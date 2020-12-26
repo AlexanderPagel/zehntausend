@@ -1,0 +1,8 @@
+# Build
+.depend
+*.o
+zehntausend
+
+# Edit
+*.swp
+Session.vim
