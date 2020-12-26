@@ -1,4 +1,4 @@
-#include "rl_sarsamaxeligibility.hpp"
+#include "rl_sarsamaxeligibility.h"
 
 namespace rl
 {

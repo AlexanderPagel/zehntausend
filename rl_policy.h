@@ -1,5 +1,5 @@
-#ifndef RL_POLICY_HPP_INCLUDED
-#define RL_POLICY_HPP_INCLUDED
+#ifndef RL_POLICY_H_INCLUDED
+#define RL_POLICY_H_INCLUDED
 
 namespace rl
 {
@@ -21,4 +21,4 @@ Policy::~Policy(){}
 
 }
 
-#endif // RL_POLICY_HPP_INCLUDED
+#endif // RL_POLICY_H_INCLUDED

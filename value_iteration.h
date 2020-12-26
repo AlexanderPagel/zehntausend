@@ -1,9 +1,9 @@
-#ifndef VALUE_ITERATION_HPP_INCLUDED
-#define VALUE_ITERATION_HPP_INCLUDED
+#ifndef VALUE_ITERATION_H_INCLUDED
+#define VALUE_ITERATION_H_INCLUDED
 
 #include <array>
 #include <unordered_map>
-#include "state.hpp"
+#include "state.h"
 
 // later for policy with decisions to put dice aside
 unsigned int constexpr thrwosWith6 = 462;
@@ -42,4 +42,4 @@ class T
     ValueIteration();
 };
 
-#endif // VALUE_ITERATION_HPP_INCLUDED
+#endif // VALUE_ITERATION_H_INCLUDED

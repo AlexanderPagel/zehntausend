@@ -1,5 +1,5 @@
-#ifndef STATE_HPP_INCLUDED
-#define STATE_HPP_INCLUDED
+#ifndef STATE_H_INCLUDED
+#define STATE_H_INCLUDED
 
 class State
 {
@@ -16,4 +16,4 @@ public:
     State(unsigned int p = 0, unsigned int d = 0) : points{p}, dice{d}{}
 };
 
-#endif // STATE_HPP_INCLUDED
+#endif // STATE_H_INCLUDED

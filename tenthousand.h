@@ -1,18 +1,18 @@
-#ifndef TENTHOUSAND_HPP_INCLUDED
-#define TENTHOUSAND_HPP_INCLUDED
+#ifndef TENTHOUSAND_H_INCLUDED
+#define TENTHOUSAND_H_INCLUDED
 
-#include "dice.hpp"
+#include "dice.h"
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
-#include "rl_state.hpp"
-#include "rl_afterstate.hpp"
-#include "rl_action.hpp"
-#include "rl_exceptions.hpp"
-#include "rl_environment.hpp"
+#include "rl_state.h"
+#include "rl_afterstate.h"
+#include "rl_action.h"
+#include "rl_exceptions.h"
+#include "rl_environment.h"
 
 
 /// \tbc why tf hell does any1 use defines? there is constexpr and stuff... you know that eh?
@@ -1271,4 +1271,4 @@ namespace tenthousand_states
 
 }
 
-#endif // TENTHOUSAND_HPP_INCLUDED
+#endif // TENTHOUSAND_H_INCLUDED

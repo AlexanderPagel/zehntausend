@@ -1,5 +1,5 @@
-#ifndef RL_EXCEPTIONS_HPP_INCLUDED
-#define RL_EXCEPTIONS_HPP_INCLUDED
+#ifndef RL_EXCEPTIONS_H_INCLUDED
+#define RL_EXCEPTIONS_H_INCLUDED
 
 #include <stdexcept>
 
@@ -27,4 +27,4 @@ class InvalidMoveError : public MdpError
 
 }
 
-#endif // RL_EXCEPTIONS_HPP_INCLUDED
+#endif // RL_EXCEPTIONS_H_INCLUDED

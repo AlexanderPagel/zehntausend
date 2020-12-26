@@ -6,3 +6,6 @@ zehntausend
 # Edit
 *.swp
 Session.vim
+
+# Misc
+rename.sh

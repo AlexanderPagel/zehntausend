@@ -1,10 +1,10 @@
-#ifndef RL_SARSAMAX_HPP_INCLUDED
-#define RL_SARSAMAX_HPP_INCLUDED
+#ifndef RL_SARSAMAX_H_INCLUDED
+#define RL_SARSAMAX_H_INCLUDED
 
-#include "rl_agent.hpp"
+#include "rl_agent.h"
 
 // debug
-#include "tenthousand.hpp"
+#include "tenthousand.h"
 
 using ::from_rl_bases::TenKState;
 
@@ -103,4 +103,4 @@ SarsaMax::~SarsaMax(){}
 
 }
 
-#endif // RL_SARSAMAX_HPP_INCLUDED
+#endif // RL_SARSAMAX_H_INCLUDED

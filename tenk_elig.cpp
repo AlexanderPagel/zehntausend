@@ -1,4 +1,4 @@
-#include "tenk_elig.hpp"
+#include "tenk_elig.h"
 
 auto TenKElig::begin() -> decltype( _elig.begin() )
 {

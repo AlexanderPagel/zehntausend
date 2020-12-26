@@ -1,5 +1,5 @@
-#ifndef DICE_HPP_INCLUDED
-#define DICE_HPP_INCLUDED
+#ifndef DICE_H_INCLUDED
+#define DICE_H_INCLUDED
 
 
 #include <cstdlib>
@@ -57,4 +57,4 @@ unsigned int Dice<N>::operator[](size_t i) const
 }
 
 
-#endif // DICE_HPP_INCLUDED
+#endif // DICE_H_INCLUDED

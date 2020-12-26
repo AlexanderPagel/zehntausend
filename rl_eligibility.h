@@ -1,10 +1,10 @@
-#ifndef RL_ELIGIBILITY_HPP_INCLUDED
-#define RL_ELIGIBILITY_HPP_INCLUDED
+#ifndef RL_ELIGIBILITY_H_INCLUDED
+#define RL_ELIGIBILITY_H_INCLUDED
 
 #include <unordered_map>
 #include <iterator>
 
-#include "rl_afterstate.hpp"
+#include "rl_afterstate.h"
 
 namespace rl
 {
@@ -35,4 +35,4 @@ Eligibility::~Eligibility() {}
 
 } //  ::rl
 
-#endif // RL_ELIGIBILITY_HPP_INCLUDED
+#endif // RL_ELIGIBILITY_H_INCLUDED

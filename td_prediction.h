@@ -1,9 +1,9 @@
-#ifndef TD_PREDICTION_HPP_INCLUDED
-#define TD_PREDICTION_HPP_INCLUDED
+#ifndef TD_PREDICTION_H_INCLUDED
+#define TD_PREDICTION_H_INCLUDED
 
 #include <array>
 #include <unordered_map>
-#include "state.hpp"
+#include "state.h"
 
 // later for policy with decisions to put dice aside
 unsigned int constexpr thrwosWith6 = 462;
@@ -40,13 +40,13 @@ class TDPrediction
 
 };
 
-#endif // TD_PREDICTION_HPP_INCLUDED
+#endif // TD_PREDICTION_H_INCLUDED
 
 
 
 
-#ifndef VALUE_ITERATION_HPP_INCLUDED
-#define VALUE_ITERATION_HPP_INCLUDED
+#ifndef VALUE_ITERATION_H_INCLUDED
+#define VALUE_ITERATION_H_INCLUDED
 
 
-#endif // VALUE_ITERATION_HPP_INCLUDED
+#endif // VALUE_ITERATION_H_INCLUDED

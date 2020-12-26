@@ -1,11 +1,11 @@
-#ifndef RL_SARSAMAXELIGIBILITY_HPP_INCLUDED
-#define RL_SARSAMAXELIGIBILITY_HPP_INCLUDED
+#ifndef RL_SARSAMAXELIGIBILITY_H_INCLUDED
+#define RL_SARSAMAXELIGIBILITY_H_INCLUDED
 
 #include <memory>
 
-#include "rl_agent.hpp"
-#include "rl_policy.hpp"
-#include "rl_eligibility.hpp"
+#include "rl_agent.h"
+#include "rl_policy.h"
+#include "rl_eligibility.h"
 
 namespace rl
 {
@@ -58,4 +58,4 @@ SarsaMaxLambda::~SarsaMaxLambda()
 }
 
 
-#endif // RL_SARSAMAXELIGIBILITY_HPP_INCLUDED
+#endif // RL_SARSAMAXELIGIBILITY_H_INCLUDED

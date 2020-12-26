@@ -1,4 +1,4 @@
-#include "tenthousand.hpp"
+#include "tenthousand.h"
 
 namespace tenthousand_states
 {

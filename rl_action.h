@@ -1,5 +1,5 @@
-#ifndef RL_ACTION_HPP_INCLUDED
-#define RL_ACTION_HPP_INCLUDED
+#ifndef RL_ACTION_H_INCLUDED
+#define RL_ACTION_H_INCLUDED
 
 namespace rl
 {
@@ -26,4 +26,4 @@ Action::~Action() {}
 
 }
 
-#endif // RL_ACTION_HPP_INCLUDED
+#endif // RL_ACTION_H_INCLUDED

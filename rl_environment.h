@@ -1,8 +1,8 @@
-#ifndef RL_ENVIRONMENT_HPP_INCLUDED
-#define RL_ENVIRONMENT_HPP_INCLUDED
+#ifndef RL_ENVIRONMENT_H_INCLUDED
+#define RL_ENVIRONMENT_H_INCLUDED
 
-#include "rl_action.hpp"
-#include "rl_state.hpp"
+#include "rl_action.h"
+#include "rl_state.h"
 
 #include <tuple>
 #include <memory>
@@ -71,4 +71,4 @@ class Simulation
 
 
 }
-#endif // RL_ENVIRONMENT_HPP_INCLUDED
+#endif // RL_ENVIRONMENT_H_INCLUDED

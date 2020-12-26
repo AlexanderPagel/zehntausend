@@ -2,8 +2,8 @@
 #include <cstdlib>
 
 
-//#include "tenthousand.hpp"
-#include "sarsa.hpp"
+//#include "tenthousand.h"
+#include "sarsa.h"
 
 #include <windows.h>
 

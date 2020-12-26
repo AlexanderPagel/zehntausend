@@ -1,8 +1,8 @@
-#ifndef TENK_ELIG_HPP_INCLUDED
-#define TENK_ELIG_HPP_INCLUDED
+#ifndef TENK_ELIG_H_INCLUDED
+#define TENK_ELIG_H_INCLUDED
 
-#include "tenthousand.hpp"
-#include "rl_eligibility.hpp"
+#include "tenthousand.h"
+#include "rl_eligibility.h"
 
 
 class TenKElig : public rl::Eligibility
@@ -35,4 +35,4 @@ public:
     ~TenKElig() = default;
 };
 
-#endif // TENK_ELIG_HPP_INCLUDED
+#endif // TENK_ELIG_H_INCLUDED

@@ -1,17 +1,17 @@
-#ifndef SARSA_HPP_INCLUDED
-#define SARSA_HPP_INCLUDED
+#ifndef SARSA_H_INCLUDED
+#define SARSA_H_INCLUDED
 
 #include <array>
 #include <unordered_map>
-#include "tenthousand.hpp"
+#include "tenthousand.h"
 #include <conio.h> // getch()
 #include <iostream>
 #include <iomanip>
 #include <limits>
 #include <memory>
 
-#include "rl_headers.hpp"
-#include "tenk_elig.hpp"
+#include "rl_headers.h"
+#include "tenk_elig.h"
 
 // debug
 //static unsigned int d_count = 0;
@@ -93,4 +93,4 @@ public:
 };
 
 
-#endif // SARSA_HPP_INCLUDED
+#endif // SARSA_H_INCLUDED

@@ -1,8 +1,8 @@
-#ifndef RL_SARSA_HPP_INCLUDED
-#define RL_SARSA_HPP_INCLUDED
+#ifndef RL_SARSA_H_INCLUDED
+#define RL_SARSA_H_INCLUDED
 
 
-#include "rl_agent.hpp"
+#include "rl_agent.h"
 
 namespace rl
 {
@@ -59,4 +59,4 @@ public:
 
 }
 
-#endif // RL_SARSA_HPP_INCLUDED
+#endif // RL_SARSA_H_INCLUDED

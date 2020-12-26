@@ -1,5 +1,5 @@
-#ifndef RL_STATE_HPP_INCLUDED
-#define RL_STATE_HPP_INCLUDED
+#ifndef RL_STATE_H_INCLUDED
+#define RL_STATE_H_INCLUDED
 
 #include <iostream> /// \testing
 
@@ -37,4 +37,4 @@ class State
 }
 
 
-#endif // RL_STATE_HPP_INCLUDED
+#endif // RL_STATE_H_INCLUDED
