@@ -48,7 +48,7 @@ enum Features : int
   Q_FORWARD_2,
   Q_FORWARD_3,
 };
-double w[];
+//double w[];
 
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
@@ -329,4 +329,4 @@ Sarsa::~Sarsa()
 
 }
 
-valueFunction(Position const&, Weights[]);
+//valueFunction(Position const&, Weights[]);

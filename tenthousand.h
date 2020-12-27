@@ -648,7 +648,7 @@ Tenthousand<P>::thrown() const -> Throw_t
         }
     }
 
-    return std::move(t);
+    return t;
 }
 
 template<unsigned int P>

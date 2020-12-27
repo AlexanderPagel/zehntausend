@@ -5,12 +5,11 @@
 //#include "tenthousand.h"
 #include "sarsa.h"
 
-#include <windows.h>
+//#include <windows.h>
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <conio.h>
 
 #ifdef TEST_RUN
     #error TEST_RUN is already defined
@@ -81,7 +80,9 @@ int main()
          << setw(14) << std::left << "(l)" << "get Lost (quit)\n" << endl;
     cout << "\tNote: (a) Can find new triples, but is currently unable\n\tto complete triples\n" << endl;
     cout << setw(14) << std::left << "\nPress any key to start." << endl;
-    getch(); /// \tbc quick = use setting from last timeS
+    // FIXME use ncurses getch()
+    std::cin.ignore();
+//    getch(); /// \tbc quick = use setting from last timeS
 
     // computer interaction (input parameters by player)
     system("cls");
@@ -103,7 +104,7 @@ int main()
 #else
     cout << "Starting test" << endl;
 #endif
-    int steps;
+    int steps; (void) steps;
 #ifndef TEST_RUN
     cin >> steps; cin.sync(); cin.clear();
     if( steps < 0 )
@@ -141,9 +142,9 @@ int main()
     std::srand(time(0));
 
     cout << "NO TRAIN NO GAIN" << endl;
-    for(int i =  50000000; i != 0; --i)
+    for(int i =  50000; i != 0; --i)
     {
-        if( !(i % 1000000) ) cout << ".";
+        if( !(i % 1000) ) cout << ".";
         bot->rl::SarsaMaxLambda::performEpisode();
     }
     cout << "DONE" << endl;
@@ -234,7 +235,9 @@ cout << "[Preparation]" << endl;
 #ifdef TEST_RUN
                     in = 'f';
 #else
-                    in = getch();
+                    // FIXME use ncurses getch()
+                    in << std::cin(); std::cin.sync(); std::cin.clear();
+//                    in = getch();
 #endif // TEST_RUN
 
                     switch( in )
@@ -379,7 +382,7 @@ void gradDesc_hyperparameter()
     static constexpr double d = 0.03;
     static constexpr double doubleAlpha = 0.003;
 
-    using Game_t = Sarsa::Game_t;
+    using Game_t = Sarsa::Game_t; (void) Game_t();
 
 //    double a = 0.9;
 //    double e = 0.9;

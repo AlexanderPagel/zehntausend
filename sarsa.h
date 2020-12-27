@@ -4,7 +4,7 @@
 #include <array>
 #include <unordered_map>
 #include "tenthousand.h"
-#include <conio.h> // getch()
+//#include <conio.h> // getch()
 #include <iostream>
 #include <iomanip>
 #include <limits>

@@ -34,8 +34,8 @@ protected:
             State const& s2)
         -> void
     {
-        ::from_rl_bases::TenKState const& tempS1( dynamic_cast<::from_rl_bases::TenKState const&>(s1));
-        ::from_rl_bases::TenKState const& tempS2( dynamic_cast<::from_rl_bases::TenKState const&>(s2));
+        ::from_rl_bases::TenKState const& tempS1( dynamic_cast<::from_rl_bases::TenKState const&>(s1)); (void) tempS1;
+        ::from_rl_bases::TenKState const& tempS2( dynamic_cast<::from_rl_bases::TenKState const&>(s2)); (void) tempS2;
         double oldEstimate = getEstimate(s1,a1);
         double delta = r + _gamma*greedyValue(s2) - oldEstimate;
         double newEstimate = oldEstimate + _alpha*delta;
@@ -83,7 +83,7 @@ public:
             double r = this->Agent::_environment->takeAction(*a1);          // Take action A, observe R,
             shared_ptr<State const> s2 = _environment->cloneState();        //  S'
 
-            ::from_rl_bases::TenKState const& tempS2( dynamic_cast<::from_rl_bases::TenKState const&>(*s2));
+            ::from_rl_bases::TenKState const& tempS2( dynamic_cast<::from_rl_bases::TenKState const&>(*s2)); (void) tempS2;
 
             update(*s1,*a1,r,*s2);                                          // Update towards R + gamma* max_a{ Q(s, a) }
             s1 = s2;                                                        // S <- S'; A <- A'
