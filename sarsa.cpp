@@ -1,55 +1,5 @@
 #include "sarsa.h"
 
-//#include <cmath>
-
-enum Features : int
-{
-  N_CENTRAL_1,
-  N_CENTRAL_2,
-  N_CENTRAL_3,
-  N_CENTRAL_4,
-
-  N_FORWARD_1,
-  N_FORWARD_2,
-  N_FORWARD_3,
-  N_FORWARD_4,
-
-  B_DIAGONAL_1,
-  B_DIAGONAL_2,
-  B_DIAGONAL_3,
-
-  B_AGGRESSIVE_1,
-  B_AGGRESSIVE_2,
-  B_AGGRESSIVE_3,
-  B_AGGRESSIVE_4,
-
-  R_CENTRAL_1,
-  R_CENTRAL_2,
-  R_CENTRAL_3,
-
-  R_FORWARD_1,
-  R_FORWARD_2,
-  R_FORWARD_3,
-
-  Q_DIAGONAL_1,
-  Q_DIAGONAL_2,
-  Q_DIAGONAL_3,
-
-  Q_AGGRESSIVE_1,
-  Q_AGGRESSIVE_2,
-  Q_AGGRESSIVE_3,
-  Q_AGGRESSIVE_4,
-
-  Q_CENTRAL_1,
-  Q_CENTRAL_2,
-  Q_CENTRAL_3,
-
-  Q_FORWARD_1,
-  Q_FORWARD_2,
-  Q_FORWARD_3,
-};
-//double w[];
-
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
 {
@@ -328,5 +278,3 @@ Sarsa::~Sarsa()
 {
 
 }
-
-//valueFunction(Position const&, Weights[]);
