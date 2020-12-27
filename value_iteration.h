@@ -35,9 +35,9 @@ namespace std
 /// ------------------------------------------------------------------------
 /// class ValueIteration ---------------------------------------------------
 
-class T
+class ValueIteration
 {
-    std::unordered_map<State, double> V;    // estimate for v_Pi
+    std::unordered_map<State, double> vPi;    // estimate for v_Pi
 
     ValueIteration();
 };
