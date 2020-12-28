@@ -86,18 +86,13 @@ public:
     using Throw_t = from_rl_bases::TenKThrow;
 
 private:
-    Throw_t* _cup;
-    Points_t _p;    /// \tbc more members slow "inside" moves
+    Throw_t* _cup;  // TODO Throw already contains pointer
+    Points_t _p;
 
 public:
     bool isTerminal() const{ return !_cup->any(); }
-    auto clone() const& noexcept(true) { return new TenKState(*this); }
-
-//    auto
-//    clone() && noexcept(true)
-//    {
-//        return new TenKState( std::move(*this) );
-//    }
+    auto clone() const noexcept(true) { return new TenKState(*this); }
+    bool operator==(TenKState const& other) const;
 
     Throw_t&       thrown() { return *_cup; }
     Throw_t const& thrown() const { return *_cup; }
@@ -105,62 +100,16 @@ public:
     Points_t const& points() const { return _p; }
 //    bool terminal() const { return isTerminal(); }
 
-    static TenKState randomStart()
-    {
-        TenKState s;
-        s.thrown()[6] = 6;
-        for( unsigned int i = 0; i < 6; ++i )
-            ++s.thrown()[rand() % 6];
-        s.points() = 0;
+    static TenKState randomStart();
+    TenKState(Throw_t const& t, Points_t const& p);
 
-        return s;
-    }
+    TenKState& operator=(TenKState const& src);
+    TenKState& operator=(TenKState&& src);
 
-    auto
-    operator==(TenKState const& other) const
-        -> bool
-    {
-        return
-            ( isTerminal() && other.isTerminal() ) ||
-            ( _p == other._p && *_cup == *other._cup );
-    }
-
-    /// ----------------------------------------------------------------
-    /// assignments
-    auto
-    operator=(TenKState& src) noexcept
-        -> TenKState&
-    {
-        *_cup = *src._cup;
-        _p = src._p;
-        return *this;
-    }
-
-    auto
-    operator=(TenKState&& src) noexcept
-        -> TenKState&
-    {
-        if( _cup )
-            delete _cup;
-        _cup = src._cup; src._cup = 0;
-        _p = src._p;
-        return *this;
-    }
-
-    /// ---------------------------------------------------------------
-    /// constructors
-
-    TenKState() : _cup(new Throw_t()), _p(0) {}
-    TenKState(TenKState const& src)
-        : _cup(new Throw_t(*src._cup)), _p(src._p) {}
-    TenKState(TenKState&& src)
-        : _cup(src._cup), _p(src._p)
-    {
-        src._cup = nullptr;
-    }
-    TenKState(Throw_t const& t, Points_t const& p) : _cup(new Throw_t(t)), _p(p) {}
-
-    ~TenKState() { if( _cup != nullptr ) delete _cup; }
+    TenKState();
+    TenKState(TenKState const& src);
+    TenKState(TenKState&& src);
+    ~TenKState();
 };
 
 /// ====================================================================
@@ -168,7 +117,7 @@ public:
 class TenKMove
 {
 public:
-    using Throw_t = from_rl_bases::TenKThrow;   // derived throw type to be used with this action type
+    using Throw_t = from_rl_bases::TenKThrow;
 
 private:
     Throw_t* _put;
@@ -933,80 +882,6 @@ void Tenthousand<P>::print() const
     }
 }
 
-namespace std
-{
-
-    template<> struct hash<from_rl_bases::TenKState>
-    {
-        size_t operator()(from_rl_bases::TenKState const& x) const
-        {
-            return std::hash<unsigned int>()
-            (
-                x.isTerminal()
-                    ?
-                        (
-                            1 << (sizeof(unsigned int)*8 -1)
-                        )
-                    :
-                        (
-                            x.thrown()[0] << 0  |
-                            x.thrown()[1] << 3  | // max size is 8 ^= 3 bit
-                            x.thrown()[2] << 6  |
-                            x.thrown()[3] << 9  |
-                            x.thrown()[5] << 12 |
-                            x.thrown()[4] << 15 |
-                            x.thrown()[6] << 18 |
-                            x.  points()    << 21
-                         )
-             ); // return
-        }   // operator()
-    };   // struct hash<>
-
-//    template <> struct hash<tenthousand_states::State>
-//    {
-//        size_t operator()(tenthousand_states::State const& x) const
-//        {
-//            return std::hash<unsigned int>()
-//            (
-//                x.terminal()
-//                    ?
-//                        (
-//                            1 << (sizeof(unsigned int)*8 -1)
-//                        )
-//                    :
-//                        (
-//                            x.thrown()[0] << 0  |
-//                            x.thrown()[1] << 3  | // max size is 8 ^= 3 bit
-//                            x.thrown()[2] << 6  |
-//                            x.thrown()[3] << 9  |
-//                            x.thrown()[5] << 12 |
-//                            x.thrown()[4] << 15 |
-//                            x.thrown()[6] << 18 |
-//                            x.  points()    << 21
-//                         )
-//             );
-//        }
-//    };
-
-    template <> struct hash<tenthousand_states::Afterstate>
-    {
-        size_t operator()(tenthousand_states::Afterstate const& x) const
-        {
-            return std::hash<unsigned int>()
-            (
-                x.fromTerminal()  ? (   // 0/0 states
-                                        1 << (sizeof(unsigned int)*8 -1)
-                                    )
-                                  :
-                                    (
-                                        x.diceLeft()    <<   0 |
-                                        x.points()      <<   3 |
-                                        x.pointsBefore() << 15  /// reserving 12 bit for 4095 points /// \tbc there is a max value here after which it can get ineffective
-                                    )
-             );
-        }
-    };
-
-}
+#include "tenthousand.inc"
 
 #endif // TENTHOUSAND_HPP_INCLUDED
