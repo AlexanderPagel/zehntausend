@@ -2,6 +2,8 @@
 //
 // Implementation of template class Dice<>
 
+#include <cassert>
+
 template<unsigned int N>
 Dice<N>& Dice<N>::roll()
 {
@@ -22,8 +24,11 @@ Dice<N>& Dice<N>::roll(std::array<bool,N> const& active)
 template<unsigned int N>
 unsigned int Dice<N>::operator[](size_t i) const
 {
-    // array::operator[] does not bounce check so check before
-    if( i >= N )
-        throw std::out_of_range("There are not so many dice!");
+    assert(i < N);
+
+    // TODO there should be a separate function "at()" to take user input and perform bounds check
+//    if( i >= N )
+//        throw std::out_of_range("There are not so many dice!");
+
     return dice[i];
 }

@@ -20,8 +20,6 @@ class Dice
 public:
     Dice() = default;
     explicit Dice( std::array<unsigned int, N> const& src) : dice(src) {}
-//    explicit Dice( std::array<unsigned int, N>&& src ) : dice( std::move(src) )
-//    {}
 
     bool operator==(Dice const& other) { return dice == other.dice; }
 

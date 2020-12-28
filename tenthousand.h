@@ -1,19 +1,21 @@
 #ifndef TENTHOUSAND_HPP_INCLUDED
-#define TENTHOUSAND_HPP_INCLUDED
+#define TENTHOUSAND_HPP_INCLUDED 1
 
-#include "dice.h"
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
-/// \tbc why tf hell does any1 use defines? there is constexpr and stuff... you know that eh?
+#include "dice.h"
+
+// FIXME use constexpr
 #define TURN_MINIMUM 350
 
 
 namespace from_rl_bases
 {
+
 /// @note   No validity or range checks in this class.
 class TenKThrow
 {
@@ -25,74 +27,36 @@ private:
     DiceArray_t* _arr;
 
 protected:
+    // TODO Use these
     bool isInit() const { return _arr != nullptr; }
     void init() { _arr = new DiceArray_t; }
-    void checkInit() const  {   if( !isInit() )
-                                    throw std::logic_error("TenKThrow not initialized");
-                            }
+    void checkInit() const;
 
 public:
-    /// ----------------------------------------------------------------
-    /// basic object manipulation
+    // Access
     void clear() { if( _arr != nullptr ) delete _arr; }
+    void fill(size_t v);
+    size_t& operator[](size_t fig)       { return (*_arr)[fig]; }
+    size_t  operator[](size_t fig) const { return (*_arr)[fig]; }
+    size_t& total()       { return (*_arr)[TOTAL]; }
+    size_t  total() const { return (*_arr)[TOTAL]; }
 
-
-    /// ----------------------------------------------------------------
-    /// logical game functionality
-    void fill(size_t v)
-    {
-        if( !isInit() )
-            init();
-        _arr->fill(v);
-    }
+    // Content checks
     bool any() const { return (*_arr)[TOTAL] != 0; }
-    size_t& operator[](size_t fig) { return (*_arr)[fig]; }
-    size_t operator[](size_t fig) const { return (*_arr)[fig]; }
-    size_t& total() { return (*_arr)[TOTAL]; }
-    size_t total() const { return (*_arr)[TOTAL]; }
+    bool operator==(TenKThrow const& other) const;
 
-    bool operator==(TenKThrow const& other) const
-    {
-        return
-            _arr == other._arr
-            ||
-            (
-                (*_arr)[ONE]   == (*other._arr)[ONE] &&
-                (*_arr)[TWO]   == (*other._arr)[TWO] &&
-                (*_arr)[THREE] == (*other._arr)[THREE] &&
-                (*_arr)[FOUR]  == (*other._arr)[FOUR] &&
-                (*_arr)[FIVE]  == (*other._arr)[FIVE] &&
-                (*_arr)[SIX]   == (*other._arr)[SIX]
-//                (*_arr)[ALL] == (*other._arr)[] &&     if handled correctly should be equal
-            );
-    }
-
-
-    /// ----------------------------------------------------------------
-    /// creation and assignments
-    TenKThrow& operator=(TenKThrow const& src)
-    {
-        if( _arr == nullptr )
-            _arr = new DiceArray_t(*src._arr);
-        else *_arr = *src._arr;
-        return *this;
-    }
-
-    /// ----------------------------------------------------------------
-    /// copy and construct/destruct
-    TenKThrow& operator=(TenKThrow&& src) { clear(); _arr = src._arr;
-                                            src._arr = nullptr;
-                                            return *this;}
-
-    explicit TenKThrow(DiceArray_t const& a) : _arr{ new DiceArray_t(a) } {}
-
-//    TenKThrow() : _arr( nullptr ){}
-    TenKThrow() : _arr( new DiceArray_t ){ _arr->fill(0); }
+    // Copy & assign
+    TenKThrow& operator=(TenKThrow const& src);
+    TenKThrow& operator=(TenKThrow&& src);
+    // TODO need default?  TenKThrow() : _arr( nullptr ){}
     TenKThrow(TenKThrow const& src) : _arr( new DiceArray_t(*src._arr) ) {}
     TenKThrow(TenKThrow&& src) : _arr(src._arr) { src._arr = nullptr; }
 
+    // Construct
+    explicit TenKThrow(DiceArray_t const& a) : _arr{ new DiceArray_t(a) } {}
+    TenKThrow() : _arr( new DiceArray_t ){ _arr->fill(0); }
     ~TenKThrow() { this->clear(); }
-}; // ns from_rl_bases
+};
 
 /// ====================================================================
 ///
@@ -156,7 +120,7 @@ public:
 
     /// ----------------------------------------------------------------
     /// assignments
-        auto
+    auto
     operator=(TenKState& src) noexcept
         -> TenKState&
     {
@@ -250,8 +214,7 @@ public:
     ~TenKMove() { if( _put != nullptr ) delete _put; }
 };
 
-}
-
+} // namespace from_rl_bases
 
 
 class illegal_move_error : public std::runtime_error
