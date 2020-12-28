@@ -317,28 +317,28 @@ namespace tenthousand_states
 
     /// then, enter terminal with 0 diceLeft is equal to s = terminate state, others
     ///  /e.g., enter terminal wih 4 dice and 200 points is not terminal, but reached after illegal moves
-    class State : private std::pair<from_rl_bases::TenKThrow,unsigned int>
-    {
-        typedef from_rl_bases::TenKThrow Throw_t;
-        typedef typename std::pair<Throw_t,unsigned int> _base_t;
-    public:
-        Throw_t& thrown() { return _base_t::first; }
-        Throw_t const& thrown() const {return _base_t::first; }
-        unsigned int& points() { return _base_t::second; }
-        unsigned int const& points() const { return _base_t::second; }
-        bool terminal() const { return !_base_t::first.any(); }
+//    class State : private std::pair<from_rl_bases::TenKThrow,unsigned int>
+//    {
+//        typedef from_rl_bases::TenKThrow Throw_t;
+//        typedef typename std::pair<Throw_t,unsigned int> _base_t;
+//    public:
+//        Throw_t& thrown() { return _base_t::first; }
+//        Throw_t const& thrown() const {return _base_t::first; }
+//        unsigned int& points() { return _base_t::second; }
+//        unsigned int const& points() const { return _base_t::second; }
+//        bool terminal() const { return !_base_t::first.any(); }
 
-        static State randomStart();
+//        static State randomStart();
 
-        bool operator==(State const& other) const { return _base_t::second == other.second && _base_t::first == other.first; }
+//        bool operator==(State const& other) const { return _base_t::second == other.second && _base_t::first == other.first; }
 
-        State& operator=(State const&) = default;
+//        State& operator=(State const&) = default;
 
-        State() = default;
-        State(State const& src) : _base_t( src ) {}
-        State(State&& src) : _base_t( src ) {}    // implicit move
-        explicit State(_base_t&& src) : _base_t( std::move(src) ) {}
-    };
+//        State() = default;
+//        State(State const& src) : _base_t( src ) {}
+//        State(State&& src) : _base_t( src ) {}    // implicit move
+//        explicit State(_base_t&& src) : _base_t( std::move(src) ) {}
+//    };
 
     class Move : private std::pair<from_rl_bases::TenKThrow,bool>
     {
@@ -1016,31 +1016,31 @@ namespace std
         }   // operator()
     };   // struct hash<>
 
-    template <> struct hash<tenthousand_states::State>
-    {
-        size_t operator()(tenthousand_states::State const& x) const
-        {
-            return std::hash<unsigned int>()
-            (
-                x.terminal()
-                    ?
-                        (
-                            1 << (sizeof(unsigned int)*8 -1)
-                        )
-                    :
-                        (
-                            x.thrown()[0] << 0  |
-                            x.thrown()[1] << 3  | // max size is 8 ^= 3 bit
-                            x.thrown()[2] << 6  |
-                            x.thrown()[3] << 9  |
-                            x.thrown()[5] << 12 |
-                            x.thrown()[4] << 15 |
-                            x.thrown()[6] << 18 |
-                            x.  points()    << 21
-                         )
-             );
-        }
-    };
+//    template <> struct hash<tenthousand_states::State>
+//    {
+//        size_t operator()(tenthousand_states::State const& x) const
+//        {
+//            return std::hash<unsigned int>()
+//            (
+//                x.terminal()
+//                    ?
+//                        (
+//                            1 << (sizeof(unsigned int)*8 -1)
+//                        )
+//                    :
+//                        (
+//                            x.thrown()[0] << 0  |
+//                            x.thrown()[1] << 3  | // max size is 8 ^= 3 bit
+//                            x.thrown()[2] << 6  |
+//                            x.thrown()[3] << 9  |
+//                            x.thrown()[5] << 12 |
+//                            x.thrown()[4] << 15 |
+//                            x.thrown()[6] << 18 |
+//                            x.  points()    << 21
+//                         )
+//             );
+//        }
+//    };
 
     template <> struct hash<tenthousand_states::Afterstate>
     {
