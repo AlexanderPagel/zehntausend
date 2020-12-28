@@ -5,21 +5,21 @@ namespace rl
 {
 
 
-class Action
-{
+//class Action
+//{
 
     /// Representation completely implementation-dependent.
 
-public:
+//public:
 //    virtual Action& operator=(Action&&) = 0;
 //    virtual Action& operator=(Action const&) = 0;
 //    Action(Action&&) noexcept = delete;
-    Action() = default;
-    Action(Action const&) = default;
-    Action(Action&&) = default;
+//    Action() = default;
+//    Action(Action const&) = default;
+//    Action(Action&&) = default;
 
-    virtual ~Action() = 0;
-};
+//    virtual ~Action() = 0;
+//};
 
 
 }

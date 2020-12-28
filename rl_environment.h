@@ -23,49 +23,49 @@ namespace rl
 
 
 
-class Environment
-{
-public:
+//class Environment
+//{
+//public:
     /// typedefs
 
-    using Reward_t = double;
+//    using Reward_t = double;
 
-protected:
+//protected:
 
-public:
+//public:
     /// ----------------------------------------------------------------
     /// interaction in MDPs --------------------------------------------
 
     /// \b  Initialize the internal state to a starting state.
-    virtual auto
-    init()
-        -> Environment& = 0;
+//    virtual auto
+//    init()
+//        -> Environment& = 0;
 
-    virtual auto
-    takeAction(const Action&)
-        -> Reward_t = 0;
+//    virtual auto
+//    takeAction(const Action&)
+//        -> Reward_t = 0;
 
-    virtual auto
-    cloneState() const
-        -> shared_ptr<State> = 0;
+//    virtual auto
+//    cloneState() const
+//        -> shared_ptr<State> = 0;
 
-    Environment() noexcept = delete;
-    Environment(Environment const&) noexcept = delete;
+//    Environment() noexcept = delete;
+//    Environment(Environment const&) noexcept = delete;
 //    Environment(Environment&& src) = delete;
 
-    virtual  ~Environment() = default;
-};
+//    virtual  ~Environment() = default;
+//};
 
-class Simulation
-{
+//class Simulation
+//{
     /// types
-    using Reward_t = double;    /// \tbc unify with env?
-    using Response_t = std::pair<Reward_t,shared_ptr<State>>;
+//    using Reward_t = double;    /// \tbc unify with env?
+//    using Response_t = std::pair<Reward_t,shared_ptr<State>>;
 
-    auto
-    simulate(State const&, Action const&) const
-        -> Response_t;
-};
+//    auto
+//    simulate(State const&, Action const&) const
+//        -> Response_t;
+//};
 
 
 }

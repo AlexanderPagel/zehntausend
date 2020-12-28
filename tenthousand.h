@@ -209,7 +209,7 @@ public:
 
 /// ====================================================================
 ///
-class TenKMove : public rl::Action//, protected TenKThrow
+class TenKMove
 {
 public:
     using Throw_t = from_rl_bases::TenKThrow;   // derived throw type to be used with this action type
@@ -258,7 +258,7 @@ public:
     /// ----------------------------------------------------------------
     /// ctors
     TenKMove() : _put(new Throw_t()), _finishes(false) {}
-    TenKMove(TenKMove const& src) : rl::Action(), _put(new Throw_t(*src._put)), _finishes(src._finishes) {}
+    TenKMove(TenKMove const& src) : _put(new Throw_t(*src._put)), _finishes(src._finishes) {}
     TenKMove(TenKMove&& src) : _put(src._put), _finishes(src._finishes) { src._put = nullptr; }
 
     TenKMove(Throw_t&& t, bool b) : _put(new Throw_t(std::move(t))), _finishes(b) {}

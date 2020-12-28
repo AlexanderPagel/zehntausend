@@ -11,25 +11,25 @@ namespace rl
 
 //class Policy??
 
-class Agent
-{
-protected:
-    Environment* _environment;
+//class Agent
+//{
+//protected:
+//    Environment* _environment;
     //    Policy* _policy;/// \tbc ????
 
-public:
-    explicit Agent(rl::Environment* e) : _environment(e)
-    {
-        if( e == nullptr )
-            throw invalid_argument("must provide an environment");
-    }
+//public:
+//    explicit Agent(rl::Environment* e) : _environment(e)
+//    {
+//        if( e == nullptr )
+//            throw invalid_argument("must provide an environment");
+//    }
 
-    Agent& operator=(Agent const&) = delete;
+//    Agent& operator=(Agent const&) = delete;
 
-    Agent(Agent const&) = delete;
-    virtual ~Agent();
+//    Agent(Agent const&) = delete;
+//    virtual ~Agent();
 
-};
+//};
 
 
 }

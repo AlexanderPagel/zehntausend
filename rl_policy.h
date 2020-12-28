@@ -5,16 +5,16 @@ namespace rl
 {
 
 
-class Policy
-{
+//class Policy
+//{
 
-public:
-    virtual auto
-    operator()(State const&) const
-        -> shared_ptr<Action>;
+//public:
+//    virtual auto
+//    operator()(State const&) const
+//        -> shared_ptr<Action>;
 
-    virtual ~Policy();
-};
+//    virtual ~Policy();
+//};
 
 
 }
