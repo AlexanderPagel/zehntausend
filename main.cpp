@@ -12,7 +12,7 @@
 #ifdef TEST_RUN
     #error TEST_RUN is already defined
 #else
-    #define TEST_RUN
+//    #define TEST_RUN
 #endif // TEST_RUN
 
     // game
@@ -74,10 +74,12 @@ int main()
          << setw(14) << std::left << "(l)" << "get Lost (quit)\n" << endl;
     cout << "\tNote: (a) Can find new triples, but is currently unable\n\tto complete triples\n" << endl;
     cout << setw(14) << std::left << "\nPress any key to start." << endl;
-    getch(); /// \tbc quick = use setting from last timeS
+//    getch(); /// \tbc quick = use setting from last timeS
+    std::cin.ignore();
 
     // computer interaction (input parameters by player)
-    system("cls");
+//    system("cls");
+    std::cout << std::endl << std::endl;
     cout << "Choose your AI level.\n"
          << string(72, '-') << endl
          << "Note:\n\tCurrently, AI skill is limited by computing power.\n"
@@ -121,7 +123,8 @@ int main()
 #endif
 
 #ifndef TEST_RUN
-    system("cls");
+//    system("cls");
+    std::cout << std::endl << std::endl;
     cout << "For level " << steps << ", the AI chose the following parameters for 1-step TD(0) control (Sarsa):\n"
             << "\n\talpha      = " << bot->alpha
             << "\n\tepsilon    = " << bot->epsilon
@@ -164,7 +167,7 @@ int main()
         int left = 4 - (time(nullptr) - start);
         left = left > 0 ? left : 0;
         #ifndef TEST_RUN
-        Sleep(left * int(factor * 1000)); /// \tbc lol does not work as intended
+//        Sleep(left * int(factor * 1000)); /// \tbc lol does not work as intended
 
         #endif // TEST_RUN
     }; (void)wait;
@@ -206,7 +209,8 @@ cout << "[Preparation]" << endl;
 #ifdef TEST_RUN
                     in = 'f';
 #else
-                    in = getch();
+//                    in = getch();
+                    std::cin >> in; cin.sync(); cin.clear();
 #endif // TEST_RUN
 
                     switch( in )
