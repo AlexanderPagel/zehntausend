@@ -5,8 +5,10 @@
 #include "rl_eligibility.h"
 
 
-class TenKElig : public rl::Eligibility
+class TenKElig
 {
+public:
+    using Elig_t = double;
 private:
     using Game_t = Tenthousand<1>;
     using Traced_t = Game_t::Afterstate_t;

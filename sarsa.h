@@ -33,7 +33,7 @@
 //template class Tenthousand<1>; /// \tbc ? why is this here? :D
 
 /// \tbc template with type parameter derived from environment
-class Sarsa : public rl::SarsaMaxLambda
+class Sarsa
 {
 private:
     /// ------------------------------------------------------------------------
@@ -55,6 +55,8 @@ private:
 
 public:
     double const _epsilon;    // e.g., 10 for epsilon = 0.1 /// \tbc maybe change to actual epsilon
+    double const _alpha;
+    double const _gamma;
 
     mutable _afterstateTable_t _afterstateValueTable;   // mutable for greedy lookup, not training
     mutable _legalActionsTable_t _legalActionsTable;
@@ -74,11 +76,11 @@ public:
 protected:
     /// ------------------------------------------------------------------------
     /// rl::SarsaMaxLambda requirements
-    auto getEstimate(rl::State const& s, rl::Action const& a) const -> double;
-    auto setEstimate(rl::State const& s, rl::Action const& a, double g) -> void;
-    auto greedyValue(rl::State const& s) const -> double;
-    auto update(rl::State const&, rl::Action const&, double,
-                rl::State const&, rl::Action const&) -> void;
+    auto getEstimate(State_t const& s, Action_t const& a) const -> double;
+    auto setEstimate(State_t const& s, Action_t const& a, double g) -> void;
+    auto greedyValue(State_t const& s) const -> double;
+    auto update(State_t const&, Action_t const&, double,
+                State_t const&, Action_t const&) -> void;
 
     /// ------------------------------------------------------------------------
     /// rl::Policy requirements

@@ -97,7 +97,7 @@ public:
 /// ====================================================================
 /// Class TenKState = throw + points
 
-class TenKState : public rl::State, protected TenKThrow
+class TenKState : protected TenKThrow
 {
 public:
     using Points_t = unsigned int;
@@ -120,12 +120,11 @@ public:
         return new TenKState(*this);
     }
 
-    auto
-    clone() && noexcept(true)
-        -> rl::State*
-    {
-        return new TenKState( std::move(*this) );
-    }
+//    auto
+//    clone() && noexcept(true)
+//    {
+//        return new TenKState( std::move(*this) );
+//    }
 
     /// ----------------------------------------------------------------
     /// game-related functionality
@@ -321,7 +320,7 @@ namespace tenthousand_states
 
     static Afterstate afterstate(from_rl_bases::TenKState const&, from_rl_bases::TenKMove const& m);
 
-    class Afterstate : private std::pair<unsigned int,unsigned int>, public rl::Afterstate
+    class Afterstate : private std::pair<unsigned int,unsigned int>
     {
         typedef typename std::pair<unsigned int,unsigned int> _base_t;
         bool _fromTerminal = false;
@@ -407,7 +406,7 @@ namespace tenthousand_states
 /// class Tenthousand ------------------------------------------------------
 
 template<unsigned int P=1>
-class Tenthousand : public rl::Environment
+class Tenthousand
 {
 private:
     /// \tbc assignment function?

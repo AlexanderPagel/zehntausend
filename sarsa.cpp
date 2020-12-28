@@ -200,7 +200,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 /// requirements -- rl::SarsaMaxLambda
 
 auto
-Sarsa::getEstimate(rl::State const& s, rl::Action const& a) const
+Sarsa::getEstimate(State_t const& s, Action_t const& a) const
 -> double
 {
     Afterstate_t as = _game_t::afterstate(  dynamic_cast<State_t const&>(s),
@@ -209,7 +209,7 @@ Sarsa::getEstimate(rl::State const& s, rl::Action const& a) const
 }
 
 auto
-Sarsa::setEstimate(rl::State const& s, rl::Action const& a, double g)
+Sarsa::setEstimate(State_t const& s, Action_t const& a, double g)
 -> void
 {
     // safety-check: lookup value before to insert into hash table. if algorithm is working, that should not
@@ -221,7 +221,7 @@ Sarsa::setEstimate(rl::State const& s, rl::Action const& a, double g)
 }
 
 auto
-Sarsa::greedyValue(rl::State const& s) const
+Sarsa::greedyValue(State_t const& s) const
 -> double
 {
     State_t const& sToEval( dynamic_cast<State_t const&>(s) );
@@ -230,26 +230,22 @@ Sarsa::greedyValue(rl::State const& s) const
     return _afterstateValueLookup(greedyAS);
 }
 
-auto
-Sarsa::update(rl::State const& s1, rl::Action const& a1, double r,
-              rl::State const& s2, rl::Action const& a2)
--> void
+void
+Sarsa::update(State_t const& s1, Action_t const& a1, double r,
+              State_t const& s2, Action_t const& a2)
 {
     // note: eligibility  traces are reset in the function
     //  SarsaMaxLambda::performEposide function
-    Afterstate_t as1, as2;
+    Afterstate_t as1;
     as1.fromSA(s1,a1);
-    as2.fromSA(s2,a2);
-    TenKElig* traces = dynamic_cast<TenKElig*>(_eligTraces);
-    traces->visit(as1);   // update elig traces: decay all, then increment as1
+//    as2.fromSA(s2,a2);
 
     double oldEst = _afterstateValueLookup( as1 );
-//    double target = r + _gamma*_afterstateValueLookup( as2 );
     double target = r + _gamma*greedyValue(s2);
     double delta = target - oldEst;
     for( auto e : *traces)  // not generic, but implemented for TenKElig
     {
-        _afterstateValueUpdate(e.first) += _alpha * delta * e.second;
+        _afterstateValueUpdate(as1) += _alpha * delta;
     }
 }
 
