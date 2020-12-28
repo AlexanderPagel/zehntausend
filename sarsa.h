@@ -3,13 +3,13 @@
 
 #include <array>
 #include <unordered_map>
-//#include "state.hpp"
-#include "tenthousand.hpp"
+//#include "state.h"
+#include "tenthousand.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
 
-#include "rl_headers.hpp"
+#include "rl_headers.h"
 
 // debug
 //static unsigned int d_count = 0;

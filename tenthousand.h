@@ -1,14 +1,14 @@
 #ifndef TENTHOUSAND_HPP_INCLUDED
 #define TENTHOUSAND_HPP_INCLUDED
 
-#include "dice.hpp"
+#include "dice.h"
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
-#include "rl_headers.hpp"
+#include "rl_headers.h"
 
 
 /// \tbc why tf hell does any1 use defines? there is constexpr and stuff... you know that eh?

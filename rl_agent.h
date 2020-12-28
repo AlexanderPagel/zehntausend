@@ -1,8 +1,8 @@
 #ifndef RL_AGENT_HPP_INCLUDED
 #define RL_AGENT_HPP_INCLUDED
 
-#include "rl_environment.hpp"
-#include "rl_policy.hpp"
+#include "rl_environment.h"
+#include "rl_policy.h"
 
 #include <memory>
 

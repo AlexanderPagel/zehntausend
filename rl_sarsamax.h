@@ -1,7 +1,7 @@
 #ifndef RL_SARSAMAX_HPP_INCLUDED
 #define RL_SARSAMAX_HPP_INCLUDED
 
-#include "rl_agent.hpp"
+#include "rl_agent.h"
 
 namespace rl
 {

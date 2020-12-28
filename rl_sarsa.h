@@ -2,7 +2,7 @@
 #define RL_SARSA_HPP_INCLUDED
 
 
-#include "rl_agent.hpp"
+#include "rl_agent.h"
 
 namespace rl
 {

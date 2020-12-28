@@ -1,2 +1,2 @@
-#include "dice.hpp"
+#include "dice.h"
 

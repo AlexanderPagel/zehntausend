@@ -3,7 +3,7 @@
 
 #include <array>
 #include <unordered_map>
-#include "state.hpp"
+#include "state.h"
 
 // later for policy with decisions to put dice aside
 unsigned int constexpr thrwosWith6 = 462;
