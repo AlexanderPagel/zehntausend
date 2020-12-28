@@ -8,9 +8,6 @@
 #include <tuple>
 #include <vector>
 
-#include "rl_headers.h"
-
-
 /// \tbc why tf hell does any1 use defines? there is constexpr and stuff... you know that eh?
 #define TURN_MINIMUM 350
 
