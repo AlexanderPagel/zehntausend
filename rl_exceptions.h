@@ -6,7 +6,7 @@
 namespace rl
 {
 
-class UninitializedError : public runtime_error
+class UninitializedError : public std::runtime_error
 {
 public:
     UninitializedError(std::string s) : runtime_error(s) {}

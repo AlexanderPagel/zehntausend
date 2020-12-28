@@ -1,11 +1,14 @@
 # Build
+.debug
 .depend
 *.o
+*.d
 zehntausend
 
 # Edit
 *.swp
 Session.vim
+tags
 
 # Misc
 rename.sh

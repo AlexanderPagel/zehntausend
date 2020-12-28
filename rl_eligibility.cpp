@@ -4,4 +4,7 @@ namespace rl
 {
 
 
-}
+Eligibility::~Eligibility() {}
+
+
+} // namespace rl

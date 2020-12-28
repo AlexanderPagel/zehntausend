@@ -32,7 +32,7 @@ public:
     /// ctors/dtor
 
     TenKElig(double gam, double lam);
-    ~TenKElig() = default;
+    virtual ~TenKElig() = default;
 };
 
 #endif // TENK_ELIG_H_INCLUDED

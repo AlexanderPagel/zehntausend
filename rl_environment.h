@@ -1,11 +1,11 @@
 #ifndef RL_ENVIRONMENT_H_INCLUDED
-#define RL_ENVIRONMENT_H_INCLUDED
-
-#include "rl_action.h"
-#include "rl_state.h"
+#define RL_ENVIRONMENT_H_INCLUDED 1
 
 #include <tuple>
 #include <memory>
+
+#include "rl_action.h"
+#include "rl_state.h"
 
 namespace rl
 {
@@ -17,9 +17,6 @@ namespace rl
 /// but lacks interfaces to get current states, initialize a state and similar
 ///
 /// \note   implementations (e.g., for some games like chess) could inherit both from env. and simul.
-
-
-
 
 
 
@@ -49,13 +46,7 @@ public:
     cloneState() const
         -> std::shared_ptr<State> = 0;
 
-    Environment() noexcept = default;
-    Environment(Environment const&) noexcept = default;
-    Environment(Environment&&) noexcept = default;
-
-//    Environment(Environment&& src) = delete;
-
-    virtual  ~Environment() = default;
+    virtual  ~Environment() = 0;
 };
 
 class Simulation

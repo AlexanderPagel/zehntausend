@@ -1,5 +1,5 @@
 #ifndef RL_AGENT_H_INCLUDED
-#define RL_AGENT_H_INCLUDED
+#define RL_AGENT_H_INCLUDED 1
 
 #include "rl_environment.h"
 #include "rl_policy.h"
@@ -19,23 +19,13 @@ protected:
 
 public:
     /// \tbc function to take an action ^^
-    explicit Agent(rl::Environment* e) : _environment(e)
-    {
-        if( e == nullptr )
-            throw std::invalid_argument("must provide an environment");
-    }
+    explicit Agent(rl::Environment* e);
 
-    Agent& operator=(Agent const&) = delete;
-
-    Agent(Agent const&) = delete;
-    virtual inline ~Agent() = 0;
-
+    virtual ~Agent() = 0;
 };
 
-Agent::~Agent(){}
 
-
-}
+} // namespace rl
 
 
 

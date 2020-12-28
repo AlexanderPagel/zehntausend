@@ -11,11 +11,10 @@ namespace rl
 class Afterstate : public State
 {
 public:
-    /// \tbc    ctor from state and action, maybe factory
+  //  TODO make this a ctor
+  virtual auto fromSA(State const&, Action const&) & -> Afterstate& = 0;
 
-    virtual auto
-    fromSA(State const&, Action const&) &
-        -> Afterstate& = 0;
+  virtual ~Afterstate() = 0;
 };
 
 

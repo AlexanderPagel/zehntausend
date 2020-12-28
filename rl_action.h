@@ -1,5 +1,5 @@
 #ifndef RL_ACTION_H_INCLUDED
-#define RL_ACTION_H_INCLUDED
+#define RL_ACTION_H_INCLUDED 1
 
 namespace rl
 {
@@ -14,16 +14,14 @@ public:
 //    virtual Action& operator=(Action&&) = 0;
 //    virtual Action& operator=(Action const&) = 0;
 //    Action(Action&&) noexcept = delete;
-    Action() = default;
-    Action(Action const&) = default;
-    Action(Action&&) = default;
+//    Action() = default;
+//    Action(Action const&) = default;
+//    Action(Action&&) = default;
 
-    virtual inline ~Action() = 0;
+    virtual ~Action() = 0;
 };
 
-Action::~Action() {}
 
-
-}
+} // namespace rl
 
 #endif // RL_ACTION_H_INCLUDED
