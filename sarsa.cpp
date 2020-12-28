@@ -1,4 +1,6 @@
-#include "sarsa.h"
+#include "sarsa.hpp"
+
+#include <cmath>
 
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
@@ -44,7 +46,7 @@ Sarsa::_afterstateValueLookup(Afterstate_t const& as) const -> double
 
     if( i == _afterstateValueTable.end() )
     {
-        auto put = _afterstateValueTable.insert( {transf, 500} ); /// \tbc make variable
+        auto put = _afterstateValueTable.insert( {transf, 500} ); /// \bc make variable
         if( put.second == false )
             exit(43258);
         i = put.first;
@@ -124,7 +126,7 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
         return Action_t::zero();
     }
 
-    if( (double)std::rand()/RAND_MAX < _epsilon )
+    if( (double)std::rand()/RAND_MAX < epsilon )
     {
         auto legalActions = std::move( _legalActionsLookup(s) );
 
@@ -171,15 +173,32 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 
             auto r  = simulEnvFeedback.first;
             auto s_ = simulEnvFeedback.second;
+
+
             auto a_( greedy(s_) );
 
             Afterstate_t as ( _game_t::afterstate(s,a) );
             Afterstate_t as_ ( _game_t::afterstate(s_,a_) );
 
+//            if( as.diceLeft() == 0 && as.points() == 350 && as.fromTerminal() == false )
+//                cout << "appearance. why does this have an estimate of 605??" << endl;
+
+
             double prev = _afterstateValueLookup( as );
             double nextEst = _afterstateValueLookup( as_ );
 
-            _afterstateValueUpdate( as ) = prev + _alpha*(r+_gamma*nextEst - prev);
+//            if(
+//               s.thrown()[0] == 0&&
+//               s.thrown()[1] == 0&&
+//               s.thrown()[2] == 1&&
+//               s.thrown()[3] == 1&&
+//               s.thrown()[4] == 3&&
+//               s.thrown()[5] == 0&&
+//               s.points() == 100
+//               )
+//                cout << setw(0);
+
+            _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 
             s = s_;
             a = a_;
@@ -196,81 +215,12 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 
 }
 
-/// ----------------------------------------------------------------------------
-/// requirements -- rl::SarsaMaxLambda
 
-auto
-Sarsa::getEstimate(State_t const& s, Action_t const& a) const
--> double
+Sarsa::Sarsa(double alph, double epsil, double gam) noexcept
+    : alpha{alph}, epsilon{epsil}, gamma{gam}, _afterstateValueTable{}, _legalActionsTable()
 {
-    Afterstate_t as = _game_t::afterstate(  dynamic_cast<State_t const&>(s),
-                                            dynamic_cast<Action_t const&>(a));
-    return _afterstateValueLookup( as );
-}
-
-auto
-Sarsa::setEstimate(State_t const& s, Action_t const& a, double g)
--> void
-{
-    // safety-check: lookup value before to insert into hash table. if algorithm is working, that should not
-    // be necessary
-    Afterstate_t transf = _game_t::afterstate(dynamic_cast<State_t const&>(s),
-                                              dynamic_cast<Action_t const&>(a));
-    _afterstateValueTable.at( transf ) = g;
-    return;
-}
-
-auto
-Sarsa::greedyValue(State_t const& s) const
--> double
-{
-    State_t const& sToEval( dynamic_cast<State_t const&>(s) );
-    Action_t greedyAction( greedy(sToEval) );
-    Afterstate_t greedyAS( Game_t::afterstate(sToEval, greedyAction) );
-    return _afterstateValueLookup(greedyAS);
-}
-
-void
-Sarsa::update(State_t const& s1, Action_t const& a1, double r,
-              State_t const& s2, Action_t const& a2)
-{
-    // note: eligibility  traces are reset in the function
-    //  SarsaMaxLambda::performEposide function
-    Afterstate_t as1;
-    as1.fromSA(s1,a1);
-//    as2.fromSA(s2,a2);
-
-    double oldEst = _afterstateValueLookup( as1 );
-    double target = r + _gamma*greedyValue(s2);
-    double delta = target - oldEst;
-    for( auto e : *traces)  // not generic, but implemented for TenKElig
-    {
-        _afterstateValueUpdate(as1) += _alpha * delta;
-    }
-}
-
-/// ----------------------------------------------------------------------------
-/// requirements rl::Policy
-auto
-Sarsa::operator()(rl::State const& s) const
--> std::shared_ptr<rl::Action>
-{
-    Action_t* temp = new Action_t( eGreedy(dynamic_cast<State_t const&>(s)) );  // RVO
-    return shared_ptr<rl::Action>(temp);
-}
-
-/// ----------------------------------------------------------------------------
-/// ctors/dtor
-Sarsa::Sarsa(Environment_t* env, double alph, double epsil,
-                                 double gam, double lamb) noexcept
-    : rl::SarsaMaxLambda(env, alph, gam, new TenKElig(gam,lamb)),
-      _epsilon{epsil}, _afterstateValueTable{}, _legalActionsTable()
-{
-    if( 1/RAND_MAX > _epsilon )
+    if( 1/RAND_MAX > epsilon )
         exit(36762);
-}
-
-Sarsa::~Sarsa()
-{
 
 }
+

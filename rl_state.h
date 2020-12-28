@@ -1,7 +1,5 @@
-#ifndef RL_STATE_H_INCLUDED
-#define RL_STATE_H_INCLUDED
-
-#include <iostream> /// \testing
+#ifndef RL_STATE_HPP_INCLUDED
+#define RL_STATE_HPP_INCLUDED
 
 /// \support moves?
 
@@ -16,25 +14,17 @@ class State
     ///          constructed) terminal state.
     /// \note   May be implemented as boolean member variable or as function
     ///          of the internal state representation.
-    virtual auto
-    isTerminal() const
-        -> bool = 0;
+    bool isTerminal() const;
 
-    virtual auto
-    clone() const& noexcept -> State* = 0;
+    /// move-requirements
+    explicit State(State&&) = 0;
+    State& operator=(State&&) = 0;
 
-    virtual auto
-    clone() && noexcept -> State* = 0;
-
-    State() = default;
-    explicit State(State const&) { std::cout << "normal-constructed state" << std::endl; }
-    explicit State(State&&) noexcept { std::cout << "move-construct state" << std::endl; }
-
-    virtual ~State() = default;
+    virtual ~State();
 };
 
 
 }
 
 
-#endif // RL_STATE_H_INCLUDED
+#endif // RL_STATE_HPP_INCLUDED

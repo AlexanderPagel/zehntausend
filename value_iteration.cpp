@@ -1,4 +1,4 @@
-#include "value_iteration.h"
+#include "value_iteration.hpp"
 
 ValueIteration::ValueIteration() : vPi{}
 {

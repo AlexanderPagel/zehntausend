@@ -2,10 +2,8 @@
 #include <cstdlib>
 
 
-//#include "tenthousand.h"
-#include "sarsa.h"
-
-//#include <windows.h>
+//#include "tenthousand.hpp"
+#include "sarsa.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -51,19 +49,15 @@ using namespace std;
 template<unsigned int n>
 static void reprint(Tenthousand<n> const& game, string msg = "")
 {
-    system("cls");
+    cout << std::endl << std::endl;
     cout << std::setprecision(5) << std::fixed << msg << endl;
     cout << string(80,'-') << endl;
     game.print();
 }
 
-void gradDesc_hyperparameter();
-double evalParams(double,double,double,double,int,int);
-
 int main()
 {
-    std::srand( std::time(nullptr) );
-//    gradDesc_hyperparameter();
+
     /// \tbc test / read copy constructor calls
     /// \tbc implement random state learning
 
@@ -80,9 +74,7 @@ int main()
          << setw(14) << std::left << "(l)" << "get Lost (quit)\n" << endl;
     cout << "\tNote: (a) Can find new triples, but is currently unable\n\tto complete triples\n" << endl;
     cout << setw(14) << std::left << "\nPress any key to start." << endl;
-    // FIXME use ncurses getch()
-    std::cin.ignore();
-//    getch(); /// \tbc quick = use setting from last timeS
+    getch(); /// \tbc quick = use setting from last timeS
 
     // computer interaction (input parameters by player)
     system("cls");
@@ -104,7 +96,7 @@ int main()
 #else
     cout << "Starting test" << endl;
 #endif
-    int steps; (void) steps;
+    int steps;
 #ifndef TEST_RUN
     cin >> steps; cin.sync(); cin.clear();
     if( steps < 0 )
@@ -115,7 +107,6 @@ int main()
 
     cout << "\n\n\tStarting. Please wait..." << endl;
     Sarsa* bot;
-    Sarsa::Game_t* trainEnv = new Sarsa::Game_t();
 #ifndef TEST_RUN
     if( steps < 1000 )
         bot = new Sarsa(0.25, .2);
@@ -126,7 +117,7 @@ int main()
     else
         bot = new Sarsa(0.12, .1);
 #else
-    bot = new Sarsa(trainEnv, 0.01, .15, 1., .6); // gamma = 0.99 implicit
+    bot = new Sarsa(0.09, 0.09);
 #endif
 
 #ifndef TEST_RUN
@@ -139,17 +130,7 @@ int main()
     // randomness
     std::srand(time(nullptr));
 #else
-    std::srand(time(0));
-
-    cout << "NO TRAIN NO GAIN" << endl;
-    for(int i =  50000; i != 0; --i)
-    {
-        if( !(i % 1000) ) cout << ".";
-        bot->rl::SarsaMaxLambda::performEpisode();
-    }
-    cout << "DONE" << endl;
-
-
+    std::srand(time( nullptr ));
 #endif
 
     // game
@@ -163,8 +144,6 @@ int main()
 
     // time management: thinking and waiting
     enum Activity { LEARN, PROCRAST };
-    #ifndef TEST_RUN
-
     auto wait = [&bot, &steps](bool activity = PROCRAST, double factor = 1.0)->void
     {
         size_t start = time(nullptr);
@@ -188,27 +167,19 @@ int main()
         Sleep(left * int(factor * 1000)); /// \tbc lol does not work as intended
 
         #endif // TEST_RUN
-    };
-    #endif // TEST_RUN
+    }; (void)wait;
 
 #ifndef TEST_RUN
 cout << "[Preparation]" << endl;
     bot->performLearningEpisodes(steps * 10, 80);
 #else
 //    bot->performLearningEpisodes(500000000, 80);
-//      bot->performLearningEpisodes(50000000, 80);
-
-
+      bot->performLearningEpisodes(500000, 80);
     // 500000000 (.05/.05) -> avg 430 (200000 total)
     // 500000000 (.06/.06) -> avg 454 (300000 total)
     // 500000000 (.07/.07) -> avg 446 (300000 total)
     // 500000000 (.09/.07) -> avg 360 (100000 total)
     // 50000000  (.05/.1)  -> avg 452 (200000 total) | SARSAMAX
-    // 50000000  (.09/.09) -> avg 440 (200000 total) | SARSAMAX
-    // 50000000  (.04/.11) -> avg 440 (200000 total) | SARSAMAX
-    // 50000000  (.11/.11) -> avg 442 (200000 total) | SARSAMAX
-    // 50000000  (0.01 .15 1. .6) -> avg 462 (200k total) | SARSAMAXLAMBDA
-
 
 #endif
 
@@ -235,9 +206,7 @@ cout << "[Preparation]" << endl;
 #ifdef TEST_RUN
                     in = 'f';
 #else
-                    // FIXME use ncurses getch()
-                    in << std::cin(); std::cin.sync(); std::cin.clear();
-//                    in = getch();
+                    in = getch();
 #endif // TEST_RUN
 
                     switch( in )
@@ -373,134 +342,5 @@ cout << "[Preparation]" << endl;
     delete bot;
 
     return 0;
-}
-
-void gradDesc_hyperparameter()
-{
-    static constexpr int T   =  100000;
-    static constexpr int N   = 10000;
-    static constexpr double d = 0.03;
-    static constexpr double doubleAlpha = 0.003;
-
-    using Game_t = Sarsa::Game_t; (void) Game_t();
-
-//    double a = 0.9;
-//    double e = 0.9;
-//    double g = 0.1;
-//    double l = 0.1;
-
-    double a = 0.5;
-    double e = 0.5;
-    double g = 0.5;
-    double l = 1;
-
-    auto c = [](double& v){v=v>1?1:v<0?0:v;};
-
-    while(true)
-    {
-        double goal = evalParams(a,e,g,l,T,N);
-        cout << "\t( " << goal << " )" << endl;
-
-        double na = a+d;    // new a
-        double ne = e+d;
-        double ng = g+d;
-        double nl = l+d;
-        c(na);
-        c(ne);
-        c(ng);
-        c(nl);
-
-        double da = evalParams(na,e, g, l,T,N) - goal;   // wie viele punkte man dadurch erhält
-        double de = evalParams(a, ne,g, l,T,N) - goal;
-        double dg = evalParams(a, e,ng, l,T,N) - goal;
-        double dl = evalParams(a, e, g,nl,T,N) - goal;
-
-        a = a+doubleAlpha*da;
-        e = e+doubleAlpha*de;
-        g = g+doubleAlpha*dg;
-        l = l+doubleAlpha*dl;
-        c(a);
-        c(e);
-        c(g);
-        c(l);
-
-//        cout << "Corrected to: " << endl;
-        cout <<   "a == " << std::fixed << std::setprecision(2) << a
-             << "\te == " << std::fixed << std::setprecision(2) << e
-             << "\tg == " << std::fixed << std::setprecision(2) << g
-             << "\tl == " << std::fixed << std::setprecision(2) << l;
-
-
-
-
-    } // while true
-
-}
-
-double evalParams(double a,double e,double g,double l,int T, int N)
-{
-    using Game_t = Sarsa::Game_t;
-
-    double alph = a;
-    double eps = e;
-    double gam = g;
-    double lamb = l;
-    Game_t* env;
-    Sarsa*  bot;
-
-
-    // : training
-//    cout << "\ttrain..." << endl;
-    env = new Game_t();
-    bot = new Sarsa(env, alph, eps, gam, lamb);
-    for( int i = 0; i < T; ++i)
-        bot->performEpisode();
-
-    // : evaluate
-//    cout << "\teval..." << endl;
-    env->init();
-    unsigned int total = 0;
-    for(int i = 1; i <= N; ++i)
-    {
-        auto s = env->cloneState();
-        auto& corr = dynamic_cast<Game_t::State_t&>(*s);
-        Game_t::State_t copy(corr);
-        std::shared_ptr<Game_t::State_t> state( new Game_t::State_t(copy) );
-        Sarsa::Action_t a = bot->greedy( *state, false );
-
-        if( copy.isTerminal() )
-        {
-            // (this case increments i by 1 (through for loop) and resets state)
-            //
-            env->init();
-            continue;
-        }
-
-        try
-        {
-            env->takeAction( a );
-        }
-        catch(illegal_move_error& err)
-        {
-            /// \note this cannot happen because env->takeAction does not throw
-            env->init();
-            continue;
-        }
-        if( a.finishes() )
-        {
-            total += env->getPoints(0);
-            env->init();
-            continue;
-        }
-        --i;    // game continues -- but we want evaluationTime EPISODES, not moves
-    }   // test episodes
-    double averageScore = ( (double)total ) / N;
-
-//    cout << "\t" << a << " " << e << " " << g << " " << l << " | " << averageScore << endl;
-
-    delete env;
-    delete bot;
-
-    return averageScore;
 }
 
