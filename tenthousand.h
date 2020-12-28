@@ -330,9 +330,9 @@ namespace tenthousand_states
         typedef from_rl_bases::TenKThrow Throw_t;
         typedef typename std::pair<Throw_t,bool> _base_t;
     public:
-        Throw_t& putAside() { return _base_t::first; }
+        Throw_t&       putAside()       { return _base_t::first; }
         Throw_t const& putAside() const { return _base_t::first; }
-        bool& finishes() { return _base_t::second; }
+        bool&       finishes()       { return _base_t::second; }
         bool const& finishes() const {return _base_t::second; }
 
         static Move zero() { return Move( Throw_t{{0,0,0,0,0,0,0}},false ); }
@@ -342,7 +342,6 @@ namespace tenthousand_states
         Move(Move const& src) : _base_t( src ){}
         Move(Move&& src) : _base_t( src ) {}
         Move(Throw_t&& t, bool b) : _base_t( std::move(t), b) {}
-
     };
 
     class Afterstate : private std::pair<unsigned int,unsigned int>
@@ -351,25 +350,22 @@ namespace tenthousand_states
         bool _fromTerminal = false;
         unsigned int _pointsBefore = 0;
     public:
-        bool& fromTerminal() { return _fromTerminal; }
-        inline bool fromTerminal() const {return _fromTerminal; }
-        unsigned int& diceLeft() { return this->first; }
-        unsigned int diceLeft() const { return this->first; }
-        unsigned int& points() { return this->second; }
-        unsigned int points() const  { return this->second; }
-        unsigned int& pointsBefore() { return this->_pointsBefore; }
-        unsigned int pointsBefore() const { return this->_pointsBefore; }
+        bool&       fromTerminal()       { return _fromTerminal; }
+        inline bool fromTerminal() const { return _fromTerminal; }
+        unsigned int& diceLeft()       { return this->first; }
+        unsigned int  diceLeft() const { return this->first; }
+        unsigned int& points()        { return this->second; }
+        unsigned int  points() const  { return this->second; }
+        unsigned int& pointsBefore()       { return this->_pointsBefore; }
+        unsigned int  pointsBefore() const { return this->_pointsBefore; }
 
 
         bool operator==(Afterstate const& other) const
         {
-            return
-                    (fromTerminal() && other.fromTerminal())    // terminal states are the same
-                ||
-                    (_base_t::first == other._base_t::first &&
+            return (fromTerminal() && other.fromTerminal())    // terminal states are the same
+                || (_base_t::first == other._base_t::first &&
                     _base_t::second == other._base_t::second &&
-                    _pointsBefore == other._pointsBefore)
-                ;
+                    _pointsBefore == other._pointsBefore);
         }
 
         Afterstate() = default;
@@ -379,7 +375,6 @@ namespace tenthousand_states
         Afterstate(Afterstate&& src) :  _base_t( std::move(src) ),
                                         _fromTerminal(src._fromTerminal),
                                         _pointsBefore(src._pointsBefore) {}
-
     };
 }
 
