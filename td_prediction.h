@@ -18,27 +18,27 @@ unsigned int constexpr thrwos = 923; // sum of the above
 // now for decisions about continue or not while putting everything aside:
 unsigned int constexpr numberOfStates = (2000/50+1) * 7; // including points == 0 and dice number == 0
 
-namespace std
-{
-    template <> struct hash<State>
-    {
-        size_t operator()(const State& x) const
-        {
-            return std::hash<unsigned long long>()( ((unsigned long long) x.points << 32) + x.dice); /// \tbc alternatively reserve 4 bits for dice and 28 bits for points
-        }
-    };
-}
+//namespace std
+//{
+//    template <> struct hash<State>
+//    {
+//        size_t operator()(const State& x) const
+//        {
+//            return std::hash<unsigned long long>()( ((unsigned long long) x.points << 32) + x.dice); /// \tbc alternatively reserve 4 bits for dice and 28 bits for points
+//        }
+//    };
+//}
 
 
-class TDPrediction
-{
-    std::unordered_map<State, double> V;    // estimate for v_Pi
+//class TDPrediction
+//{
+//    std::unordered_map<State, double> V;    // estimate for v_Pi
 
 
 
 
 
-};
+//};
 
 #endif // TD_PREDICTION_HPP_INCLUDED
 

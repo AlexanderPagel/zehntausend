@@ -21,25 +21,25 @@ unsigned int constexpr numberOfStates = (2000/50+1) * 7; // including points == 
 /// ------------------------------------------------------------------------
 /// define std::hash<State> for hash table ---------------------------------
 
-namespace std
-{
-    template <> struct hash<State>
-    {
-        size_t operator()(const State& x) const
-        {
-            return std::hash<unsigned long long>()( ((unsigned long long) x.points << 32) + x.dice); /// \tbc alternatively reserve 4 bits for dice and 28 bits for points
-        }
-    };
-}
+//namespace std
+//{
+//    template <> struct hash<State>
+//    {
+//        size_t operator()(const State& x) const
+//        {
+//            return std::hash<unsigned long long>()( ((unsigned long long) x.points << 32) + x.dice); /// \tbc alternatively reserve 4 bits for dice and 28 bits for points
+//        }
+//    };
+//}
 
 /// ------------------------------------------------------------------------
 /// class ValueIteration ---------------------------------------------------
 
-class ValueIteration
-{
-    std::unordered_map<State, double> vPi;    // estimate for v_Pi
+//class ValueIteration
+//{
+//    std::unordered_map<State, double> vPi;    // estimate for v_Pi
 
-    ValueIteration();
-};
+//    ValueIteration();
+//};
 
 #endif // VALUE_ITERATION_HPP_INCLUDED
