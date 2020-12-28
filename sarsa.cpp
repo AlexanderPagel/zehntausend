@@ -88,26 +88,26 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 //            double sum = reward + gamma*afterstateEstimate;
             if( v )
             {
-                cout << "Action( ";
-                for(int i=0;i<6;++i) cout << a.putAside()[i];
-                cout << " " << a.putAside()[6]
+                std::cout << "Action( ";
+                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
+                std::cout << " " << a.putAside()[6]
                      << " | " << a.finishes() << " ) --> "
-                     << setprecision(2) << std::fixed << afterstateEstimate;
+                     << std::setprecision(2) << std::fixed << afterstateEstimate;
             }
 
 
             if( afterstateEstimate >= maxEstimate )
             {
-                if( v ) cout << setw(3) << "*";
+                if( v ) std::cout << std::setw(3) << "*";
 
                 bestAction = a;
                 maxEstimate = afterstateEstimate;
             }
 
-            if( v ) cout << endl;
+            if( v ) std::cout << std::endl;
         }
-            if( v ) cout << endl << "[ENTER]" << endl;
-            if( v ) cin.ignore();
+            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
+            if( v ) std::cin.ignore();
         return bestAction;
     }
     else
@@ -162,7 +162,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 //                s.thrown()[5] < 3 &&
 //                s.thrown()[6] == 6 &&
 //                a.putAside()[0] > 0 )
-//                    cout << setw(0);
+//                    std::cout << std::setw(0);
 
         do /// \note   what if s is terminal for other games?
         {
@@ -181,7 +181,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
             Afterstate_t as_ ( _game_t::afterstate(s_,a_) );
 
 //            if( as.diceLeft() == 0 && as.points() == 350 && as.fromTerminal() == false )
-//                cout << "appearance. why does this have an estimate of 605??" << endl;
+//                std::cout << "appearance. why does this have an estimate of 605??" << std::endl;
 
 
             double prev = _afterstateValueLookup( as );
@@ -196,7 +196,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 //               s.thrown()[5] == 0&&
 //               s.points() == 100
 //               )
-//                cout << setw(0);
+//                std::cout << std::setw(0);
 
             _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 

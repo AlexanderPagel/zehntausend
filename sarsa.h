@@ -46,7 +46,7 @@ public:
 private:
     typedef std::unordered_map<State_t,Game_t::ActionVector_t> _legalActionsTable_t;
     typedef std::unordered_map<Afterstate_t, double> _afterstateTable_t;
-    /// \state restrictions go here (as lambda/function that is applied during lookup to transform the state/afterstate into the desired form, e.g., reducing points to 2000 max)
+    /// \state restrictions go here (as lambda/function that is applied during lookup to transform the state/afterstate into the desired form, e.g., redustd::cing points to 2000 max)
 
 public:
 
@@ -68,7 +68,7 @@ public:
 private:
 
 public:
-    void performLearningEpisodes(unsigned int n = 1, unsigned int l = 0, std::ostream& = cout) &;
+    void performLearningEpisodes(unsigned int n = 1, unsigned int l = 0, std::ostream& = std::cout) &;
 
     // :test
     Sarsa(double alpha = 0.1, double epsilon = 0.2, double lambda = 1) noexcept;

@@ -44,14 +44,12 @@ std::string dToS(double d)
 
 /// \tbc define #TEST and #NOTEST to execute depending on global constexpr?
 
-using namespace std;
-
 template<unsigned int n>
-static void reprint(Tenthousand<n> const& game, string msg = "")
+static void reprint(Tenthousand<n> const& game, std::string msg = "")
 {
-    cout << std::endl << std::endl;
-    cout << std::setprecision(5) << std::fixed << msg << endl;
-    cout << string(80,'-') << endl;
+    std::cout << std::endl << std::endl;
+    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
+    std::cout << std::string(80,'-') << std::endl;
     game.print();
 }
 
@@ -65,49 +63,49 @@ int main()
     /// play 1 human vs. 2 bots
 
 #ifndef TEST_RUN
-    cout << "In-Game controls:\n"
-         << string(72, '-') << endl;
-    cout << setw(14) << std::left << "(1) to (6)" << "select die (deactivates it)\n"
-         << setw(14) << std::left << "(a)" << "select All possible dice\n"
-         << setw(14) << std::left << "(r)" << "Roll active dice\n"
-         << setw(14) << std::left << "(f)" << "Finish your turn\n"
-         << setw(14) << std::left << "(l)" << "get Lost (quit)\n" << endl;
-    cout << "\tNote: (a) Can find new triples, but is currently unable\n\tto complete triples\n" << endl;
-    cout << setw(14) << std::left << "\nPress any key to start." << endl;
+    std::cout << "In-Game controls:\n"
+         << std::string(72, '-') << std::endl;
+    std::cout << std::setw(14) << std::left << "(1) to (6)" << "select die (deactivates it)\n"
+         << std::setw(14) << std::left << "(a)" << "select All possible dice\n"
+         << std::setw(14) << std::left << "(r)" << "Roll active dice\n"
+         << std::setw(14) << std::left << "(f)" << "Finish your turn\n"
+         << std::setw(14) << std::left << "(l)" << "get Lost (quit)\n" << std::endl;
+    std::cout << "\tNote: (a) Can find new triples, but is currently unable\n\tto complete triples\n" << std::endl;
+    std::cout << std::setw(14) << std::left << "\nPress any key to start." << std::endl;
 //    getch(); /// \tbc quick = use setting from last timeS
     std::cin.ignore();
 
     // computer interaction (input parameters by player)
 //    system("cls");
     std::cout << std::endl << std::endl;
-    cout << "Choose your AI level.\n"
-         << string(72, '-') << endl
+    std::cout << "Choose your AI level.\n"
+         << std::string(72, '-') << std::endl
          << "Note:\n\tCurrently, AI skill is limited by computing power.\n"
             "\tYou might still win against your local desktop machine.\n\n"
             "Typical levels might be:\n\n\n" << std::right
-         << "\t" << setw( 7 ) << 10     << "\t| newborn  | hopefully doesn't shit its pants"     << endl
-         << "\t" << setw( 7 ) << " "    << "\t|          |" << endl
-         << "\t" << setw( 7 ) << 100    << "\t| child    | might understand the rules next year" << endl
-         << "\t" << setw( 7 ) << " "    << "\t|          |" << endl
-         << "\t" << setw( 7 ) << 1000   << "\t| teenager | mostly distracted but sometimes lucky af" << endl
-         << "\t" << setw( 7 ) << " "    << "\t|          |" << endl         << "\t" << setw( 7 ) << 10000  << "\t| adult    | an actual opponent"<< endl
-         << "\t" << setw( 7 ) << " "    << "\t|          |" << endl
-         << "\t" << setw( 7 ) << 100000 << "\t| R2FU     | that fkn bot has hax" << endl
+         << "\t" << std::setw( 7 ) << 10     << "\t| newborn  | hopefully doesn't shit its pants"     << std::endl
+         << "\t" << std::setw( 7 ) << " "    << "\t|          |" << std::endl
+         << "\t" << std::setw( 7 ) << 100    << "\t| child    | might understand the rules next year" << std::endl
+         << "\t" << std::setw( 7 ) << " "    << "\t|          |" << std::endl
+         << "\t" << std::setw( 7 ) << 1000   << "\t| teenager | mostly distracted but sometimes lucky af" << std::endl
+         << "\t" << std::setw( 7 ) << " "    << "\t|          |" << std::endl         << "\t" << std::setw( 7 ) << 10000  << "\t| adult    | an actual opponent"<< std::endl
+         << "\t" << std::setw( 7 ) << " "    << "\t|          |" << std::endl
+         << "\t" << std::setw( 7 ) << 100000 << "\t| R2FU     | that fkn bot has hax" << std::endl
          << "\n\n\tAny number from 0 to 4 billion will work.\n\n\n"
             "Level: ";
 #else
-    cout << "Starting test" << endl;
+    std::cout << "Starting test" << std::endl;
 #endif
     int steps;
 #ifndef TEST_RUN
-    cin >> steps; cin.sync(); cin.clear();
+    std::cin >> steps; std::cin.sync(); std::cin.clear();
     if( steps < 0 )
         steps = 0;
 #else
     steps = 0;
 #endif
 
-    cout << "\n\n\tStarting. Please wait..." << endl;
+    std::cout << "\n\n\tStarting. Please wait..." << std::endl;
     Sarsa* bot;
 #ifndef TEST_RUN
     if( steps < 1000 )
@@ -125,11 +123,11 @@ int main()
 #ifndef TEST_RUN
 //    system("cls");
     std::cout << std::endl << std::endl;
-    cout << "For level " << steps << ", the AI chose the following parameters for 1-step TD(0) control (Sarsa):\n"
+    std::cout << "For level " << steps << ", the AI chose the following parameters for 1-step TD(0) control (Sarsa):\n"
             << "\n\talpha      = " << bot->alpha
             << "\n\tepsilon    = " << bot->epsilon
-            << "\n\tgamma      = " << bot->gamma << endl;
-    cout << "\n\n" << endl;
+            << "\n\tgamma      = " << bot->gamma << std::endl;
+    std::cout << "\n\n" << std::endl;
     // randomness
     std::srand(time(nullptr));
 #else
@@ -143,7 +141,7 @@ int main()
     unsigned char in;
 
     // errors and info
-    string s;
+    std::string s;
 
     // time management: thinking and waiting
     enum Activity { LEARN, PROCRAST };
@@ -159,9 +157,9 @@ int main()
                 i = 0; l= 0;
             }
 
-            cout << "[Training]\t:\t" << l << endl;
+            std::cout << "[Training]\t:\t" << l << std::endl;
             bot->performLearningEpisodes(l, 80);
-            cout << endl;
+            std::cout << std::endl;
         }
 
         int left = 4 - (time(nullptr) - start);
@@ -173,7 +171,7 @@ int main()
     }; (void)wait;
 
 #ifndef TEST_RUN
-cout << "[Preparation]" << endl;
+std::cout << "[Preparation]" << std::endl;
     bot->performLearningEpisodes(steps * 10, 80);
 #else
 //    bot->performLearningEpisodes(500000000, 80);
@@ -187,7 +185,7 @@ cout << "[Preparation]" << endl;
 #endif
 
     // game loop
-    cout << "\nStarting now" << endl;
+    std::cout << "\nStarting now" << std::endl;
     while(true)
     {
 
@@ -210,7 +208,7 @@ cout << "[Preparation]" << endl;
                     in = 'f';
 #else
 //                    in = getch();
-                    std::cin >> in; cin.sync(); cin.clear();
+                    std::cin >> in; std::cin.sync(); std::cin.clear();
 #endif // TEST_RUN
 
                     switch( in )
@@ -243,7 +241,7 @@ cout << "[Preparation]" << endl;
                     case 'l':
                         goto cleanup;
                     default:
-                        cout << "[inv]" << endl;
+                        std::cout << "[inv]" << std::endl;
                         continue;
                     }
                 } while( in_again == true );
@@ -269,7 +267,7 @@ cout << "[Preparation]" << endl;
                 #endif // TEST_RUN
 
                 m += "\n\tThinking...\n";
-                cout << m << endl;
+                std::cout << m << std::endl;
 
                 #ifndef TEST_RUN
                 wait(LEARN);
@@ -283,7 +281,7 @@ cout << "[Preparation]" << endl;
 
                     m += "\n\tI do this.\n";
                     reprint(game);
-                    cout << m << endl;
+                    std::cout << m << std::endl;
                     #ifndef TEST_RUN
                     wait(PROCRAST, .25);
                     #endif // TEST_RUN
@@ -292,7 +290,7 @@ cout << "[Preparation]" << endl;
                     {
                         m += "\n\t <-- And finish.\n";
                         reprint(game);
-                        cout << m << endl;
+                        std::cout << m << std::endl;
                         #ifndef TEST_RUN
 
                         wait(PROCRAST, .25);
@@ -303,7 +301,7 @@ cout << "[Preparation]" << endl;
                     {
                         m += "\n\t => And go all in.\n";
                         reprint(game);
-                        cout << m << endl;
+                        std::cout << m << std::endl;
                         game.roll();
                         #ifndef TEST_RUN
                         wait(PROCRAST, .5);
@@ -315,7 +313,7 @@ cout << "[Preparation]" << endl;
                 {
                     m += "\n\t - welp -";
                     reprint(game);
-                    cout << m << endl;
+                    std::cout << m << std::endl;
                     game.finishTurn();
                 }
 
@@ -325,7 +323,7 @@ cout << "[Preparation]" << endl;
         {
             if( game.getPlayer() == 1 )
             {
-                cout << "Invalid." << endl;
+                std::cout << "Invalid." << std::endl;
 
                 #ifndef TEST_RUN
                 wait(PROCRAST, .5);
@@ -337,7 +335,7 @@ cout << "[Preparation]" << endl;
         }
         catch ( ... )
         {
-            cout << "what happended???" << endl;
+            std::cout << "what happended???" << std::endl;
             exit(43);
         }
     }

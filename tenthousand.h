@@ -254,7 +254,7 @@ public:
 
 
 
-class illegal_move_error : public runtime_error
+class illegal_move_error : public std::runtime_error
 {
 public:
     illegal_move_error() : runtime_error("") {}
@@ -403,21 +403,21 @@ public:
 private:
 
     Player _player;                                                          // the player who's turn it is
-    array<unsigned int, P> _points;                                          // points for each player
+    std::array<unsigned int, P> _points;                                          // points for each player
 
     // note: Dice<6> rolls values in [1,6]
     Dice<6> _cup;                                                            // one cup of dice for all players
     unsigned int _current;
 
     // helping stuff during individual turns
-    array<bool,6> _active;                                                   // dice NOT put to the side
-    array<unsigned int,8> _aside;                                            // how many of each were put aside from a throw 0-5: dice, 6: TOTAL, 7: ANY
+    std::array<bool,6> _active;                                                   // dice NOT put to the side
+    std::array<unsigned int,8> _aside;                                            // how many of each were put aside from a throw 0-5: dice, 6: TOTAL, 7: ANY
 
     // checks for a triplet of the given figure in the ACTIVE dices position 0 and 3 indicate existence ( == NAN or not)
     std::array<int,6> _triples();  /// \tbc return rref?
 
     Player _incrementPlayer();
-    void _abortTurn(string const& s = "");   // abort with 0 points for the player (throws illegal_move_error)
+    void _abortTurn(std::string const& s = "");   // abort with 0 points for the player (throws illegal_move_error)
 
 protected:
     void _refresh(void) &;
@@ -931,39 +931,39 @@ Tenthousand<P>::Tenthousand()
 template<unsigned int P>
 void Tenthousand<P>::print() const
 {
-//    std::cout << "Tenthousand (" << P << " players):" << endl;
+//    std::cout << "Tenthousand (" << P << " players):" << std::endl;
     for(unsigned int i = 0; i < P; ++i)
-        std::cout << "Player [" << setw(P>9?2:1) << i << "]:" << setw(6) << _points[i] << endl;
-    cout << endl;
+        std::cout << "Player [" << std::setw(P>9?2:1) << i << "]:" << std::setw(6) << _points[i] << std::endl;
+    std::cout << std::endl;
 
     if( !getPutAny() )
     {
-        cout << "      \n"
+        std::cout << "      \n"
                 "     |\t    Dice:    1   2   3   4   5   6\n"
-                "  " << setw(2) << _player << " |"
+                "  " << std::setw(2) << _player << " |"
                       "\t   +-----+\n"
-                "     |\t   |" << setw(5) << _current << "|  ";
-        if( _active[0] ) cout << "[" << _cup[0]+1 << "] "; else cout << " " << _cup[0]+1 << "  ";
-        if( _active[1] ) cout << "[" << _cup[1]+1 << "] "; else cout << " " << _cup[1]+1 << "  ";
-        if( _active[2] ) cout << "[" << _cup[2]+1 << "] "; else cout << " " << _cup[2]+1 << "  ";
-        if( _active[3] ) cout << "[" << _cup[3]+1 << "] "; else cout << " " << _cup[3]+1 << "  ";
-        if( _active[4] ) cout << "[" << _cup[4]+1 << "] "; else cout << " " << _cup[4]+1 << "  ";
-        if( _active[5] ) cout << "[" << _cup[5]+1 << "]" << endl; else cout << " " << _cup[5]+1 << "  " << endl;
-        cout << "      \t   +-----+\n" << endl;
+                "     |\t   |" << std::setw(5) << _current << "|  ";
+        if( _active[0] ) std::cout << "[" << _cup[0]+1 << "] "; else std::cout << " " << _cup[0]+1 << "  ";
+        if( _active[1] ) std::cout << "[" << _cup[1]+1 << "] "; else std::cout << " " << _cup[1]+1 << "  ";
+        if( _active[2] ) std::cout << "[" << _cup[2]+1 << "] "; else std::cout << " " << _cup[2]+1 << "  ";
+        if( _active[3] ) std::cout << "[" << _cup[3]+1 << "] "; else std::cout << " " << _cup[3]+1 << "  ";
+        if( _active[4] ) std::cout << "[" << _cup[4]+1 << "] "; else std::cout << " " << _cup[4]+1 << "  ";
+        if( _active[5] ) std::cout << "[" << _cup[5]+1 << "]" << std::endl; else std::cout << " " << _cup[5]+1 << "  " << std::endl;
+        std::cout << "      \t   +-----+\n" << std::endl;
     }
     else
     {
-        cout << "      \n"
+        std::cout << "      \n"
                 "     |\t    Dice:    1   2   3   4   5   6\n"
-                "  " << setw(2) << _player << " |\n"
-                "     |\t    " << setw(5) << _current << "   ";
-        if( _active[0] ) cout << "[" << _cup[0]+1 << "] "; else cout << " " << _cup[0]+1 << "  ";
-        if( _active[1] ) cout << "[" << _cup[1]+1 << "] "; else cout << " " << _cup[1]+1 << "  ";
-        if( _active[2] ) cout << "[" << _cup[2]+1 << "] "; else cout << " " << _cup[2]+1 << "  ";
-        if( _active[3] ) cout << "[" << _cup[3]+1 << "] "; else cout << " " << _cup[3]+1 << "  ";
-        if( _active[4] ) cout << "[" << _cup[4]+1 << "] "; else cout << " " << _cup[4]+1 << "  ";
-        if( _active[5] ) cout << "[" << _cup[5]+1 << "]" << endl; else cout << " " << _cup[5]+1 << "  " << endl;
-        cout << "      \n" << endl;
+                "  " << std::setw(2) << _player << " |\n"
+                "     |\t    " << std::setw(5) << _current << "   ";
+        if( _active[0] ) std::cout << "[" << _cup[0]+1 << "] "; else std::cout << " " << _cup[0]+1 << "  ";
+        if( _active[1] ) std::cout << "[" << _cup[1]+1 << "] "; else std::cout << " " << _cup[1]+1 << "  ";
+        if( _active[2] ) std::cout << "[" << _cup[2]+1 << "] "; else std::cout << " " << _cup[2]+1 << "  ";
+        if( _active[3] ) std::cout << "[" << _cup[3]+1 << "] "; else std::cout << " " << _cup[3]+1 << "  ";
+        if( _active[4] ) std::cout << "[" << _cup[4]+1 << "] "; else std::cout << " " << _cup[4]+1 << "  ";
+        if( _active[5] ) std::cout << "[" << _cup[5]+1 << "]" << std::endl; else std::cout << " " << _cup[5]+1 << "  " << std::endl;
+        std::cout << "      \n" << std::endl;
     }
 }
 
