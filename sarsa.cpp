@@ -5,29 +5,24 @@
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
 {
-    // : search for previously computed legal moves
-    auto i = _legalActionsTable.find( s );
+    // Search for previously computed legal moves
+    auto search = _legalActionsTable.find( s );
 
-    if( i == _legalActionsTable.end() )
+    // Compute anew and cache if not found
+    if( search == _legalActionsTable.end() )
     {
-        // - element missing
-        // : add the required element
-        /// \tbc check if the overloaded insert function taking rvalue ref is called
         auto put = _legalActionsTable.insert( {s, Game_t::legalActions(s)} );
-
-        if( put.second == false )
-            exit(7687);
-        i = put.first;
+        assert(put.second); // Insertion took place
+        search = put.first;
     }
 
-    return i->second;
+    return search->second;
 }
 
-auto
-Sarsa::_afterstateValueLookup(Afterstate_t const& as) const -> double
+double
+Sarsa::_afterstateValueLookup(Afterstate_t const& as) const
 {
-
-    // : finishing means 0
+    // In terminal states there is no future reward
     if( as.fromTerminal() )
         return 0;
 
@@ -66,7 +61,7 @@ auto
 Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 {
 
-    if( s.terminal() )
+    if( s.isTerminal() )
     {
         return Action_t::zero();
     }
@@ -121,7 +116,7 @@ auto
 Sarsa::eGreedy(State_t const& s) const -> Action_t
 {
     /// \tbc this is the case when S_ is already seen as terminating but the algorithm needs a dummy action A_
-    if( s.terminal() )
+    if( s.isTerminal() )
     {
         return Action_t::zero();
     }
@@ -145,31 +140,21 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
     }
 }
 
-auto
-Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os) & -> void
+void
+Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 {
     unsigned int const t = n;
 
     for( ; n != 0; --n )
     {
         auto s( State_t::randomStart() ); /// \tbc moves?
-//            if(
-//                s.thrown()[0] == 1 &&
-//                s.thrown()[1] < 3 &&
-//                s.thrown()[2] < 3 &&
-//                s.thrown()[3] < 3 &&
-//                s.thrown()[4] == 1 &&
-//                s.thrown()[5] < 3 &&
-//                s.thrown()[6] == 6 &&
-//                a.putAside()[0] > 0 )
-//                    std::cout << std::setw(0);
 
-        do /// \note   what if s is terminal for other games?
+        // TODO check first if random start can be terminal
+        // while(not isTerminal())
+        do
         {
             auto a( eGreedy(s) );
-            auto simulEnvFeedback = ( Environment_t::simulate(s, a) );    /// \tbc decltype or sth all these things to know what they are? :D
-            /// \tbc make reward be computed by the simulation, not the player :D
-            // reward = gain in points
+            auto simulEnvFeedback = ( Environment_t::simulate(s, a) );
 
             auto r  = simulEnvFeedback.first;
             auto s_ = simulEnvFeedback.second;
@@ -177,34 +162,20 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 
             auto a_( greedy(s_) );
 
-            Afterstate_t as ( _game_t::afterstate(s,a) );
-            Afterstate_t as_ ( _game_t::afterstate(s_,a_) );
-
-//            if( as.diceLeft() == 0 && as.points() == 350 && as.fromTerminal() == false )
-//                std::cout << "appearance. why does this have an estimate of 605??" << std::endl;
-
+            Afterstate_t as ( Environment_t::afterstate(s,a) );
+            Afterstate_t as_ ( Environment_t::afterstate(s_,a_) );
 
             double prev = _afterstateValueLookup( as );
             double nextEst = _afterstateValueLookup( as_ );
-
-//            if(
-//               s.thrown()[0] == 0&&
-//               s.thrown()[1] == 0&&
-//               s.thrown()[2] == 1&&
-//               s.thrown()[3] == 1&&
-//               s.thrown()[4] == 3&&
-//               s.thrown()[5] == 0&&
-//               s.points() == 100
-//               )
-//                std::cout << std::setw(0);
 
             _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 
             s = s_;
             a = a_;
         }
-        while( !s.terminal() );
+        while( !s.isTerminal() );
 
+        // Print a loading bar so we know the algorithm didn't hung itself
         if( l != 0 )
             if( t != 0 )
                 if( n % (int)(t/l+1) == 0 ) /// \tbc get an exact loading function?
@@ -216,7 +187,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 }
 
 
-Sarsa::Sarsa(double alph, double epsil, double gam) noexcept
+Sarsa::Sarsa(double alph, double epsil, double gam)
     : alpha{alph}, epsilon{epsil}, gamma{gam}, _afterstateValueTable{}, _legalActionsTable()
 {
     if( 1/RAND_MAX > epsilon )

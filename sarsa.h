@@ -32,46 +32,51 @@ template class Tenthousand<1>;
 class Sarsa //: // public rl::SarsaMax
 {
 private:
-    typedef Tenthousand<1> _game_t; /// \tbc make this template?
-    typedef _game_t Environment_t;  /// \tbc environment base class?
+    // If we implement another game variant we only need to change typedef for
+    // our type "_game_t" and everything else is corrected implicitly.
+    // We have some (implicit) expectations on our game type, for example:
+    //  - provide types for state, action, ...
+    //  - provide function to compute legal actions
+    //  - provide function to construct afterstates
+    //  - ...
+    using _game_t        = Tenthousand<1>;
+    using Environment_t  = _game_t;
 public:
-    typedef _game_t Game_t;
-
-    typedef Game_t::State_t State_t;    /// \tbc make all template-resistenat and stuff
-    typedef Game_t::Move_t Action_t;
-    typedef Game_t::Afterstate_t Afterstate_t;
-
-    typedef Game_t::ActionVector_t ActionVector_t;
+    using Game_t         = _game_t;
+    using State_t        = Game_t::State_t;
+    using Action_t       = Game_t::Move_t;
+    using Afterstate_t   = Game_t::Afterstate_t;
+    using ActionVector_t = Game_t::ActionVector_t;
 
 private:
-    typedef std::unordered_map<State_t,Game_t::ActionVector_t> _legalActionsTable_t;
-    typedef std::unordered_map<Afterstate_t, double> _afterstateTable_t;
-    /// \state restrictions go here (as lambda/function that is applied during lookup to transform the state/afterstate into the desired form, e.g., redustd::cing points to 2000 max)
+    using _legalActionsTable_t = std::unordered_map<State_t, ActionVector_t>;
+    using _afterstateTable_t = std::unordered_map<Afterstate_t, double>;
 
 public:
-
     double const alpha;
-    double const epsilon;    // e.g., 10 for epsilon = 0.1 /// \tbc maybe change to actual epsilon
+    double const epsilon;    // Store as 1/epsilon, e.g., 10 for epsilon = 0.1 // TODO
     double const gamma;
 
     mutable _afterstateTable_t _afterstateValueTable;   // mutable for greedy lookup, not training
     mutable _legalActionsTable_t _legalActionsTable;
 
-    double _afterstateValueLookup(Afterstate_t const& as) const; /// \tbc this also can buffer finishing states?
+    // Use environment to compute legal actions and store them
+    double  _afterstateValueLookup(Afterstate_t const& as) const; /// \tbc this also can buffer finishing states?
     double& _afterstateValueUpdate(Afterstate_t const& as) const;
-    ActionVector_t const& _legalActionsLookup(State_t const&) const;  // rvalue version should not insert if not found
+    ActionVector_t const& _legalActionsLookup(State_t const&) const;
 
 public:
-    Action_t greedy(State_t const& S, bool v=false) const;   // rvalue obj versions?
-    Action_t eGreedy(State_t const& S) const;   // rvalue obj versions?
-
-private:
+    Action_t greedy (State_t const& s, bool v=false) const;   // rvalue obj versions?
+    Action_t eGreedy(State_t const& s) const;   // rvalue obj versions?
 
 public:
-    void performLearningEpisodes(unsigned int n = 1, unsigned int l = 0, std::ostream& = std::cout) &;
+    void performLearningEpisodes(
+        unsigned int n = 1,
+        unsigned int l = 0,
+        std::ostream& = std::cout);
 
-    // :test
-    Sarsa(double alpha = 0.1, double epsilon = 0.2, double lambda = 1) noexcept;
+    // Ctor
+    Sarsa(double alpha = 0.1, double epsilon = 0.2, double lambda = 1);
 
 //    void printLowQ() const & noexcept;
 };

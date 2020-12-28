@@ -1,3 +1,24 @@
+// tenthousand.h
+//
+// Implementation of tenthousand game mechanics. Classes provide the interfaces
+// required by RL algorithms.
+//
+// FIXME This file is way too big. Move each class to it's own file.
+//
+// class TenKThrow
+//  - Representing thrown dice
+//  - For each digit, number of dice showing it
+//  - May be empty (representing 0 active/rolled dice)
+//
+// class TenKState
+//  - Represents MDP states
+//  - Current throw + current points
+//  - Throw empty := terminal state
+//
+// class Tenthousand
+//  - Represents N-player game of tenthousand
+//  - Each having an independent game state
+
 #ifndef TENTHOUSAND_HPP_INCLUDED
 #define TENTHOUSAND_HPP_INCLUDED 1
 
@@ -58,8 +79,6 @@ public:
     ~TenKThrow() { this->clear(); }
 };
 
-/// ====================================================================
-///
 class TenKState
 {
 public:
@@ -71,17 +90,8 @@ private:
     Points_t _p;    /// \tbc more members slow "inside" moves
 
 public:
-    /// ----------------------------------------------------------------
-    /// rl:Statae requirements
-    auto
-    isTerminal() const
-        -> bool { return !_cup->any(); }
-
-    auto
-    clone() const& noexcept(true)
-    {
-        return new TenKState(*this);
-    }
+    bool isTerminal() const{ return !_cup->any(); }
+    auto clone() const& noexcept(true) { return new TenKState(*this); }
 
 //    auto
 //    clone() && noexcept(true)
@@ -89,14 +99,11 @@ public:
 //        return new TenKState( std::move(*this) );
 //    }
 
-    /// ----------------------------------------------------------------
-    /// game-related functionality
-
-    Throw_t& thrown() { return *_cup; }
+    Throw_t&       thrown() { return *_cup; }
     Throw_t const& thrown() const { return *_cup; }
-    Points_t& points() {return _p; }
+    Points_t&       points() {return _p; }
     Points_t const& points() const { return _p; }
-    bool terminal() const { return isTerminal(); }
+//    bool terminal() const { return isTerminal(); }
 
     static TenKState randomStart()
     {
@@ -347,14 +354,10 @@ namespace tenthousand_states
 /// class Tenthousand ------------------------------------------------------
 
 template<unsigned int P=1>
-class Tenthousand /// \continue
+class Tenthousand
 {
-private:
-    /// \tbc assignment function
-    /// \tbc cannot move std::array on int types
-
-
 public:
+    // Provide some "generic" types for RL interfaces.
     typedef unsigned int Player;
     typedef from_rl_bases::TenKThrow Throw_t;
     typedef from_rl_bases::TenKState State_t;
@@ -532,7 +535,7 @@ template<unsigned int P>
 unsigned int
 Tenthousand<P>::legal(State_t const& s, Move_t const& m)
 {
-    if( s.terminal() )
+    if( s.isTerminal() )
     {
         return 0;
     }
@@ -592,7 +595,7 @@ Tenthousand<P>::afterstate(State_t const& s, Move_t const& m) -> Afterstate_t
     Afterstate_t as;
 
     // : special case for afterstates arising from terminal states s
-    if( s.terminal() )
+    if( s.isTerminal() )
     {
         as.diceLeft() = as.points() = as.pointsBefore() = 0;    // \tbc should be std. initialized
         as.fromTerminal() = true;
@@ -633,7 +636,7 @@ Tenthousand<P>::simulate(State_t const& s, Move_t const& a) -> std::pair<double,
     {
         double r;
         // : a illegal
-        if( s.terminal() )
+        if( s.isTerminal() )
             r = 0.0;
         else
             r = - (double)s.points();   // points is unsigned
@@ -666,7 +669,7 @@ auto
 Tenthousand<P>::legalMoves(State_t const& s) -> MoveVector_t
 {
     MoveVector_t movVec;
-    if( s.terminal() )
+    if( s.isTerminal() )
     {
         return movVec;
     }
@@ -939,7 +942,7 @@ namespace std
         {
             return std::hash<unsigned int>()
             (
-                x.terminal()
+                x.isTerminal()
                     ?
                         (
                             1 << (sizeof(unsigned int)*8 -1)
