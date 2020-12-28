@@ -21,25 +21,17 @@ namespace from_rl_bases
 class TenKThrow
 {
 public:
-    /// ----------------------------------------------------------------
-    ///
-
     using DiceArray_t = std::array<size_t,7>;
     enum {ONE = 0, TWO, THREE, FOUR, FIVE, SIX, TOTAL};
 
 private:
-    /// ----------------------------------------------------------------
-    ///
     DiceArray_t* _arr;
 
 protected:
-    /// ----------------------------------------------------------------
-    ///
-
     bool isInit() const { return _arr != nullptr; }
     void init() { _arr = new DiceArray_t; }
     void checkInit() const  {   if( !isInit() )
-                                    throw rl::UninitializedError("");
+                                    throw std::logic_error("TenKThrow not initialized");
                             }
 
 public:
@@ -107,7 +99,7 @@ public:
 
 /// ====================================================================
 ///
-class TenKState : public rl::State
+class TenKState
 {
 public:
     using Points_t = unsigned int;
@@ -126,17 +118,15 @@ public:
 
     auto
     clone() const& noexcept(true)
-        -> rl::State*
     {
         return new TenKState(*this);
     }
 
-    auto
-    clone() && noexcept(true)
-        -> rl::State*
-    {
-        return new TenKState( std::move(*this) );
-    }
+//    auto
+//    clone() && noexcept(true)
+//    {
+//        return new TenKState( std::move(*this) );
+//    }
 
     /// ----------------------------------------------------------------
     /// game-related functionality
@@ -194,11 +184,9 @@ public:
 
     TenKState() : _cup(new Throw_t()), _p(0) {}
     TenKState(TenKState const& src)
-        : rl::State(),
-        _cup(new Throw_t(*src._cup)), _p(src._p) {}
+        : _cup(new Throw_t(*src._cup)), _p(src._p) {}
     TenKState(TenKState&& src)
-        : rl::State(),
-        _cup(src._cup), _p(src._p)
+        : _cup(src._cup), _p(src._p)
     {
         src._cup = nullptr;
     }
@@ -262,7 +250,7 @@ public:
     TenKMove(TenKMove&& src) : _put(src._put), _finishes(src._finishes) { src._put = nullptr; }
 
     TenKMove(Throw_t&& t, bool b) : _put(new Throw_t(std::move(t))), _finishes(b) {}
-    virtual ~TenKMove() { if( _put != nullptr ) delete _put; }
+    ~TenKMove() { if( _put != nullptr ) delete _put; }
 };
 
 }

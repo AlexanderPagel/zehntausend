@@ -6,23 +6,23 @@
 namespace rl
 {
 
-class UninitializedError : public runtime_error
-{
-public:
-    UninitializedError(std::string s) : runtime_error(s) {}
-};
+//class UninitializedError : public runtime_error
+//{
+//public:
+//    UninitializedError(std::string s) : runtime_error(s) {}
+//};
 
 /// some form of error in the MDP process: impossible action selected, ...
-class MdpError : public std::runtime_error
-{
+//class MdpError : public std::runtime_error
+//{
 
-};
+//};
 
 
-class InvalidMoveError : public MdpError
-{
+//class InvalidMoveError : public MdpError
+//{
 
-};
+//};
 
 
 }

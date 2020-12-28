@@ -5,11 +5,11 @@ namespace rl
 {
 
 
-class Afterstate
-{
-public:
+//class Afterstate
+//{
+//public:
     /// \tbc
-};
+//};
 
 
 }
