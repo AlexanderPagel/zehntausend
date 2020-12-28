@@ -279,41 +279,41 @@ public:
 
 namespace tenthousand_states
 {
-    class Throw : private std::array<unsigned int, 7>
-    {
-        typedef typename std::array<unsigned int,7> _base_t;
+//    class Throw : private std::array<unsigned int, 7>
+//    {
+//        typedef typename std::array<unsigned int,7> _base_t;
 
-    public:
-        template<typename T>    /// \tbc jesus christ i am so lazy
-        void fill( T const& value ) { _base_t::fill(value); }
+//    public:
+//        template<typename T>    /// \tbc jesus christ i am so lazy
+//        void fill( T const& value ) { _base_t::fill(value); }
 
-        unsigned int& operator[](size_t i) { return this->_base_t::operator[](i); }
-        unsigned int operator[](size_t i) const {return this->_base_t::operator[](i); }
-        bool any() const { return _base_t::operator[](6) != 0; }
-        unsigned int&  total() {return _base_t::operator[](6); }
-        unsigned int total() const { return _base_t::operator[](6); }
+//        unsigned int& operator[](size_t i) { return this->_base_t::operator[](i); }
+//        unsigned int operator[](size_t i) const {return this->_base_t::operator[](i); }
+//        bool any() const { return _base_t::operator[](6) != 0; }
+//        unsigned int&  total() {return _base_t::operator[](6); }
+//        unsigned int total() const { return _base_t::operator[](6); }
 
-        bool operator==(Throw const& other) const
-        {
-            return(
-               _base_t::operator[](6) == other._base_t::operator[](6) && // in best case, this value is already different
-               _base_t::operator[](0) == other._base_t::operator[](0) &&
-               _base_t::operator[](1) == other._base_t::operator[](1) &&
-               _base_t::operator[](2) == other._base_t::operator[](2) &&
-               _base_t::operator[](3) == other._base_t::operator[](3) &&
-               _base_t::operator[](4) == other._base_t::operator[](4) &&
-               _base_t::operator[](5) == other._base_t::operator[](5)
-               );
-        }
+//        bool operator==(Throw const& other) const
+//        {
+//            return(
+//               _base_t::operator[](6) == other._base_t::operator[](6) && // in best case, this value is already different
+//               _base_t::operator[](0) == other._base_t::operator[](0) &&
+//               _base_t::operator[](1) == other._base_t::operator[](1) &&
+//               _base_t::operator[](2) == other._base_t::operator[](2) &&
+//               _base_t::operator[](3) == other._base_t::operator[](3) &&
+//               _base_t::operator[](4) == other._base_t::operator[](4) &&
+//               _base_t::operator[](5) == other._base_t::operator[](5)
+//               );
+//        }
 
-        Throw& operator=(Throw const&) = default;
+//        Throw& operator=(Throw const&) = default;
 
-        Throw() : _base_t( {0} ) {}
-        Throw(Throw const& src) : _base_t( src) {}
-        Throw(Throw&& src) : _base_t( src ) {}    // implicit move
-        explicit Throw(_base_t&& src) : _base_t(std::move(src)) {}
+//        Throw() : _base_t( {0} ) {}
+//        Throw(Throw const& src) : _base_t( src) {}
+//        Throw(Throw&& src) : _base_t( src ) {}    // implicit move
+//        explicit Throw(_base_t&& src) : _base_t(std::move(src)) {}
 
-    };
+//    };
 
     /// then, enter terminal with 0 diceLeft is equal to s = terminate state, others
     ///  /e.g., enter terminal wih 4 dice and 200 points is not terminal, but reached after illegal moves
