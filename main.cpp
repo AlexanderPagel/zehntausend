@@ -174,7 +174,7 @@ cout << "[Preparation]" << endl;
     bot->performLearningEpisodes(steps * 10, 80);
 #else
 //    bot->performLearningEpisodes(500000000, 80);
-      bot->performLearningEpisodes(500000, 80);
+      bot->performLearningEpisodes(5000000, 80);
     // 500000000 (.05/.05) -> avg 430 (200000 total)
     // 500000000 (.06/.06) -> avg 454 (300000 total)
     // 500000000 (.07/.07) -> avg 446 (300000 total)
