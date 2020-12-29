@@ -1,6 +1,6 @@
 Git compendium
   - Overview
-  - Usefull commands (1-8)
+  - Usefull commands (1-13)
   - Fallstricke
   - Legende
   - References (links)
@@ -13,17 +13,17 @@ Overview: (siehe auch [1])
 =====================================================================================================
 
   ---------------------------------------------------------------------------------------------------
-  "Working Directory":                          Menge der Normalen Dateien
+  "Working Directory":                        Menge der Normalen Dateien
   ---------------------------------------------------------------------------------------------------
-  "Staging Area" == "Staging Index" == "Index": Halbfertiger commit der gerade in bearbeitung ist.
-                                                Technisch gesehen bereits durch git "geschützt".
+  "Staging Area" = "Staging Index" = "Index": Halbfertiger commit der gerade in bearbeitung ist.
+                                              Technisch gesehen bereits durch git "geschützt".
   ---------------------------------------------------------------------------------------------------
-  "Local Repository":                           Lokale Versionierung. Alles im .git ordner.
-                                                Hier sind alle commits gemeint, die auf den
-                                                lokalen Rechner geladen (oder hier erstellt) wurden.
+  "Local Repository":                         Lokale Versionierung. Alles im .git ordner.
+                                              Hier sind alle commits gemeint, die auf den
+                                              lokalen Rechner geladen (oder hier erstellt) wurden.
   ---------------------------------------------------------------------------------------------------
-  "Remote Repository":                          Repository das online bereitgestellt wird.
-                                                Hier lädt man commits/branches hoch um sie zu teilen.
+  "Remote Repository":                        Repository das online bereitgestellt wird.
+                                              Hier lädt man commits/branches hoch um sie zu teilen.
   ---------------------------------------------------------------------------------------------------
 
 =====================================================================================================
@@ -31,7 +31,6 @@ Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
 =====================================================================================================
 
 (1) Status abfrage:
-
   ---------------------------------------------------------------------------------------------------
   git status                                  Allgemein nicht so super nützlich. Zum rausfinden
                                               davon, was kaputt ist aber ganz ok.
@@ -57,7 +56,6 @@ Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
   ---------------------------------------------------------------------------------------------------
 
 (2) Commits machen
-
   ---------------------------------------------------------------------------------------------------
   git add                                     Änderungen zum staging index hinzufügen.                  *
     -p (meistens am besten)                   Als vorbereitung des anstehenden commit.
@@ -73,9 +71,8 @@ Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
   ---------------------------------------------------------------------------------------------------
 
 (3) Commits auswählen (checkout) (= "Version/Zeitpunkt auswählen")
-
   ---------------------------------------------------------------------------------------------------
-  git checkout                                Einen commit auswählen, also zu diesem Punkt in der       (*)
+  git checkout                                Einen commit auswählen, also zu diesem Punkt in der       **
                                               Versionierung zurückkehren.
     -f --force (verwirft working dir.)        Am besten mit branches verwenden.
                                               So springen wir z. B. zwischen unseren jeweiligen
@@ -84,9 +81,8 @@ Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
   ---------------------------------------------------------------------------------------------------
 
 (4) Branches
-
   ---------------------------------------------------------------------------------------------------
-  git branch                                  Beuen branch erzeugen. Ein branch ist ein name welcher    (*)
+  git branch                                  Beuen branch erzeugen. Ein branch ist ein name welcher    **
   git checkout -b (normalerweise)             i. d. R. das feature beschreibst welches man gerade
   git branch -d --delete                      implementieren möchte. Mit git checkout --branch (-b)
   git branch -D (delete by force)             wird HEAD auf den neuen branch gesetzt, d. h., ein neu
@@ -96,23 +92,31 @@ Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
                                               ist.
   ---------------------------------------------------------------------------------------------------
 
-(4) Mergen
-
+(5) Mergen
   ---------------------------------------------------------------------------------------------------
-  git merge [branch]                          master auschecken und dann feature branch mergen. Dies    (*)
+  git merge [branch]                          master auschecken und dann feature branch mergen. Dies    **
                                               fügt die Änderungen des features zu master hinzu.
                                               Ggf. git rebase in Betracht ziehen!
   ---------------------------------------------------------------------------------------------------
 
-(5) Remotes: push. fetch, pull
+(6) Remotes: push, fetch, pull mit online repos
+  ---------------------------------------------------------------------------------------------------
+  git fetch [Remote [Branch]]                 Branches herunterladen. Keine Angabe = alles.             **
+  ---------------------------------------------------------------------------------------------------
+  git push                                    Aktuelle branch hochladen. Zielbranch im remote beim      **
+                                              ersten mal festlegen.
+  ---------------------------------------------------------------------------------------------------
+  git pull                                    Kombiniert git fetch und git merge. Nicht wirklich
+                                              notwendig.
+                                              Anwenden, um branches von anderen (die wir selbst nicht
+                                              pushen) zu laden, z. B. den master Branch.
   ---------------------------------------------------------------------------------------------------
 
 =====================================================================================================
 Quickfix Workflow: (ich sag mal "ergebnisorientiert")
 =====================================================================================================
 
-(5) Rebase (nur singleplayer; wirklich)
-
+(7) Rebase (nur singleplayer; wirklich)
   ---------------------------------------------------------------------------------------------------
   git rebase  (ezpz)                          Einzelne commits/ketten nehmen und an andere parent
     -i (interaktiv)                           commits hängen.
@@ -126,8 +130,7 @@ Quickfix Workflow: (ich sag mal "ergebnisorientiert")
   git rebase --onto (die volle Dröhnung)      Erklärt in [4].
   ---------------------------------------------------------------------------------------------------
 
-(6) Andere commit jonglage
-
+(8) Andere commit jonglage
   ---------------------------------------------------------------------------------------------------
   git apply (selten aber gut zu kennen)       Einzelne patches (~diffs) anwenden. Z.B. aus git diff
                                               zu erhalten.
@@ -137,8 +140,7 @@ Quickfix Workflow: (ich sag mal "ergebnisorientiert")
                                               Änderungen eines bestimmten commit anwenden möchtest.
   ---------------------------------------------------------------------------------------------------
 
-(7) Stash (Zwischenspeicher für tupel {Working directory, staging index})
-
+(9) Stash (Zwischenspeicher für tupel {Working directory, staging index})
   ---------------------------------------------------------------------------------------------------
   git stash save -m "Beschreibung"            Speichere working directory + staging index zwischen.
                                               Falls man kurzfristig mal eben auf ein anderen branch
@@ -170,14 +172,46 @@ Panik Modus: (kann passieren)
 
 Regel 1: Keine Panik im Panik Modus. Solange der .git Ordner noch da ist gibt es Mittel und Wege.
 
-(8) Reflog
-
+(10) Reflog
   ---------------------------------------------------------------------------------------------------
   git reflog                                  Wenn ein commit verloren gegangen ist kann er so
                                               vermutlich noch gefunden werden.
   ---------------------------------------------------------------------------------------------------
   git checkout HEAD@{n}                       Zahl für n aus git reflog entnehmen.
   ---------------------------------------------------------------------------------------------------
+
+=====================================================================================================
+Config:
+=====================================================================================================
+
+(11) Show config
+  ---------------------------------------------------------------------------------------------------
+  git config --global --edit (file)           Show config file.
+  ---------------------------------------------------------------------------------------------------
+  git config --list --show-origin (config)    Show current configuration.
+  ---------------------------------------------------------------------------------------------------
+
+(12) Misc
+  ---------------------------------------------------------------------------------------------------
+  git config --global \                       Passwort speichern.
+	  credential.helper = cache
+      --timeout = 7200
+  ---------------------------------------------------------------------------------------------------
+  .gitattributes                              Config für ein Projekt dem Projekt beilegen.
+  ---------------------------------------------------------------------------------------------------
+  git config --global \
+    diff.algorithm = histogram                Kürzere diffs.
+  ---------------------------------------------------------------------------------------------------
+
+(13) Windows vs. Unix
+  ---------------------------------------------------------------------------------------------------
+  git config --global core.autocrlf true
+  git config --global core.auto
+  ---------------------------------------------------------------------------------------------------
+  git config --global user.name               Muss angegeben werden, aber beliebig.
+  git config --global user.email
+  ---------------------------------------------------------------------------------------------------
+
 
 =====================================================================================================
 Fallstricke:
@@ -191,8 +225,10 @@ Fallstricke:
 Legende:
 =====================================================================================================
 
-  *   Braucht man unbedingt, um dateien in git rein zu packen und überhaupt zu wissen was los ist.
-  (*) Braucht man unbedingt, um git im Sinnce einer (verteilten) Versionierung zu verwenden.
+  Git command links                           Erläuterung und Hinweise rechts.
+
+  *   Braucht man unbedingt, um Dateien in git rein zu packen und überhaupt zu wissen was los ist.
+  **  Braucht man unbedingt, um git im Sinne einer (verteilten) Versionierung zu verwenden.
 
 =====================================================================================================
 References:
