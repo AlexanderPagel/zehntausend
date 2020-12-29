@@ -1,0 +1,213 @@
+Git compendium
+  - Overview
+  - Usefull commands (1-8)
+  - Fallstricke
+  - Legende
+  - References (links)
+  - Aliases (für copy pasta)
+Disclaimer: Einsteiger level. Ich bin auch nicht Experte.
+
+
+=====================================================================================================
+Overview: (siehe auch [1])
+=====================================================================================================
+
+  ---------------------------------------------------------------------------------------------------
+  "Working Directory":                          Menge der Normalen Dateien
+  ---------------------------------------------------------------------------------------------------
+  "Staging Area" == "Staging Index" == "Index": Halbfertiger commit der gerade in bearbeitung ist.
+                                                Technisch gesehen bereits durch git "geschützt".
+  ---------------------------------------------------------------------------------------------------
+  "Local Repository":                           Lokale Versionierung. Alles im .git ordner.
+                                                Hier sind alle commits gemeint, die auf den
+                                                lokalen Rechner geladen (oder hier erstellt) wurden.
+  ---------------------------------------------------------------------------------------------------
+  "Remote Repository":                          Repository das online bereitgestellt wird.
+                                                Hier lädt man commits/branches hoch um sie zu teilen.
+  ---------------------------------------------------------------------------------------------------
+
+=====================================================================================================
+Bilderbuch Workflow: (braucht man dauernd und sollte man auch)
+=====================================================================================================
+
+(1) Status abfrage:
+
+  ---------------------------------------------------------------------------------------------------
+  git status                                  Allgemein nicht so super nützlich. Zum rausfinden
+                                              davon, was kaputt ist aber ganz ok.
+  ---------------------------------------------------------------------------------------------------
+  git log                                     Super hilfreich. Eine Version festlegen und aliassen.     * (-> Legende)
+    --all     (von allen branches)            z.b. {1}, {2}
+    --graph   (mit linien zwischen commits)
+    --oneline (1 Zeile pro commit)
+    -n        (zeige n commits)
+    -p        (code änderung zeigen)
+  ---------------------------------------------------------------------------------------------------
+  git diff                                    Super hilfreich. Zeigt aktuelle, neue änderungen;         *
+    --staged (zeigt staging index)            oder änderungen zwischen commits, etc.
+    --color-words (wort-weise diff)           Git config auf diff-algorithm=histogramm stellen.
+  ---------------------------------------------------------------------------------------------------
+  git show                                    Einzelnen commit zeigen
+    --stat (nur file names, kein diff)
+  ---------------------------------------------------------------------------------------------------
+  Alles kombinieren                           Am besten ein alias zurechtlegen, der die drei commands
+                                              Diff, staged diff und log kombiniert. Ggf. auch status.
+                                              Z. B. ein großes alias wie {4} für den kompletten
+                                              Überblick.
+  ---------------------------------------------------------------------------------------------------
+
+(2) Commits machen
+
+  ---------------------------------------------------------------------------------------------------
+  git add                                     Änderungen zum staging index hinzufügen.                  *
+    -p (meistens am besten)                   Als vorbereitung des anstehenden commit.
+    -A (wenn sinnvoll)                        Am besten einfach {3}.
+    -u (wenn sinnvoll)
+    [--] {files}
+  ---------------------------------------------------------------------------------------------------
+  git commit                                  Staging index als neuen commit übernehmen. Commit         *
+    --amend (schnell fixen - nur lokal)       Nachricht sollte nicht fehlen. Wenn man es besonders
+                                              gut sein soll sind [3] Richtlinien für gute messages.
+                                              Mit --amend wird der letzte commit (HEAD) ersetzt; für
+                                              den Fall dass kurzfristig nachgebessert werden soll.
+  ---------------------------------------------------------------------------------------------------
+
+(3) Commits auswählen (checkout) (= "Version/Zeitpunkt auswählen")
+
+  ---------------------------------------------------------------------------------------------------
+  git checkout                                Einen commit auswählen, also zu diesem Punkt in der       (*)
+                                              Versionierung zurückkehren.
+    -f --force (verwirft working dir.)        Am besten mit branches verwenden.
+                                              So springen wir z. B. zwischen unseren jeweiligen
+                                              feature branches hin und her oder wechseln zu master.
+                                              Wenn es nicht klappt frage git status und git log.
+  ---------------------------------------------------------------------------------------------------
+
+(4) Branches
+
+  ---------------------------------------------------------------------------------------------------
+  git branch                                  Beuen branch erzeugen. Ein branch ist ein name welcher    (*)
+  git checkout -b (normalerweise)             i. d. R. das feature beschreibst welches man gerade
+  git branch -d --delete                      implementieren möchte. Mit git checkout --branch (-b)
+  git branch -D (delete by force)             wird HEAD auf den neuen branch gesetzt, d. h., ein neu
+                                              erzeugter branch wird direkt zum aktuellen branch.
+                                              Generell möchte man halbfertige arbeiten auf einem
+                                              separaten branch vorhalten, bis das feature komplett
+                                              ist.
+  ---------------------------------------------------------------------------------------------------
+
+(4) Mergen
+
+  ---------------------------------------------------------------------------------------------------
+  git merge [branch]                          master auschecken und dann feature branch mergen. Dies    (*)
+                                              fügt die Änderungen des features zu master hinzu.
+                                              Ggf. git rebase in Betracht ziehen!
+  ---------------------------------------------------------------------------------------------------
+
+(5) Remotes: push. fetch, pull
+  ---------------------------------------------------------------------------------------------------
+
+=====================================================================================================
+Quickfix Workflow: (ich sag mal "ergebnisorientiert")
+=====================================================================================================
+
+(5) Rebase (nur singleplayer; wirklich)
+
+  ---------------------------------------------------------------------------------------------------
+  git rebase  (ezpz)                          Einzelne commits/ketten nehmen und an andere parent
+    -i (interaktiv)                           commits hängen.
+                                              Kann gut einen merge verhindern, solange die feature
+                                              branch lokal geblieben ist (bzw. niemand sonst sie
+                                              verwendet). Dann kann rebasing viel übersichtlicher
+                                              als mergen sein.
+                                              Im interaktiv modus kann man einzelne commits ändern,
+                                              zusammenlegen (= squash) oder wegwerfen.
+  ---------------------------------------------------------------------------------------------------
+  git rebase --onto (die volle Dröhnung)      Erklärt in [4].
+  ---------------------------------------------------------------------------------------------------
+
+(6) Andere commit jonglage
+
+  ---------------------------------------------------------------------------------------------------
+  git apply (selten aber gut zu kennen)       Einzelne patches (~diffs) anwenden. Z.B. aus git diff
+                                              zu erhalten.
+  ---------------------------------------------------------------------------------------------------
+  git cherry-pick (selten)                    Commits auswählen und auf HEAD (aktuellen zustand)
+                                              drauf klonen. Kann schneller sein wenn du einfach die
+                                              Änderungen eines bestimmten commit anwenden möchtest.
+  ---------------------------------------------------------------------------------------------------
+
+(7) Stash (Zwischenspeicher für tupel {Working directory, staging index})
+
+  ---------------------------------------------------------------------------------------------------
+  git stash save -m "Beschreibung"            Speichere working directory + staging index zwischen.
+                                              Falls man kurzfristig mal eben auf ein anderen branch
+                                              will aber noch kein commit fertig ist.
+                                              Auch gut wenn man änderungen zu einem anderen branch
+                                              mitnehmen will.
+    --index (nur index zwischenspeichern)
+  ---------------------------------------------------------------------------------------------------
+  git stash                                   Ohne Nachricht geht auch, aber das schreit nach Ärger.
+  ---------------------------------------------------------------------------------------------------
+  git stash list                              Alle Zwischenspeicherungen anzeigen
+  ---------------------------------------------------------------------------------------------------
+  git stash show                              Diff von Zwischenspeicherungen anzeigen.
+  ---------------------------------------------------------------------------------------------------
+  git stash pop                               Letzte zwischenspeicherung stack-mäßig wieder anwenden.
+                                              Und aus dem stash entfernen.
+  ---------------------------------------------------------------------------------------------------
+  git stash apply                             Anwenden und im stash behalten. Nicht notwendigerwise
+                                              der letzte/oberste stash.
+  ---------------------------------------------------------------------------------------------------
+  git stash drop                              Letzten (obersten) stash löschen.
+  ---------------------------------------------------------------------------------------------------
+  git stash clear                             Alle stashes löschen.
+  ---------------------------------------------------------------------------------------------------
+
+=====================================================================================================
+Panik Modus: (kann passieren)
+=====================================================================================================
+
+Regel 1: Keine Panik im Panik Modus. Solange der .git Ordner noch da ist gibt es Mittel und Wege.
+
+(8) Reflog
+
+  ---------------------------------------------------------------------------------------------------
+  git reflog                                  Wenn ein commit verloren gegangen ist kann er so
+                                              vermutlich noch gefunden werden.
+  ---------------------------------------------------------------------------------------------------
+  git checkout HEAD@{n}                       Zahl für n aus git reflog entnehmen.
+  ---------------------------------------------------------------------------------------------------
+
+=====================================================================================================
+Fallstricke:
+=====================================================================================================
+
+  - Zu viele, komplizierte und große merges. Lieber oft und einfach mergen. Wenn möglich mittels
+    rebasing "linearen" master kreieren.
+  - "Die Historie neu schreiben": rebase, amend, force-push usw. auf gut Glück geht immer schief.
+
+=====================================================================================================
+Legende:
+=====================================================================================================
+
+  *   Braucht man unbedingt, um dateien in git rein zu packen und überhaupt zu wissen was los ist.
+  (*) Braucht man unbedingt, um git im Sinnce einer (verteilten) Versionierung zu verwenden.
+
+=====================================================================================================
+References:
+=====================================================================================================
+
+  [1] Cheat sheet (semi gut):       https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet
+  [2] Overview (das Bild ist nice): https://codesamplez.com/source-control/useful-git-commands
+  [3] Wie commit messages aussehen: https://chris.beams.io/posts/git-commit/
+  [4] Rebase benutzen:              https://stackoverflow.com/questions/29914052/i-cant-understand-the-behaviour-of-git-rebase-onto
+
+=====================================================================================================
+Aliases:
+=====================================================================================================
+
+  {1} "git log --graph --all --oneline -20"
+  {2} "git log --graph --abbrev-commit --pretty=format:'%C(bold dim yellow)%h %C(cyan dim)%C(bold)(%cr) %C(bold white)%C(reset)%C(auto)%s%C(bold)%C(reset) - %C(dim white)%an%C(reset) %C(auto)%d' --all -20"
+  {3} "git add -p"
+  {4} "git diff --stat --staged; {1}; git diff --stat;"
