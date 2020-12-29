@@ -302,10 +302,14 @@ namespace tenthousand_states
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------
 
+namespace ui{ class Ui; } // FIXME only needed to friend. create appropriate interface (or redo class)
+
 template<unsigned int P=1>
 class Tenthousand
 {
   static_assert(P > 0);
+  friend class ::ui::Ui;  // FIXME no interface for die digits and aside vectors right now
+  friend class Rollback;  // This is actually somewhat logiccal imo
 
 public:
     // Provide some "generic" types for RL interfaces.
@@ -378,6 +382,9 @@ public:
     ~Tenthousand() = default;
 
     void print() const;
+
+    // Sorry to the person having to merge this later i need to query aside dice for ui
+    auto const& getActive() const { return _active; }
 };
 
 /// ------------------------------------------------------------------------
@@ -840,6 +847,7 @@ template<unsigned int P>
 Tenthousand<P>::Tenthousand()
     : _player(0),  _points(), _cup(), _current(0), _active(), _aside()
 {
+    // TODO This shoudld probably be a "reset" or "init" member
     _points.fill(0); // reset points
     _active.fill(true);
     _aside.fill(0);
