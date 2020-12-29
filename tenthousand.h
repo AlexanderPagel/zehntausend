@@ -244,7 +244,7 @@ namespace tenthousand_states
 //        explicit State(_base_t&& src) : _base_t( std::move(src) ) {}
 //    };
 
-    class Move : private std::pair<from_rl_bases::TenKThrow,bool>
+    class Move : private std::pair<from_rl_bases::TenKThrow, bool>
     {
         typedef from_rl_bases::TenKThrow Throw_t;
         typedef typename std::pair<Throw_t,bool> _base_t;
@@ -305,6 +305,8 @@ namespace tenthousand_states
 template<unsigned int P=1>
 class Tenthousand
 {
+  static_assert(P > 0);
+
 public:
     // Provide some "generic" types for RL interfaces.
     typedef unsigned int Player;
@@ -539,7 +541,8 @@ Tenthousand<P>::legal(State_t const& s, Move_t const& m)
 
 template<unsigned int P>
 auto
-Tenthousand<P>::afterstate(State_t const& s, Move_t const& m) -> Afterstate_t
+Tenthousand<P>::afterstate(State_t const& s, Move_t const& m)
+  -> Afterstate_t
 {
     Afterstate_t as;
 

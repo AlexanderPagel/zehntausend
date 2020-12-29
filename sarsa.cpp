@@ -149,9 +149,7 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
     {
         auto s( State_t::randomStart() ); /// \tbc moves?
 
-        // TODO check first if random start can be terminal
-        // while(not isTerminal())
-        do
+        while(!s.isTerminal())
         {
             auto a( eGreedy(s) );
             auto simulEnvFeedback = ( Environment_t::simulate(s, a) );
@@ -171,9 +169,8 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
             _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 
             s = s_;
-            a = a_;
+//            a = a_;
         }
-        while( !s.isTerminal() );
 
         // Print a loading bar so we know the algorithm didn't hung itself
         if( l != 0 )
@@ -194,4 +191,3 @@ Sarsa::Sarsa(double alph, double epsil, double gam)
         exit(36762);
 
 }
-

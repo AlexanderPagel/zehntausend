@@ -29,7 +29,7 @@ class Sarsa;
 template class Tenthousand<1>;
 
 /// \tbc template with type parameter derived from environment
-class Sarsa //: // public rl::SarsaMax
+class Sarsa
 {
 private:
     // If we implement another game variant we only need to change typedef for
@@ -76,7 +76,7 @@ public:
         std::ostream& = std::cout);
 
     // Ctor
-    Sarsa(double alpha = 0.1, double epsilon = 0.2, double lambda = 1);
+    Sarsa(double alpha = 0.1, double epsilon = 0.2, double gamma = 1);
 
 //    void printLowQ() const & noexcept;
 };
