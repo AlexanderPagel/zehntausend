@@ -1,384 +1,8 @@
-// tenthousand.h
-//
-// Implementation of tenthousand game mechanics. Classes provide the interfaces
-// required by RL algorithms.
-//
-// FIXME This file is way too big. Move each class to it's own file.
-//
-// class TenKThrow
-//  - Representing thrown dice
-//  - For each digit, number of dice showing it
-//  - May be empty (representing 0 active/rolled dice)
-//
-// class TenKState
-//  - Represents MDP states
-//  - Current throw + current points
-//  - Throw empty := terminal state
-//
-// class Tenthousand
-//  - Represents N-player game of tenthousand
-//  - Each having an independent game state
-
-#ifndef TENTHOUSAND_HPP_INCLUDED
-#define TENTHOUSAND_HPP_INCLUDED 1
-
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
-
-#include "dice.h"
-
-// FIXME use constexpr
-#define TURN_MINIMUM 350
-
-
-namespace from_rl_bases
-{
-
-/// @note   No validity or range checks in this class.
-class TenKThrow
-{
-public:
-    using DiceArray_t = std::array<size_t,7>;
-    enum {ONE = 0, TWO, THREE, FOUR, FIVE, SIX, TOTAL};
-
-private:
-    DiceArray_t* _arr;
-
-protected:
-    // TODO Use these
-    bool isInit() const { return _arr != nullptr; }
-    void init() { _arr = new DiceArray_t; }
-    void checkInit() const;
-
-public:
-    // Access
-    void clear() { if( _arr != nullptr ) delete _arr; }
-    void fill(size_t v);
-    size_t& operator[](size_t fig)       { return (*_arr)[fig]; }
-    size_t  operator[](size_t fig) const { return (*_arr)[fig]; }
-    size_t& total()       { return (*_arr)[TOTAL]; }
-    size_t  total() const { return (*_arr)[TOTAL]; }
-
-    // Content checks
-    bool any() const { return (*_arr)[TOTAL] != 0; }
-    bool operator==(TenKThrow const& other) const;
-
-    // Copy & assign
-    TenKThrow& operator=(TenKThrow const& src);
-    TenKThrow& operator=(TenKThrow&& src);
-    // TODO need default?  TenKThrow() : _arr( nullptr ){}
-    TenKThrow(TenKThrow const& src) : _arr( new DiceArray_t(*src._arr) ) {}
-    TenKThrow(TenKThrow&& src) : _arr(src._arr) { src._arr = nullptr; }
-
-    // Construct
-    explicit TenKThrow(DiceArray_t const& a) : _arr{ new DiceArray_t(a) } {}
-    TenKThrow() : _arr( new DiceArray_t ){ _arr->fill(0); }
-    ~TenKThrow() { this->clear(); }
-};
-
-class TenKState
-{
-public:
-    using Points_t = unsigned int;
-    using Throw_t = from_rl_bases::TenKThrow;
-
-private:
-    Throw_t* _cup;  // TODO Throw already contains pointer
-    Points_t _p;
-
-public:
-    bool isTerminal() const{ return !_cup->any(); }
-    auto clone() const noexcept(true) { return new TenKState(*this); }
-    bool operator==(TenKState const& other) const;
-
-    Throw_t&       thrown() { return *_cup; }
-    Throw_t const& thrown() const { return *_cup; }
-    Points_t&       points() {return _p; }
-    Points_t const& points() const { return _p; }
-//    bool terminal() const { return isTerminal(); }
-
-    static TenKState randomStart();
-    TenKState(Throw_t const& t, Points_t const& p);
-
-    TenKState& operator=(TenKState const& src);
-    TenKState& operator=(TenKState&& src);
-
-    TenKState();
-    TenKState(TenKState const& src);
-    TenKState(TenKState&& src);
-    ~TenKState();
-};
-
-/// ====================================================================
-///
-class TenKMove
-{
-public:
-    using Throw_t = from_rl_bases::TenKThrow;
-
-private:
-    Throw_t* _put;
-    bool _finishes;
-
-public:
-    /// ----------------------------------------------------------------
-    /// action requirements
-
-        // empty
-
-    /// ----------------------------------------------------------------
-    /// game functionality
-    Throw_t& putAside() { return *_put; }
-    Throw_t const& putAside() const { return *_put; }
-    bool& finishes() { return _finishes; }
-    bool finishes() const { return _finishes; }
-
-    static TenKMove zero() { return TenKMove(); }
-
-    /// ----------------------------------------------------------------
-    /// assignments
-    auto
-    operator=(TenKMove const& src)
-        -> TenKMove&
-    {
-        if( this == &src ) return *this;
-
-        *_put = *src._put;
-        _finishes = src._finishes;
-    }
-
-    auto
-    operator=(TenKMove&& src)
-        -> TenKMove&
-    {
-        if( this == &src ) return *this;
-        delete _put;
-        _put = src._put; src._put = nullptr;
-        _finishes = src._finishes;
-    }
-
-    /// ----------------------------------------------------------------
-    /// ctors
-    TenKMove() : _put(new Throw_t()), _finishes(false) {}
-    TenKMove(TenKMove const& src) : _put(new Throw_t(*src._put)), _finishes(src._finishes) {}
-    TenKMove(TenKMove&& src) : _put(src._put), _finishes(src._finishes) { src._put = nullptr; }
-
-    TenKMove(Throw_t&& t, bool b) : _put(new Throw_t(std::move(t))), _finishes(b) {}
-    ~TenKMove() { if( _put != nullptr ) delete _put; }
-};
-
-} // namespace from_rl_bases
-
-
-class illegal_move_error : public std::runtime_error
-{
-public:
-    illegal_move_error() : runtime_error("") {}
-    illegal_move_error(std::string const& s) : runtime_error(s) {}
-    ~illegal_move_error() = default;
-};
-
-namespace tenthousand_states
-{
-//    class Throw : private std::array<unsigned int, 7>
-//    {
-//        typedef typename std::array<unsigned int,7> _base_t;
-
-//    public:
-//        template<typename T>    /// \tbc jesus christ i am so lazy
-//        void fill( T const& value ) { _base_t::fill(value); }
-
-//        unsigned int& operator[](size_t i) { return this->_base_t::operator[](i); }
-//        unsigned int operator[](size_t i) const {return this->_base_t::operator[](i); }
-//        bool any() const { return _base_t::operator[](6) != 0; }
-//        unsigned int&  total() {return _base_t::operator[](6); }
-//        unsigned int total() const { return _base_t::operator[](6); }
-
-//        bool operator==(Throw const& other) const
-//        {
-//            return(
-//               _base_t::operator[](6) == other._base_t::operator[](6) && // in best case, this value is already different
-//               _base_t::operator[](0) == other._base_t::operator[](0) &&
-//               _base_t::operator[](1) == other._base_t::operator[](1) &&
-//               _base_t::operator[](2) == other._base_t::operator[](2) &&
-//               _base_t::operator[](3) == other._base_t::operator[](3) &&
-//               _base_t::operator[](4) == other._base_t::operator[](4) &&
-//               _base_t::operator[](5) == other._base_t::operator[](5)
-//               );
-//        }
-
-//        Throw& operator=(Throw const&) = default;
-
-//        Throw() : _base_t( {0} ) {}
-//        Throw(Throw const& src) : _base_t( src) {}
-//        Throw(Throw&& src) : _base_t( src ) {}    // implicit move
-//        explicit Throw(_base_t&& src) : _base_t(std::move(src)) {}
-
-//    };
-
-    /// then, enter terminal with 0 diceLeft is equal to s = terminate state, others
-    ///  /e.g., enter terminal wih 4 dice and 200 points is not terminal, but reached after illegal moves
-//    class State : private std::pair<from_rl_bases::TenKThrow,unsigned int>
-//    {
-//        typedef from_rl_bases::TenKThrow Throw_t;
-//        typedef typename std::pair<Throw_t,unsigned int> _base_t;
-//    public:
-//        Throw_t& thrown() { return _base_t::first; }
-//        Throw_t const& thrown() const {return _base_t::first; }
-//        unsigned int& points() { return _base_t::second; }
-//        unsigned int const& points() const { return _base_t::second; }
-//        bool terminal() const { return !_base_t::first.any(); }
-
-//        static State randomStart();
-
-//        bool operator==(State const& other) const { return _base_t::second == other.second && _base_t::first == other.first; }
-
-//        State& operator=(State const&) = default;
-
-//        State() = default;
-//        State(State const& src) : _base_t( src ) {}
-//        State(State&& src) : _base_t( src ) {}    // implicit move
-//        explicit State(_base_t&& src) : _base_t( std::move(src) ) {}
-//    };
-
-    class Move : private std::pair<from_rl_bases::TenKThrow, bool>
-    {
-        typedef from_rl_bases::TenKThrow Throw_t;
-        typedef typename std::pair<Throw_t,bool> _base_t;
-    public:
-        Throw_t&       putAside()       { return _base_t::first; }
-        Throw_t const& putAside() const { return _base_t::first; }
-        bool&       finishes()       { return _base_t::second; }
-        bool const& finishes() const {return _base_t::second; }
-
-        static Move zero() { return Move( Throw_t{{0,0,0,0,0,0,0}},false ); }
-
-        Move& operator=(Move const&) = default;
-
-        Move(Move const& src) : _base_t( src ){}
-        Move(Move&& src) : _base_t( src ) {}
-        Move(Throw_t&& t, bool b) : _base_t( std::move(t), b) {}
-    };
-
-    class Afterstate : private std::pair<unsigned int,unsigned int>
-    {
-        typedef typename std::pair<unsigned int,unsigned int> _base_t;
-        bool _fromTerminal = false;
-        unsigned int _pointsBefore = 0;
-    public:
-        bool&       fromTerminal()       { return _fromTerminal; }
-        inline bool fromTerminal() const { return _fromTerminal; }
-        unsigned int& diceLeft()       { return this->first; }
-        unsigned int  diceLeft() const { return this->first; }
-        unsigned int& points()        { return this->second; }
-        unsigned int  points() const  { return this->second; }
-        unsigned int& pointsBefore()       { return this->_pointsBefore; }
-        unsigned int  pointsBefore() const { return this->_pointsBefore; }
-
-
-        bool operator==(Afterstate const& other) const
-        {
-            return (fromTerminal() && other.fromTerminal())    // terminal states are the same
-                || (_base_t::first == other._base_t::first &&
-                    _base_t::second == other._base_t::second &&
-                    _pointsBefore == other._pointsBefore);
-        }
-
-        Afterstate() = default;
-        Afterstate(Afterstate const& src) : _base_t( src ),
-                                            _fromTerminal(src._fromTerminal),
-                                            _pointsBefore(src._pointsBefore) {}
-        Afterstate(Afterstate&& src) :  _base_t( std::move(src) ),
-                                        _fromTerminal(src._fromTerminal),
-                                        _pointsBefore(src._pointsBefore) {}
-    };
-}
-
-
-
-/// ------------------------------------------------------------------------
-/// class Tenthousand ------------------------------------------------------
-
-template<unsigned int P=1>
-class Tenthousand
-{
-  static_assert(P > 0);
-
-public:
-    // Provide some "generic" types for RL interfaces.
-    typedef unsigned int Player;
-    typedef from_rl_bases::TenKThrow Throw_t;
-    typedef from_rl_bases::TenKState State_t;
-    typedef tenthousand_states::Move Move_t;
-    typedef tenthousand_states::Afterstate Afterstate_t;
-
-    typedef typename std::vector<Move_t> MoveVector_t;
-    typedef MoveVector_t ActionVector_t;
-private:
-
-    Player _player;                                                          // the player who's turn it is
-    std::array<unsigned int, P> _points;                                          // points for each player
-
-    // note: Dice<6> rolls values in [1,6]
-    Dice<6> _cup;                                                            // one cup of dice for all players
-    unsigned int _current;
-
-    // helping stuff during individual turns
-    std::array<bool,6> _active;                                                   // dice NOT put to the side
-    std::array<unsigned int,8> _aside;                                            // how many of each were put aside from a throw 0-5: dice, 6: TOTAL, 7: ANY
-
-    // checks for a triplet of the given figure in the ACTIVE dices position 0 and 3 indicate existence ( == NAN or not)
-    std::array<int,6> _triples();  /// \tbc return rref?
-
-    Player _incrementPlayer();
-    void _abortTurn(std::string const& s = "");   // abort with 0 points for the player (throws illegal_move_error)
-
-protected:
-    void _refresh(void) &;
-    void _setCurrent(unsigned int c) { _current = c; }
-
-public:
-    Throw_t thrown() const;   // note: do not put aside befostatere
-    State_t state() const;
-
-    /// \return     0 if state is terminal
-    ///        else 0 if move is illegal
-    ///        else the current points after the legal move
-    static unsigned int legal(State_t const&, Move_t const&);
-    static Afterstate_t afterstate(State_t const&, Move_t const& m);
-    static auto simulate(State_t const& s, Move_t const& a) -> std::pair<double,State_t>;
-
-    static MoveVector_t legalMoves(State_t const&);
-private:
-    typedef MoveVector_t (*_legalMovesFunc_t)(State_t const&);
-public:
-    static constexpr _legalMovesFunc_t legalActions = &legalMoves;
-    MoveVector_t legalMoves() const;
-
-    enum Figure {ONE = 0, TWO, THREE, FOUR, FIVE, SIX, TOTAL, ANY, MAX, NAN};
-
-    void putAside(void);            // put max possible value aside
-    void putAside(unsigned int d);  // put one dice aside
-    void putAside(Move_t const&) &;   /// \tbc replace arg type Move with type throw. (or overload)
-    Dice<6> const& roll(void);      // roll active dice
-    unsigned int finishTurn(void);  // stop and save current points
-    auto makeMove(Move_t const&) & -> void;
-
-    // API for reading status
-    Player const& getPlayer() const { return _player; }
-    unsigned int getPoints(Player p) const { return p<=P ? _points[p] : 0; }
-    unsigned int getCurrent() const { return _current; }
-    unsigned int activeDice() const { return 6 - _aside[TOTAL]; }
-    bool getPutAny() const { return (bool)_aside[ANY]; }
-
-    Tenthousand();  /// \tbc don't start game in constructor, wait for a function call like start()
-    ~Tenthousand() = default;
-
-    void print() const;
-};
 
 /// ------------------------------------------------------------------------
 /// implementation ---------------------------------------------------------
@@ -450,7 +74,7 @@ template<unsigned int P>
 void
 Tenthousand<P>::_abortTurn(std::string const& s)
 {
-    _refresh();
+    //_refresh();
     throw illegal_move_error{s};   // notify caller
     return;
 }
@@ -541,8 +165,7 @@ Tenthousand<P>::legal(State_t const& s, Move_t const& m)
 
 template<unsigned int P>
 auto
-Tenthousand<P>::afterstate(State_t const& s, Move_t const& m)
-  -> Afterstate_t
+Tenthousand<P>::afterstate(State_t const& s, Move_t const& m) -> Afterstate_t
 {
     Afterstate_t as;
 
@@ -638,7 +261,8 @@ Tenthousand<P>::legalMoves(State_t const& s) -> MoveVector_t
         unsigned int sum = f[ONE]+f[TWO]+f[THREE]+f[FOUR]+f[FIVE]+f[SIX];
         Move_t m( Throw_t({f[ONE],f[TWO],f[THREE],f[FOUR],f[FIVE],f[SIX],sum}), true );
         if( legal(s, m))    /// \tbc SOME double checks still here
-            movVec.push_back( std::move(m) );        m.finishes() = false;
+            movVec.push_back( std::move(m) );
+        m.finishes() = false;
         if( legal(s, m))
             movVec.push_back( std::move(m) );
     }
@@ -794,6 +418,10 @@ Tenthousand<P>::finishTurn()
             _abortTurn("Gotta try harder to reach the turn limit.");
 
         _points[_player] += _current;
+        if (_points[_player]>=10000){
+            std::cout <<"You win!" << std::endl;
+            //ToDo: Add some functionality to finish game/start a new game/continue playing.
+        }
     }
     else
         /// \tbc later: introduce a new exception to indicate terminating states.
@@ -885,6 +513,3 @@ void Tenthousand<P>::print() const
     }
 }
 
-#include "tenthousand.inc"
-
-#endif // TENTHOUSAND_HPP_INCLUDED
