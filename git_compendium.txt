@@ -205,8 +205,10 @@ Config:
 
 (13) Windows vs. Unix
   ---------------------------------------------------------------------------------------------------
-  git config --global core.autocrlf true
-  git config --global core.auto
+  git config --global \                       Habe im git repo alle line endings <LF>. Bei checkout
+    core.autocrlf true (Windows)              auf Windows erhalten alle Dateien automatisch <CR><LF>.
+  git config --global \                       Auf Linux wird das originale Zeilenende beibehalten.
+    core.autocrlf input (Unix)
   ---------------------------------------------------------------------------------------------------
   git config --global user.name               Muss angegeben werden, aber beliebig.
   git config --global user.email
