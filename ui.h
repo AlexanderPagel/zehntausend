@@ -1,14 +1,66 @@
 // ui.h
 //
-// TODO Brief explanation.
+// class Ui
+//
+// This class coordinates running games between multiple parties. Notably bots
+// and players. It queries in- and outputs from players/bots and plays out
+// their actions in the game environment.
+//
+// Lower tier classes such as
+//  - History
+//  - Dispaly
+//  - Actors (bots, humans)
+// are provided the constructed game state and/or events.
 
 #ifndef UI_H_INCLUDED
 #define UI_H_INCLUDED 1
 
+
 namespace ui
 {
 
+class Ui
+{
+  public:
+    using Game_t = Tenthousand<3>;
 
+  private:
+    // We can do generic versions of this later. Lets focus on
+    // getting something running first.
+    BotActor   bot;
+    HumanActor p1;
+    HumanActor p2;
+    History    history;
+    Display    display;
+
+    // Objekte um algorithmen auf die history annzuwenden
+    // Statistics statistics1;
+
+    // Get current "board" situation
+    Game_t::Player getPlayer() const;
+    Game_t::Points_t getTurnPoints() const;
+    bool getDieAside(int die) const;
+    int getDieDigit(int die) const;
+    bool canStopTurn() const;
+
+    // Get global game situation
+    Game_t::Points_t getPoints(Game_t::Player player) const;
+    bool isOver() const;
+    Game_t::Player getWinner() const;
+
+    // Checks for human interaction:
+    // islegal()
+    // bringshowmanypoints()
+    // ...
+
+  public:
+    // Print current situation in formatted way to stdout
+    rePrint();
+    // Einen Zug zurückgehen
+    rewind();
+
+    //update buffers();
+};
 
 
 
