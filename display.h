@@ -12,13 +12,15 @@
 #ifndef DISPLAY_H_INCLUDED
 #define DISPLAY_H_INCLUDED 1
 
+
 #include <ostream>
+
+#include "ui.h"
 
 namespace ui
 {
 
 // Preliminary screen setup:
-
 /*
 Player 1:    50                                      3 player lines
 Player 2:   300                                      .
@@ -40,11 +42,21 @@ class Display
     Ui const& ui;
     std::ostream& os;
 
+  public:
+    // Display layout parameters
+    constexpr int pointsWidth = 5;
+    constexpr int playerCount = 3;
+
   private:
+    enum class ConstLineIdx { diceNum = 0 };
+
+    void clearScreen();
+
     // Computation of sub-expressions
 
     // Formatted sub-prints
     void drawPlayer(Ui::Game_t::Player p);
+    void drawConstantLine(ConstLineIdx);
 
   public:
     // The interface that is called by our Ui class
@@ -53,12 +65,6 @@ class Display
     // TODO Set default os to std::cout
     Display();
 };
-
-// Draw one player line
-void drawPlayerLine(
-    std::ostream&,
-    Ui::Game_t::Player const&,
-    int points);
 
 } // namespace ui
 
