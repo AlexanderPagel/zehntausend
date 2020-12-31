@@ -8,6 +8,7 @@
 #ifndef HISTORY_H_INCLUDED
 #define HISTORY_H_INCLUDED 1
 
+#include <vector>
 
 namespace ui
 {

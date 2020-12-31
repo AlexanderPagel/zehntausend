@@ -15,7 +15,7 @@
 
 #include <ostream>
 
-#include "ui.h"
+#include "ui_types.h"
 
 namespace ui
 {
@@ -35,6 +35,8 @@ Player 3: 10000                                      .
 */
 
 
+class Ui;
+
 class Display
 {
   private:
@@ -44,8 +46,8 @@ class Display
 
   public:
     // Display layout parameters
-    constexpr int pointsWidth = 5;
-    constexpr int playerCount = 3;
+    static constexpr int pointsWidth = 5;
+    static constexpr int playerCount = 3;
 
   private:
     enum class ConstLineIdx { diceNum = 0 };
@@ -55,7 +57,7 @@ class Display
     // Computation of sub-expressions
 
     // Formatted sub-prints
-    void drawPlayer(Ui::Game_t::Player p);
+    void drawPlayerLine(Game_t::Player p);
     void drawConstantLine(ConstLineIdx);
 
   public:

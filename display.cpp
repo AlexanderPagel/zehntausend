@@ -4,32 +4,37 @@
 #include <ostream>
 #include <iomanip>
 
+#include "ui.h"
+
 namespace ui
 {
 
 namespace
 {
 
-constexpr std::array<std::string_view> constLines
+constexpr std::string_view constLines[] =
 {
   {"     |    Dice:    1   2   3   4   5   6             1 never changing default line"}
 };
 
+} // namespace
+
 void
-Display::drawPlayerLine(Ui::Game_t::Player p)
+Display::drawPlayerLine(Game_t::Player p)
 {
   os << "Player " << p << ":";
   os << std::setw(5) << ui.getPoints(p) << std::endl;
 }
 
 void
-Display::drawConstantLine<L>(ConstLineIdx l)
+Display::drawConstantLine(ConstLineIdx l)
 {
-  os << ConstLines.at(int(l)) << std::endl;
+  assert(unsigned(l) < std::size(constLines));
+  os << constLines[int(l)] << std::endl;
 }
 
 void
-Ui::draw()
+Display::draw()
 {
 
 }

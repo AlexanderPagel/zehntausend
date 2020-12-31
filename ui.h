@@ -16,6 +16,12 @@
 #define UI_H_INCLUDED 1
 
 
+#include "actor.h"
+#include "display.h"
+#include "history.h"
+#include "tenthousand.h"
+#include "ui_types.h"
+
 namespace ui
 {
 
@@ -24,27 +30,31 @@ class Ui
   public:
     using Game_t = Tenthousand<3>;
 
+    using History_t = History<Game_t::State_t>;
   private:
+
     // We can do generic versions of this later. Lets focus on
     // getting something running first.
+    Game_t     game;  // TODO Have our own or work on reference?
     BotActor   bot;
     HumanActor p1;
     HumanActor p2;
-    History    history;
+    History_t  history;
     Display    display;
 
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
 
+  public:
     // Get current "board" situation
     Game_t::Player getPlayer() const;
-    Game_t::Points_t getTurnPoints() const;
+    Points_t getTurnPoints() const;
     bool getDieAside(int die) const;
     int getDieDigit(int die) const;
     bool canStopTurn() const;
 
     // Get global game situation
-    Game_t::Points_t getPoints(Game_t::Player player) const;
+    Points_t getPoints(Player_t player) const;
     bool isOver() const;
     Game_t::Player getWinner() const;
 
@@ -53,11 +63,10 @@ class Ui
     // bringshowmanypoints()
     // ...
 
-  public:
     // Print current situation in formatted way to stdout
-    rePrint();
+    void rePrint();
     // Einen Zug zurückgehen
-    rewind();
+    void rewind();
 
     //update buffers();
 };
