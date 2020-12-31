@@ -29,7 +29,7 @@ Player 3: 10000                                      .
                                                      1 empty line
      |    Dice:    1   2   3   4   5   6             1 never changing default line
    0 |                                               1 line just with player number
-     |      0  -> [3] [3] [3] [6] [1] [5]            1 line with rolled dice,
+     |    _150 -> [3] [3] [3] [6] [1] [5]            1 line with rolled dice,
                                                                  currernt points,
                                                                  active indivcators, and
                                                                  yet-to-move indicators
@@ -43,23 +43,28 @@ class Display
   private:
     // The Ui object where the shown data orginates
     Ui const& ui;
-    std::ostream& os;
+
+    std::ostream& os = std::cout; // TODO really needed?
 
   public:
     // Display layout parameters
     static constexpr int pointsWidth = 5;
+    static constexpr int currentPointsWidth = 4;
     static constexpr int playerCount = 3;
 
   private:
-    enum class ConstLineIdx { diceNum = 0 };
+    enum class ConstLineIdx { emptyLine, diceNumLine = 0 };
 
-    void clearScreen();
+    void clear();
 
     // Computation of sub-expressions
+    // TODO
 
     // Formatted sub-prints
     void drawPlayerLine(Game_t::Player p);
     void drawConstantLine(ConstLineIdx);
+    void drawPlayerToMoveLine();
+    void drawCurrentThrowLine();
 
   public:
     // The interface that is called by our Ui class
