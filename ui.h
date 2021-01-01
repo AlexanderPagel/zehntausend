@@ -6,11 +6,15 @@
 // and players. It queries in- and outputs from players/bots and plays out
 // their actions in the game environment.
 //
-// Lower tier classes such as
-//  - History
-//  - Dispaly
-//  - Actors (bots, humans)
-// are provided the constructed game state and/or events.
+// Display and Actors do not directly interact with the game class Tenthousand.
+// Instead, the ui provides getters relaying to the environment.
+//
+// Display and Actors do not directly interact with the game class Tenthousand.
+// Instead, the ui provides getters relaying to the environment. This is
+// because we may want to provide more information than what the game class
+// offers (e.g., using the history or any of the other actors). We may want to
+// change this in the future.
+// TODO since actors already acto on the game itself it would onl be consequential to do the same with display. ui can till provide additional data through it's own getters
 
 #ifndef UI_H_INCLUDED
 #define UI_H_INCLUDED 1
@@ -21,6 +25,7 @@
 #include "history.h"
 #include "tenthousand.h"
 #include "ui_types.h"
+
 
 namespace ui
 {
@@ -39,8 +44,8 @@ class Ui
     BotActor   bot;
     HumanActor p1;
     HumanActor p2;
-    History_t  history;
-    Display    display;
+    History_t  history; // ?
+    Display    display; // :)
 
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
@@ -65,7 +70,7 @@ class Ui
 
     // Print current situation in formatted way to stdout
     void rePrint();
-    // Einen Zug zurückgehen
+    // Go back in history
     void rewind();
 
     //update buffers();

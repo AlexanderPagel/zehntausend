@@ -16,8 +16,14 @@
 //  This is to allow the human observer to easily follow the bot agent's play
 //  - with multiple display refreshes in-between.
 
+
 #ifndef ACTOR_H_INCLUDED
 #define ACTOR_H_INCLUDED 1
+
+
+#include <iostream>
+
+#include "ui_types.h"
 
 
 namespace ui
@@ -26,10 +32,26 @@ namespace ui
 // Möglicherweise gedachtes Interface
 class Actor
 {
+  public:
+    // How to interact and what to interact with?
+    void interact();  // Interact with ui?
 };
+
+class Ui;
 
 class HumanActor
 {
+    Ui const& ui;
+
+    std::istream& is = std::cin;
+
+  private:
+    char getChar() const;
+
+  public:
+    void operator()(Game_t const&);
+
+    HumanActor();
 };
 
 class BotActor

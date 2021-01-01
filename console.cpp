@@ -2,6 +2,9 @@
 
 #include <iostream>  // dbg/testing
 
+#include <ncurses.h>  // L
+
+
 namespace ui
 {
 
@@ -11,7 +14,19 @@ namespace console
 void clearScreen()
 {
   // Currnetly unix only
-  system("clear");
+  auto ret = system("clear");  // L
+  if (ret == -1)
+    throw std::runtime_error("Clear Screen L failed");
+}
+
+char getChar()
+{
+  // This does not look efficient, but we want to block for key press anyway
+	initscr();			/* Start curses mode 		  */
+	auto c = getch();			/* Wait for user input */
+	endwin();			/* End curses mode		  */
+
+  return c;
 }
 
 namespace // testing
@@ -19,16 +34,28 @@ namespace // testing
 
 int testClearScreen()
 {
-  std::cout << "Test" << std::endl;
+  std::cout << "Testing clearScreen(): PRess Enter to clear." << std::endl;
   std::cin.ignore();
   clearScreen();
-  std::cout << "Test2" << std::endl;
+  std::cout << "Screen cleared." << std::endl;
+  std::cin.ignore();
+  return 0;
+}
+
+int testGetChar()
+{
+  std::cout << "Testing getChar(): type now" << std::endl;
+  auto c = console::getChar();
+  std::cout << "You typed:" << c << std::endl;
   std::cin.ignore();
   return 0;
 }
 
 #ifndef NDEBUG
-static int i = testClearScreen();
+int i =
+  +testClearScreen()
+  +testGetChar()
+  ;
 #endif  // NDEBUG
 
 } // namespace

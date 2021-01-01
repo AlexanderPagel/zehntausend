@@ -70,7 +70,6 @@ class Display
     // The interface that is called by our Ui class
     void draw();
 
-    // TODO Set default os to std::cout
     Display();
 };
 

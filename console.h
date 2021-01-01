@@ -16,6 +16,7 @@ namespace console
 {
 
 void clearScreen();
+char getChar();
 
 } // namespace console
 
