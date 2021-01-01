@@ -46,11 +46,13 @@ class Ui;
 class HumanActor
 {
     // Required for interaction
-    Ui const& ui;
+    Ui& ui;
     std::istream& is = std::cin;
 
-    // Required for implementation
-    char lastInput; // Do not block questionable input if given twice in a row
+    // Required for implementation. 0 means everything normal.
+    char lastInput = 0; // Do not block questionable input if given twice in a row
+    void clearLast() { lastInput = 0; }
+    bool hasLast() const { return lastInput != 0; }
 
     // Functions that determine the appropriate answer towards the UI after
     // use input is known. These assume valid user character input.
@@ -60,7 +62,7 @@ class HumanActor
     void respondToFinish  (char);
     void respondToQuit    (char);
     // void respondToRewind();
-    void respondToSuspect (char); // Input bad. Repeat to confirm.
+    bool respondToSuspect (char); // Input sus. Returns true if confirmed
     void respondToInvalid (char); // Input is not mapped to functionality
 
     // Check user input
@@ -68,8 +70,9 @@ class HumanActor
     RespondFunc_t classifyInput(char);     // Blocks questionable input the first time
 
   public:
-    // Use UI relay interfact to act on the game
-    void operator()();
+    // Use UI relay interface to act on the game
+    void operator()();      // Query console for input
+    void operator()(char);  // Simulate key input
 
     HumanActor();
 };
@@ -88,3 +91,16 @@ bool isDieDigit(T const&);
 
 
 #endif // ACTOR_H_INCLUDED
+
+// TODO We could make it such that capital letters are forced actions (ignoring
+//      sanitizers).
+
+// Roadmap
+// 1. get human input
+// 2. check validity
+// 3. Allow corrections if invalid
+// 4. hand to UI class
+
+// TODO The respondTOSuspect might not be the best mechanic.
+//      Maybe simple re-getCh() explicitly and compare. That looping is very
+//      difficult to follow.

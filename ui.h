@@ -80,6 +80,7 @@ class Ui
     RELAY(roll)
     RELAY(finishTurn)
     RELAY(makeMove)
+#undef RELAY
 
     // Print current situation in formatted way to stdout
     void rePrint();

@@ -22,7 +22,8 @@ constexpr std::string_view constLines[] =
 
 } // namespace
 
-void Display::clear()
+void
+Display::clear()
 {
   console::clearScreen();
 }
