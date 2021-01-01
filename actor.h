@@ -45,12 +45,27 @@ class Ui;
 
 class HumanActor
 {
+    // Required for interaction
     Ui const& ui;
-
     std::istream& is = std::cin;
 
-  private:
-    char getChar() const;
+    // Required for implementation
+    char lastInput; // Do not block questionable input if given twice in a row
+
+    // Functions that determine the appropriate answer towards the UI after
+    // use input is known. These assume valid user character input.
+    void respondToDieInput(char);
+    void respondToAll     (char);
+    void respondToRoll    (char);
+    void respondToFinish  (char);
+    void respondToQuit    (char);
+    // void respondToRewind();
+    void respondToSuspect (char); // Input bad. Repeat to confirm.
+    void respondToInvalid (char); // Input is not mapped to functionality
+
+    // Check user input
+    using RespondFunc_t = void (HumanActor::*)(char);
+    RespondFunc_t classifyInput(char);     // Blocks questionable input the first time
 
   public:
     // Use UI relay interfact to act on the game
