@@ -68,6 +68,19 @@ class Ui
     // bringshowmanypoints()
     // ...
 
+    // Relaying game interactions
+#ifdef RELAY
+#error Redefinition of macro RELAY
+#else
+#define RELAY(f) \
+    template<typename... Types> \
+    auto f(Types... args) { return game. f (args...); }
+#endif
+    RELAY(putAside)
+    RELAY(roll)
+    RELAY(finishTurn)
+    RELAY(makeMove)
+
     // Print current situation in formatted way to stdout
     void rePrint();
     // Go back in history

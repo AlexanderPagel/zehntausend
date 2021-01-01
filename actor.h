@@ -15,6 +15,10 @@
 //  example, it may put dice asie one by one and then finish.
 //  This is to allow the human observer to easily follow the bot agent's play
 //  - with multiple display refreshes in-between.
+//
+// Actors
+//  - validate inputs + correct missclicks
+//  - give action to UI class which relays to game object
 
 
 #ifndef ACTOR_H_INCLUDED
@@ -49,7 +53,8 @@ class HumanActor
     char getChar() const;
 
   public:
-    void operator()(Game_t const&);
+    // Use UI relay interfact to act on the game
+    void operator()();
 
     HumanActor();
 };
@@ -58,7 +63,13 @@ class BotActor
 {
 };
 
+template<typename T>
+bool isDieDigit(T const&);
+
 } // namespace ui
+
+
+#include "actor.inc"
 
 
 #endif // ACTOR_H_INCLUDED
