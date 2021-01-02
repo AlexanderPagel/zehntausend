@@ -22,7 +22,7 @@ HumanActor::respondToDieInput(char input)
   // rollbacks.
   // Could be called class SafeGame where it is simply impossible to make
   // illegal non-revertable decisions.
-  
+
   // TODO In the long term, the game class should allow re-activation of dice
   // previously put aside. Not currently possible.
 
