@@ -82,6 +82,15 @@ HumanActor::respondToSuspect(char input)
   }
 }
 
+void
+HumanActor::respondToInvalid(char input)
+{
+  if (respondToSuspect(input))
+  {
+    // TODO Issue message for player towards Ui/Display message
+  }
+}
+
 HumanActor::RespondFunc_t
 HumanActor::classifyInput(char input)
 {
@@ -113,6 +122,11 @@ HumanActor::operator()(char input)
 
   // lastInput is set internally when a confirmation is needed from recursion
   clearLast();
+}
+
+HumanActor::HumanActor(Ui& ui)
+  : ui(ui)
+{
 }
 
 } // namespace ui

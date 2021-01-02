@@ -47,7 +47,6 @@ class HumanActor
 {
     // Required for interaction
     Ui& ui;
-    std::istream& is = std::cin;
 
     // Required for implementation. 0 means everything normal.
     char lastInput = 0; // Do not block questionable input if given twice in a row
@@ -62,7 +61,7 @@ class HumanActor
     void respondToFinish  (char);
     void respondToQuit    (char);
     // void respondToRewind();
-    bool respondToSuspect (char); // Input sus. Returns true if confirmed
+    bool respondToSuspect (char); // Input sus. Returns true if confirmed.
     void respondToInvalid (char); // Input is not mapped to functionality
 
     // Check user input
@@ -74,7 +73,7 @@ class HumanActor
     void operator()();      // Query console for input
     void operator()(char);  // Simulate key input
 
-    HumanActor();
+    HumanActor(Ui&);
 };
 
 class BotActor
@@ -104,3 +103,12 @@ bool isDieDigit(T const&);
 // TODO The respondTOSuspect might not be the best mechanic.
 //      Maybe simple re-getCh() explicitly and compare. That looping is very
 //      difficult to follow.
+
+// TODO Resonse function currently only handle the game aspect. Later we also
+//      want them to pass something like a message code or string to the
+//      UI/display as interactive feedback.
+// TODO Maybe the display class can reserve specific areas for string messages
+//      to the user by any of the other UI components. Ui class needs to
+//      provide approprite interface to comunicate w/ the display class.
+
+// TODO Maybe the ui classes should communicate directly to each other?

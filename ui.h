@@ -167,3 +167,8 @@ class Ui
 //      - generische
 //      - nach besonders guten/schlechten situationen
 //      - "sprach-modul" sollte wohl wiederum separat realisiert werden
+
+// Class Ui is currently primarily providing interfaces between each data
+// member (display, actors, game, history, ...). This is so that only the Ui
+// class must be adjusted if and of the other changes. not sure if that's worth
+// it. Ui also owns all the objects.

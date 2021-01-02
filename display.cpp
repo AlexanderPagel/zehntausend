@@ -73,4 +73,8 @@ Display::draw()
   drawCurrentThrowLine();
 }
 
+Display::Display(Ui const& ui)
+  : ui(ui)
+{}
+
 } // namespace ui

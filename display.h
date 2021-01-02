@@ -70,7 +70,7 @@ class Display
     // The interface that is called by our Ui class
     void draw();
 
-    Display();
+    Display(Ui const&);
 };
 
 } // namespace ui

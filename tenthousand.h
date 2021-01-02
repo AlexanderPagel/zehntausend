@@ -302,10 +302,13 @@ namespace tenthousand_states
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------
 
+namespace ui{ class Ui; } // FIXME only needed to friend. create appropriate interface (or redo class)
+
 template<unsigned int P=1>
 class Tenthousand
 {
   static_assert(P > 0);
+  friend class ::ui::Ui;  // FIXME no interface for die digits and aside vectors right now
 
 public:
     // Provide some "generic" types for RL interfaces.
