@@ -1,9 +1,11 @@
 #include "actor.h"
 
 #include <iostream> // dbg
+#include <string>
 
 #include "console.h"
 #include "ui.h"
+#include "action_simulation.h"
 
 namespace ui
 {
@@ -126,7 +128,35 @@ HumanActor::operator()(char input)
 
 HumanActor::HumanActor(Ui& ui)
   : ui(ui)
+{}
+
+
+// =============================================================================
+
+void
+BotActor::respondWithKeyPresses(Action_t const& action)
 {
+  // Use Ui state interface to infer required button presses
+  ActionSimulation simulatedKeys(ui, action);
+  // TODO
+  assert(false);
+  (void)action;
 }
+
+void
+BotActor::operator()()
+{
+  auto state{ui.getState()};
+
+  auto action{bot.greedy(state)};  // TODO Define operator() as agent interface
+
+  // TODO Add textual coment to display via some means
+
+  respondWithKeyPresses(action);
+}
+
+BotActor::BotActor(Ui& ui, Bot_t const& bot)
+  : ui(ui), bot(bot)
+{}
 
 } // namespace ui

@@ -57,6 +57,7 @@ class Ui
     bool getDieAside(int die) const;
     int getDieDigit(int die) const;
     bool canStopTurn() const;
+    State_t getState() const;
 
     // Get global game situation
     Points_t getPoints(Player_t player) const;
@@ -172,3 +173,7 @@ class Ui
 // member (display, actors, game, history, ...). This is so that only the Ui
 // class must be adjusted if and of the other changes. not sure if that's worth
 // it. Ui also owns all the objects.
+
+// TODO Add means of explicit communication from UI modules to human/display.
+//      Most easily: reserve one line of the display for each of the components
+//      and allow them to set and clear them.

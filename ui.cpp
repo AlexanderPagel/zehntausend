@@ -37,6 +37,12 @@ Ui::canStopTurn() const
   return game.getPutAny();
 }
 
+State_t
+Ui::getState() const
+{
+  return game.state();
+}
+
 Points_t
 Ui::getPoints(Player_t player) const
 {

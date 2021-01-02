@@ -21,6 +21,9 @@ void clearScreen()
 
 char getChar()
 {
+  // FIXME Does not seem to work. Try init and end in main and never leaving
+  //       ncurses mode.
+
   // This does not look efficient, but we want to block for key press anyway
 	initscr();			/* Start curses mode 		  */
 	auto c = getch();			/* Wait for user input */
@@ -34,25 +37,28 @@ namespace // testing
 
 int testClearScreen()
 {
-  std::cout << "Testing clearScreen(): PRess Enter to clear." << std::endl;
+  std::cout << "Testing clearScreen(): Press Enter to clear." << std::endl;
   std::cin.ignore();
   clearScreen();
-  std::cout << "Screen cleared." << std::endl;
+  std::cout << "Screen cleared. Press Enter to continue." << std::endl;
   std::cin.ignore();
+  std::cout << "Continuing after clearing screen..." << std::endl;
   return 0;
 }
 
 int testGetChar()
 {
-  std::cout << "Testing getChar(): type now" << std::endl;
+  std::cout << "Testing getChar(): Press any key." << std::endl;
   auto c = console::getChar();
   std::cout << "You typed:" << c << std::endl;
+  std::cout << "Press Enter to continue." << std::endl;
   std::cin.ignore();
   return 0;
 }
 
 #ifndef NDEBUG
-int i =
+int test_nothing() { return 0; }
+int i = test_nothing()
   +testClearScreen()
   +testGetChar()
   ;

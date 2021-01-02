@@ -28,6 +28,7 @@
 #include <iostream>
 
 #include "ui_types.h"
+#include "sarsa.h"
 
 
 namespace ui
@@ -78,6 +79,22 @@ class HumanActor
 
 class BotActor
 {
+  public:
+    using Bot_t = Sarsa;
+
+  private:
+    Ui& ui;
+
+    Bot_t const& bot;
+
+    // Simulate button presses according to given action
+    void respondWithKeyPresses(Action_t const&);
+
+  public:
+    // Use UI relay interface to act on the game
+    void operator()();
+
+    BotActor(Ui&, Bot_t const&);
 };
 
 template<typename T>
@@ -94,11 +111,19 @@ bool isDieDigit(T const&);
 // TODO We could make it such that capital letters are forced actions (ignoring
 //      sanitizers).
 
-// Roadmap
+// Roadmap HumanActor
 // 1. get human input
 // 2. check validity
 // 3. Allow corrections if invalid
 // 4. hand to UI class
+
+// Roadmap BotActor
+// 0. Load bot from somewhere
+// 1. Query state from game object
+// 2. Use bot to lookup action
+// 3. Maybe add textual comment or action value to UI/Display
+// 4. Simulate Human-Like key pressing according to bot action
+//    (Hand action to Ui class in sub-actions)
 
 // TODO The respondTOSuspect might not be the best mechanic.
 //      Maybe simple re-getCh() explicitly and compare. That looping is very
