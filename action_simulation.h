@@ -31,6 +31,11 @@ class ActionSimulation
 
   public:
 
+    auto cbegin() const { return sequence.cbegin(); }
+    auto cend() const { return sequence.cend(); }
+    auto begin() const { return cbegin(); } // ranged for expects "begin" and "end"
+    auto end() const { return cend(); }
+
     ActionSimulation(Ui const& ui, Action_t const&);
 };
 

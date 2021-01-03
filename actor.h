@@ -70,6 +70,8 @@ class HumanActor
     RespondFunc_t classifyInput(char);     // Blocks questionable input the first time
 
   public:
+    auto const& getUi() const { return ui; }
+
     // Use UI relay interface to act on the game
     void operator()();      // Query console for input
     void operator()(char);  // Simulate key input
@@ -77,18 +79,16 @@ class HumanActor
     HumanActor(Ui&);
 };
 
-class BotActor
+class BotActor : private HumanActor
 {
   public:
     using Bot_t = Sarsa;
 
   private:
-    Ui& ui;
-
     Bot_t const& bot;
 
     // Simulate button presses according to given action
-    void respondWithKeyPresses(Action_t const&);
+    void respondWithSimulatedKeyPresses(Action_t const&);
 
   public:
     // Use UI relay interface to act on the game

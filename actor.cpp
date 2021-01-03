@@ -134,29 +134,35 @@ HumanActor::HumanActor(Ui& ui)
 // =============================================================================
 
 void
-BotActor::respondWithKeyPresses(Action_t const& action)
+BotActor::respondWithSimulatedKeyPresses(Action_t const& action)
 {
-  // Use Ui state interface to infer required button presses
-  ActionSimulation simulatedKeys(ui, action);
-  // TODO
-  assert(false);
-  (void)action;
+  // Translate abstract action into concrete key inputs using Ui state
+  // interface to infer required button presses.
+  ActionSimulation const simulatedKeys(getUi(), action);
+
+  // TODO Eventually, we may here put our HumanActor sub-object into strict
+  //      mode (omitting confirmation requests). So that the bot is able to
+  //      perform obviously poor actions undistirbed.
+
+  // Pretend to be a human actor pressing these keys in order
+  for (auto const& k : simulatedKeys)
+    this->HumanActor::operator()(k);
 }
 
 void
 BotActor::operator()()
 {
-  auto state{ui.getState()};
+  auto state{getUi().getState()};
 
   auto action{bot.greedy(state)};  // TODO Define operator() as agent interface
 
   // TODO Add textual coment to display via some means
 
-  respondWithKeyPresses(action);
+  respondWithSimulatedKeyPresses(action);
 }
 
 BotActor::BotActor(Ui& ui, Bot_t const& bot)
-  : ui(ui), bot(bot)
+  : HumanActor(ui), bot(bot)
 {}
 
 } // namespace ui
