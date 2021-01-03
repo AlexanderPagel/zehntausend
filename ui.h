@@ -133,6 +133,8 @@ class UiFactory
     Ui::History_t* createDefaultHistory();
     Display*       createDefaultDisplay();
 
+    // Hand ownership of external subcomponent to ui.
+    // TODO Use rrefs to communicate loss of ownership to caller (?)
     UiFactory& set(Game_t*);
     UiFactory& set(BotActor*);
     UiFactory& set(HumanActor*);  // Sets first not yet initialized HumanActor
