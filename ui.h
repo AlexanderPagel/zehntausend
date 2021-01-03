@@ -38,14 +38,19 @@ class Ui
     using History_t = History<Game_t::State_t>;
   private:
 
+    // TODO
     // We can do generic versions of this later. Lets focus on
     // getting something running first.
-    Game_t     game;  // TODO Have our own or work on reference?
-    BotActor   bot;
-    HumanActor p1;
-    HumanActor p2;
-    History_t  history; // ?
-    Display    display; // :)
+
+    // We work solely on externally provided objects. The Ui may initialize the
+    // objects and relays interfaces between them. Each component thus only
+    // needs to reference the one Ui object.
+    Game_t*     game;
+    BotActor*   bot;
+    HumanActor* p1;
+    HumanActor* p2;
+    History_t*  history; // ?
+    Display*    display; // :)
 
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
@@ -75,7 +80,7 @@ class Ui
 #else
 #define RELAY(f) \
     template<typename... Types> \
-    auto f(Types... args) { return game. f (args...); }
+    auto f(Types... args) { return game-> f (args...); }
 #endif
     RELAY(putAside)
     RELAY(roll)
@@ -92,8 +97,50 @@ class Ui
 };
 
 
+// Class UiFactory collects the sub-component objects required for construction
+// of a Ui object. New objects are created for missing components.
+class UiFactory
+{
+  private:
+    Game_t* game = nullptr;
+    BotActor* bot = nullptr;
+    HumanActor* p1 = nullptr;
+    HumanActor* p2 = nullptr;
+    Ui::History_t* history = nullptr;
+    Display* display = nullptr;
+
+    // TODO Eventually, subcomponent type could provide a default, rather than
+    //      the factory implementing a specific one.
+    static Game_t* createDefaultGame();
+    static BotActor* createDefaultBot();
+    static HumanActor* createDefaultPlayer();
+    static Ui::History_t* createDefaultHistory();
+    static Display* createDefaultDisplay();
+
+  public:
+    UiFactory& setGame();
+    UiFactory& setBot();
+    UiFactory& setHuman();  // Sets first not yet initialized HumanActor
+    UiFactory& setHuman1();
+    UiFactory& setHuman2();
+    UiFactory& setHistory();
+    UiFactory& setDisplay();
+
+    // Generic interface to add external components
+    template<typename T>
+    UiFactory& operator<<(T*);  // TODO Explicitly instantiate for all relevant types, nothing else
+
+    // Finalize Ui object owning the collected components
+    Ui create();
+};
+
+// =============================================================================
+
 
 } // namespace ui
+
+
+#include "ui.inc"
 
 
 #endif // UI_H_INCLUDED
@@ -177,3 +224,23 @@ class Ui
 // TODO Add means of explicit communication from UI modules to human/display.
 //      Most easily: reserve one line of the display for each of the components
 //      and allow them to set and clear them.
+
+// Incorporation roadmap
+//
+// We want to:
+// 1. create 1 ui object
+// 2. the ui object creates and initializes the required sub-components (actors, history, dispaly)
+// 3. we get the opportunity to configurate the ui to our needs
+//    - select the bot level
+//    - ( maybe in the future: player number, ruleset, ...)
+//
+// Open question: How do we watn to implement this?
+// 1. Configuration class? That is like the HumanActor console interface, leading us through configuration in a config wirazd way?
+// 2. Pass entire configuration to ctor, maybe in a configuration or settings struct?
+
+// Other open questions:
+//  1. Does the UI train the bot from scratch or do we provide an external bot?
+//     Probably external is better to allow for load-store stuff and, for
+//     example, executing the program in training mode where it continues
+//     training a persistent bot intead of engaging in a game with the user
+//  2. More general: What EXACTLY is the UI supposed to do?

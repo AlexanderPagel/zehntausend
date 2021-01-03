@@ -7,13 +7,13 @@ Game_t::Player
 Ui::getPlayer() const
 {
   // TODO assert(not terminal) once gmae class has such a state
-  return game.getPlayer();
+  return game->getPlayer();
 }
 
 Points_t
 Ui::getTurnPoints() const
 {
-  return game.getCurrent();
+  return game->getCurrent();
 }
 
 bool
@@ -28,26 +28,26 @@ Ui::getDieDigit(int idx) const
 {
   assert(0 <= idx && idx <= 6);
 
-  return game._cup[idx];
+  return game->_cup[idx];
 }
 
 bool
 Ui::canStopTurn() const
 {
-  return game.getPutAny();
+  return game->getPutAny();
 }
 
 State_t
 Ui::getState() const
 {
-  return game.state();
+  return game->state();
 }
 
 Points_t
 Ui::getPoints(Player_t player) const
 {
   assert(int(player) < 3);
-  return game.getPoints(player);
+  return game->getPoints(player);
 }
 
 }
