@@ -28,29 +28,17 @@
 #include <iostream>
 
 #include "ui_types.h"
+#include "ui_subobject.h"
 #include "sarsa.h"
 
 
 namespace ui
 {
 
-// Möglicherweise gedachtes Interface
-class Actor
+class HumanActor : public UiSubobject
 {
-  public:
-    // How to interact and what to interact with?
-    void interact();  // Interact with ui?
-};
+    char lastInput = 0; // 0 indicates not applicable
 
-class Ui;
-
-class HumanActor
-{
-    // Required for interaction
-    Ui& ui;
-
-    // Required for implementation. 0 means everything normal.
-    char lastInput = 0; // Do not block questionable input if given twice in a row
     void clearLast() { lastInput = 0; }
     bool hasLast() const { return lastInput != 0; }
 
@@ -70,13 +58,17 @@ class HumanActor
     RespondFunc_t classifyInput(char);     // Blocks questionable input the first time
 
   public:
-    auto const& getUi() const { return ui; }
+//    auto const& getUi() const { return *UiSubobject::getUi(); }
+//    void setUi(Ui* u);
 
     // Use UI relay interface to act on the game
     void operator()();      // Query console for input
     void operator()(char);  // Simulate key input
 
-    HumanActor(Ui&);
+    // TODO Will this correctly use default initializer for lastInput?
+    //      This would:
+    //         HumanActor(Ui* ui) : UiSubobject(ui) {}
+    using UiSubobject::UiSubobject;
 };
 
 class BotActor : private HumanActor
@@ -94,7 +86,7 @@ class BotActor : private HumanActor
     // Use UI relay interface to act on the game
     void operator()();
 
-    BotActor(Ui&, Bot_t const&);
+    BotActor(Ui*, Bot_t const&);
 };
 
 template<typename T>

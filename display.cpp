@@ -32,7 +32,7 @@ void
 Display::drawPlayerLine(Game_t::Player p)
 {
   os << "Player " << p << ":";
-  os << std::setw(pointsWidth) << ui.getPoints(p) << std::endl;
+  os << std::setw(pointsWidth) << getUi()->getPoints(p) << std::endl;
 }
 
 void
@@ -45,18 +45,18 @@ Display::drawConstantLine(ConstLineIdx l)
 void
 Display::drawPlayerToMoveLine()
 {
-  os << "   " << ui.getPlayer() << " |" << std::endl;
+  os << "   " << getUi()->getPlayer() << " |" << std::endl;
 }
 
 void
 Display::drawCurrentThrowLine()
 {
-  os << "     |    " << std::setw(currentPointsWidth) << ui.getTurnPoints();
-  os << (ui.canStopTurn() ? "   " : " ->");
+  os << "     |    " << std::setw(currentPointsWidth) << getUi()->getTurnPoints();
+  os << (getUi()->canStopTurn() ? "   " : " ->");
   for (int i = 0; i < 6; ++i)
   {
-    if (ui.getDieAside(i)) os << "  " << ui.getDieDigit(i) << " ";
-    else                   os << " [" << ui.getDieDigit(i) << "]";
+    if (getUi()->getDieAside(i)) os << "  " << getUi()->getDieDigit(i) << " ";
+    else                         os << " [" << getUi()->getDieDigit(i) << "]";
   }
   os << std::endl;
 }
@@ -72,9 +72,5 @@ Display::draw()
   drawPlayerToMoveLine();
   drawCurrentThrowLine();
 }
-
-Display::Display(Ui const& ui)
-  : ui(ui)
-{}
 
 } // namespace ui

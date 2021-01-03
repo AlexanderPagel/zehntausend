@@ -14,7 +14,9 @@
 // because we may want to provide more information than what the game class
 // offers (e.g., using the history or any of the other actors). We may want to
 // change this in the future.
-// TODO since actors already acto on the game itself it would onl be consequential to do the same with display. ui can till provide additional data through it's own getters
+// TODO since actors already act on the game itself it would onl be
+//      consequential to do the same with display. ui can still provide
+//      additional data through it's own getters. (?)
 
 #ifndef UI_H_INCLUDED
 #define UI_H_INCLUDED 1
@@ -38,19 +40,21 @@ class Ui
     using History_t = History<Game_t::State_t>;
   private:
 
+    friend class UiFactory;
+
     // TODO
     // We can do generic versions of this later. Lets focus on
     // getting something running first.
 
-    // We work solely on externally provided objects. The Ui may initialize the
-    // objects and relays interfaces between them. Each component thus only
-    // needs to reference the one Ui object.
+    // Owning all these objects
     Game_t*     game;
     BotActor*   bot;
     HumanActor* p1;
     HumanActor* p2;
-    History_t*  history; // ?
-    Display*    display; // :)
+    History_t*  history; // TODO
+    Display*    display;
+
+    Ui(); // Private. Construction is done by class UiFactory
 
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
@@ -94,14 +98,24 @@ class Ui
     void rewind();
 
     //update buffers();
+
+    // TODO free owned objects in dtor
+    ~Ui();
+
+    // TODO Rule of 3
+    // TODO Rule of 5
 };
 
+// =============================================================================
 
 // Class UiFactory collects the sub-component objects required for construction
 // of a Ui object. New objects are created for missing components.
 class UiFactory
 {
   private:
+    // TODO Simply derive privately from Ui?
+    Ui* ui = new Ui{}; // Does not initialize ui in meaningfull way
+
     Game_t* game = nullptr;
     BotActor* bot = nullptr;
     HumanActor* p1 = nullptr;
@@ -109,33 +123,39 @@ class UiFactory
     Ui::History_t* history = nullptr;
     Display* display = nullptr;
 
+//    Ui& getUi() { return ui; }
+
     // TODO Eventually, subcomponent type could provide a default, rather than
     //      the factory implementing a specific one.
-    static Game_t* createDefaultGame();
-    static BotActor* createDefaultBot();
-    static HumanActor* createDefaultPlayer();
-    static Ui::History_t* createDefaultHistory();
-    static Display* createDefaultDisplay();
+    Game_t*        createDefaultGame();
+    BotActor*      createDefaultBot();
+    HumanActor*    createDefaultPlayer();
+    Ui::History_t* createDefaultHistory();
+    Display*       createDefaultDisplay();
+
+    UiFactory& set(Game_t*);
+    UiFactory& set(BotActor*);
+    UiFactory& set(HumanActor*);  // Sets first not yet initialized HumanActor
+    UiFactory& set(Ui::History_t*);
+    UiFactory& set(Display*);
+
+    UiFactory& setMissing();
+
+    // Finalize Ui object owning the collected components.
+    void create();
 
   public:
-    UiFactory& setGame();
-    UiFactory& setBot();
-    UiFactory& setHuman();  // Sets first not yet initialized HumanActor
-    UiFactory& setHuman1();
-    UiFactory& setHuman2();
-    UiFactory& setHistory();
-    UiFactory& setDisplay();
+    template<typename T,
+             typename = decltype(UiFactory::set(&std::declval<T>()))
+            >
+    UiFactory& operator<<(T* t);
 
-    // Generic interface to add external components
-    template<typename T>
-    UiFactory& operator<<(T*);  // TODO Explicitly instantiate for all relevant types, nothing else
-
-    // Finalize Ui object owning the collected components
-    Ui create();
+    // Obtain ownership of the prepared Ui object
+    explicit operator Ui*() &&;
 };
 
-// =============================================================================
-
+template<typename T>
+void linkSubobjectToUi(T& subobject, Ui&);
 
 } // namespace ui
 

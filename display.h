@@ -16,6 +16,7 @@
 #include <ostream>
 
 #include "ui_types.h"
+#include "ui_subobject.h"
 
 
 namespace ui
@@ -35,15 +36,9 @@ Player 3: 10000                                      .
                                                                  yet-to-move indicators
 */
 
-
-class Ui;
-
-class Display
+class Display : public UiSubobject
 {
   private:
-    // The Ui object where the shown data orginates
-    Ui const& ui;
-
     std::ostream& os = std::cout; // TODO really needed?
 
   public:
@@ -70,7 +65,7 @@ class Display
     // The interface that is called by our Ui class
     void draw();
 
-    Display(Ui const&);
+    using UiSubobject::UiSubobject;
 };
 
 } // namespace ui

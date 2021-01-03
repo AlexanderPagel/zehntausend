@@ -8,17 +8,24 @@
 #ifndef HISTORY_H_INCLUDED
 #define HISTORY_H_INCLUDED 1
 
+
 #include <vector>
+
+#include "ui_subobject.h"
+
 
 namespace ui
 {
 
 template<typename S>
-class History : private std::vector<S>
+class History : public UiSubobject, private std::vector<S>
 {
   public:
     using State_t = S;
     using Vec_t = std::vector<S>;
+
+    // Sets UI object, vector is defaulted
+    using UiSubobject::UiSubobject;
 };
 
 } // namespace ui

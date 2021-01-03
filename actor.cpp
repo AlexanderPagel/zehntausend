@@ -27,7 +27,7 @@ HumanActor::respondToDieInput(char input)
   // previously put aside. Not currently possible.
 
   // Type "1" to reference the 1st die, "6" for the last (6th)
-  ui.putAside(input - '1');
+  getUi()->putAside(input - '1');
   // FIXME We need to catch in case die cannot be put aside,
   //       or prevent such cases.
 }
@@ -35,13 +35,13 @@ HumanActor::respondToDieInput(char input)
 void
 HumanActor::respondToAll(char)
 {
-  ui.putAside();
+  getUi()->putAside();
 }
 
 void
 HumanActor::respondToRoll(char)
 {
-  ui.roll();
+  getUi()->roll();
 }
 
 void
@@ -55,7 +55,7 @@ HumanActor::respondToFinish(char c)
   // Sanitize: Put everything aside when finishing.
   respondToAll(c);  // Argument is irrelevant
 
-  ui.finishTurn();
+  getUi()->finishTurn();
 }
 
 void
@@ -126,11 +126,6 @@ HumanActor::operator()(char input)
   clearLast();
 }
 
-HumanActor::HumanActor(Ui& ui)
-  : ui(ui)
-{}
-
-
 // =============================================================================
 
 void
@@ -138,7 +133,7 @@ BotActor::respondWithSimulatedKeyPresses(Action_t const& action)
 {
   // Translate abstract action into concrete key inputs using Ui state
   // interface to infer required button presses.
-  ActionSimulation const simulatedKeys(getUi(), action);
+  ActionSimulation const simulatedKeys(*getUi(), action);
 
   // TODO Eventually, we may here put our HumanActor sub-object into strict
   //      mode (omitting confirmation requests). So that the bot is able to
@@ -152,7 +147,7 @@ BotActor::respondWithSimulatedKeyPresses(Action_t const& action)
 void
 BotActor::operator()()
 {
-  auto state{getUi().getState()};
+  auto state{getUi()->getState()};
 
   auto action{bot.greedy(state)};  // TODO Define operator() as agent interface
 
@@ -161,8 +156,8 @@ BotActor::operator()()
   respondWithSimulatedKeyPresses(action);
 }
 
-BotActor::BotActor(Ui& ui, Bot_t const& bot)
-  : HumanActor(ui), bot(bot)
+BotActor::BotActor(Ui* ui, Bot_t const& bot)
+  : HumanActor{ui}, bot(bot)
 {}
 
 } // namespace ui
