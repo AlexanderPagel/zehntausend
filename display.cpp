@@ -17,7 +17,7 @@ constexpr std::string_view constLines[] =
 {
   // Indices must match Display::ConstlineIdx
   {""},
-  {"     |    Dice:    1   2   3   4   5   6             1 never changing default line"}
+  {"     |    Dice:    1   2   3   4   5   6"}
 };
 
 } // namespace

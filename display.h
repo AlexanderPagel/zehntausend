@@ -48,7 +48,8 @@ class Display : public UiSubobject
     static constexpr int playerCount = 3;
 
   private:
-    enum class ConstLineIdx { emptyLine, diceNumLine = 0 };
+    // Need to start at 0 to be used as indices
+    enum class ConstLineIdx { emptyLine, diceNumLine };
 
     void clear();
 
