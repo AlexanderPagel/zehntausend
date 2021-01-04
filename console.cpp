@@ -32,7 +32,8 @@ char getChar()
   return c;
 }
 
-namespace // testing
+#ifdef TESTING
+namespace
 {
 
 int testClearScreen()
@@ -56,15 +57,14 @@ int testGetChar()
   return 0;
 }
 
-#ifndef NDEBUG
 int test_nothing() { return 0; }
 int i = test_nothing()
   +testClearScreen()
   +testGetChar()
   ;
-#endif  // NDEBUG
 
 } // namespace
+#endif  // TESTING
 
 } // namespace console
 
