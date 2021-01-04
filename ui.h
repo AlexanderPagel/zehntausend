@@ -163,7 +163,7 @@ class UiFactory
     UiFactory& operator<<(T* t);
 
     // Obtain ownership of the prepared Ui object
-    explicit operator Ui*() &&;
+    operator Ui*() &&;
 };
 
 template<typename T>
