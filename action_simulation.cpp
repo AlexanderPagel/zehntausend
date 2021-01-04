@@ -32,16 +32,19 @@ ActionSimulation::inferPressesToPutAside(Ui const& ui, Action_t const& action)
 
   for (int digit = Game_t::Figure::ONE; digit <= Game_t::Figure::SIX; ++digit)
     if (int n = action.putAside()[digit]; n > 0)
+    {
       // Test each possible position to find corresponding die
       for (int pos = 0; pos < 6; ++pos)
-      {
         if (!ui.getDieAside(pos) && ui.getDieDigit(pos) == digit)
         {
           addKeyPressForPos(pos); --n;
           if (n == 0) break;
         }
-        assert(false); // Unreachable
-      }
+
+      // For legal actions this does not trigger because each digit
+      // to be put aside is found in game state.
+      assert(n == 0);
+    }
 
   // TODO Probly faster:
   // Alternative implementation: looop through rolled dice and put each aside
