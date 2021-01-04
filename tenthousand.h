@@ -843,6 +843,7 @@ template<unsigned int P>
 Tenthousand<P>::Tenthousand()
     : _player(0),  _points(), _cup(), _current(0), _active(), _aside()
 {
+    // TODO This shoudld probably be a "reset" or "init" member
     _points.fill(0); // reset points
     _active.fill(true);
     _aside.fill(0);

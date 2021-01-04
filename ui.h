@@ -59,7 +59,14 @@ class Ui
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
 
+    void act(Game_t::Player);
+    void act(); // Current player
+
   public:
+
+    //__________________________________________________________________________
+    // Internal interface
+
     // Get current "board" situation
     Game_t::Player getPlayer() const;
     Points_t getTurnPoints() const;
@@ -98,6 +105,9 @@ class Ui
     void rewind();
 
     //update buffers();
+
+    // External Interface
+    void startGame();
 
     // TODO free owned objects in dtor
     ~Ui();

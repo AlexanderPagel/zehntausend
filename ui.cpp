@@ -15,6 +15,33 @@ Ui::Ui()
   // Class UiFactory initializes Ui objects.
 }
 
+void
+Ui::act(Game_t::Player player)
+{
+  switch (player)
+  {
+    case 0:
+      (*bot)();
+      break;
+    case 1:
+      (*p1)();
+      break;
+    case 2:
+      (*p2)();
+      break;
+    default:
+      assert(false && "unreachable");
+  };
+  return;
+}
+
+void
+Ui::act()
+{
+  auto&& playerToMove{getPlayer()};
+  act(std::move(playerToMove));
+}
+
 Game_t::Player
 Ui::getPlayer() const
 {
@@ -60,6 +87,43 @@ Ui::getPoints(Player_t player) const
 {
   assert(int(player) < 3);
   return game->getPoints(player);
+}
+
+bool
+Ui::isOver() const
+{
+  // TODO
+  return false;
+}
+
+Game_t::Player
+Ui::getWinner() const
+{
+  // TODO
+  return 0;
+}
+
+void
+Ui::rePrint()
+{
+  display->draw();
+}
+
+// Ui objects are crated by the UiFactory class, thus all subobjects will be
+// correctly constructed at any time.
+void
+Ui::startGame()
+{
+  // "Game loop"
+  while (!isOver())
+  {
+    std::cout << "Starting new round." << std::endl;
+    rePrint();
+    act();  // Current player makes 1 game input
+    std::cout << "Round is over." << std::endl;
+  };
+
+  std::cout << "Game has finished." << std::endl;
 }
 
 // =============================================================================
