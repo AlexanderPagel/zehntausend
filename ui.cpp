@@ -149,6 +149,12 @@ UiFactory::createDefaultBot()
   //      who creates and owns objects.
   Sarsa* b = new Sarsa();
 
+  std::cout << "Begin training default bot [ENTER]" << std::endl;
+  std::cin.ignore();
+  b->performLearningEpisodes(10000);
+  std::cout << "Finished training default bot [ENTER]" << std::endl;
+  std::cin.ignore();
+
   return new BotActor{ui, *b};
 }
 

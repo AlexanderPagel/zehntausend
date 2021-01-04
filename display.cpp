@@ -20,12 +20,24 @@ constexpr std::string_view constLines[] =
   {"     |    Dice:    1   2   3   4   5   6"}
 };
 
+// Transform 0-based digit to character representation
+// 0 -> '1', ..., 5 -> '6'
+char digitToChar(int digit);
+
 } // namespace
 
 void
 Display::clear()
 {
   console::clearScreen();
+}
+
+char
+Display::dieChar(int die) const
+{
+  return digitToChar(
+      getUi()->getDieDigit(die)
+      );
 }
 
 void
@@ -55,8 +67,8 @@ Display::drawCurrentThrowLine()
   os << (getUi()->canStopTurn() ? "   " : " ->");
   for (int i = 0; i < 6; ++i)
   {
-    if (getUi()->getDieAside(i)) os << "  " << getUi()->getDieDigit(i) << " ";
-    else                         os << " [" << getUi()->getDieDigit(i) << "]";
+    if (getUi()->getDieAside(i)) os << "  " << dieChar(i) << " ";
+    else                         os << " [" << dieChar(i) << "]";
   }
   os << std::endl;
 }
@@ -72,5 +84,16 @@ Display::draw()
   drawPlayerToMoveLine();
   drawCurrentThrowLine();
 }
+
+namespace
+{
+
+char digitToChar(int digit)
+{
+  assert(0 <= digit && digit < 6);
+  return '1' + digit;
+}
+
+} // namespace
 
 } // namespace ui

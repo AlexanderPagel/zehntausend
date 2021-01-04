@@ -54,7 +54,7 @@ class Display : public UiSubobject
     void clear();
 
     // Computation of sub-expressions
-    // TODO
+    char dieChar(int die) const;  // Character representing die at index "die"
 
     // Formatted sub-prints
     void drawPlayerLine(Game_t::Player p);
