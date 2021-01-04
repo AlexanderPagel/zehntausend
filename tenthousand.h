@@ -381,6 +381,9 @@ public:
     ~Tenthousand() = default;
 
     void print() const;
+
+    // Sorry to the person having to merge this later i need to query aside dice for ui
+    auto const& getActive() const { return _active; }
 };
 
 /// ------------------------------------------------------------------------

@@ -56,10 +56,14 @@ Ui::getTurnPoints() const
 }
 
 bool
-Ui::getDieAside(int) const
+Ui::getDieAside(int die) const
 {
-  // TODO Not implemented in game class or need to go over state
-  assert(false);
+  // TODO In the game class i currently named this "active" instead of "aside".
+  //      Find one name pls :)
+  assert(0 <= die and die < 6);
+
+  // If it is not active, it must be put aside
+  return !game->getActive()[die];
 }
 
 int
