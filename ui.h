@@ -86,6 +86,7 @@ class Ui
     // ...
 
     // Relaying game interactions
+    void finishTurn();
 #ifdef RELAY
 #error Redefinition of macro RELAY
 #else

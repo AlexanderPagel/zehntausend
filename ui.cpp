@@ -108,6 +108,25 @@ Ui::getWinner() const
 }
 
 void
+Ui::finishTurn()
+{
+  try
+  {
+    game->finishTurn();
+  }
+  // TODO If we remake the game class we probably want regular return
+  //      values. the player not getting points is not an error in
+  //      the program. The return value can then also be passed on
+  //      normally to the actor (or other callers).
+  catch (illegal_move_error& err)
+  {
+    // TODO Here we update internal states if we wish
+
+    // TODO Maybe we want to re--throw to inform the bot about the error
+  }
+}
+
+void
 Ui::rePrint()
 {
   display->draw();
