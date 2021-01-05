@@ -25,9 +25,11 @@ char getChar()
   //       ncurses mode.
 
   // This does not look efficient, but we want to block for key press anyway
-	initscr();			/* Start curses mode 		  */
-	auto c = getch();			/* Wait for user input */
-	endwin();			/* End curses mode		  */
+  initscr();      /* Start curses mode       */
+  timeout(-1);  // Blocking input
+  cbreak();     // NO line-wise buffering
+  auto c = getch();      /* Wait for user input */
+  endwin();      /* End curses mode      */
 
   return c;
 }
