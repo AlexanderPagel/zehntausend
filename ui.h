@@ -117,7 +117,7 @@ class Ui
 
     // Relaying averages
     double getAverage(Player_t const&) const;
-    void addToAverage(Player_t const&, Points_t const&);
+    void addToAverage(Player_t const&, Points_t const& turnPoints);
 
     // Print current situation in formatted way to stdout
     void rePrint();

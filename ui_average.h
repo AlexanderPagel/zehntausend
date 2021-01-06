@@ -47,4 +47,7 @@ class Average : public UiSubobject
 } // namespace ui
 
 
+#include "ui_average.inc"
+
+
 #endif // UI_AVERAGE_H_INCLUDED

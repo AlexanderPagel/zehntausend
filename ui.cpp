@@ -39,8 +39,19 @@ Ui::act(Game_t::Player player)
 void
 Ui::act()
 {
-  auto&& playerToMove{getPlayer()};
-  act(std::move(playerToMove));
+  // Keep track of points to update average
+  auto playerToMove{getPlayer()};
+  auto pointsBefore{getPoints(playerToMove)};
+
+  act(playerToMove);
+
+  // TODO This breaks when there is only 1 actor/player
+  // If player is no longer to move, update average for her
+  if (getPlayer() != playerToMove)
+  {
+    auto pointsAfter{getPoints(getPlayer())};
+    addToAverage(playerToMove, pointsAfter - pointsBefore);
+  }
 }
 
 Game_t::Player
@@ -111,25 +122,17 @@ Ui::getWinner() const
 void
 Ui::finishTurn()
 {
-  auto player{getPlayer()};
   try
   {
-    auto pointsBefore{getPoints(player)};
-
-    // Actually finishing turn in game subobject
     game->finishTurn();
-
-    auto pointsAfter{getPoints(player)};
-    addToAverage(player, pointsAfter - pointsBefore);
   }
   // TODO If we remake the game class we probably want regular return
   //      values. the player not getting points is not an error in
   //      the program. The return value can then also be passed on
   //      normally to the actor (or other callers).
-  catch (illegal_move_error& err)
+  catch (illegal_move_error& err) // Turn has also finished
   {
     // TODO Here we update internal states if we wish
-    addToAverage(player, 0);
 
     // TODO Maybe we want to re--throw to inform the bot about the error
   }
@@ -142,9 +145,9 @@ Ui::getAverage(Player_t const& player) const
 }
 
 void
-Ui::addToAverage(Player_t const& player)
+Ui::addToAverage(Player_t const& player, Points_t const& turnPoints)
 {
-  average->addToAverage(player);
+  average->addToAverage(player, turnPoints);
 }
 
 void

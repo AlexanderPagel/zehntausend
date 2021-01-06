@@ -2,44 +2,44 @@ namespace ui
 {
 
 template<typename A, typename P>
-int const&
-Average<A,P>::sumOf(Player const& player) const
+typename Average<A,P>::Points_type const&
+Average<A,P>::sumOf(Player_t const& player) const
 {
   return stats[player].first;
 }
 
 template<typename A, typename P>
-int&
-Average<A,P>::sumOf(Player const& player)
+typename Average<A,P>::Points_type&
+Average<A,P>::sumOf(Player_t const& player)
 {
   return stats[player].first;
 }
 
 template<typename A, typename P>
 int const&
-Average<A,P>::countOf(Player const& player) const
+Average<A,P>::countOf(Player_t const& player) const
 {
   return stats[player].second;
 }
 
 template<typename A, typename P>
 int&
-Average<A,P>::countOf(Player const& player)
+Average<A,P>::countOf(Player_t const& player)
 {
   return stats[player].second;
 }
 
 template<typename A, typename P>
-Average<A,P>::Average_t
+typename Average<A,P>::Average_type
 Average<A,P>::getAverage(Player_t const& player) const
 {
-  assert(palyer < stats.size());
+  assert(player < stats.size());
 
   if (countOf(player) == 0)
     return -1;
 
   // Average = sum/count
-  return static_cast<Average_type>(sumOf(palyer))
+  return static_cast<Average_type>(sumOf(player))
        / static_cast<Average_type>(countOf(player));
 }
 
@@ -48,7 +48,7 @@ void
 Average<A,P>::addToAverage(Player_t const& player,
                            Points_type const& points)
 {
-  assert(palyer < stats.size());
+  assert(player < stats.size());
 
   sumOf(player) += points;
   ++countOf(player);
@@ -72,7 +72,7 @@ Average<A,P>::init(Player_t const& playerCount)
   stats.resize(playerCount, {0, 0});
 }
 
-tempalte<typename A, typename P>
+template<typename A, typename P>
 Average<A,P>::Average(Player_t const& playerCount)
   : stats(playerCount, {0, 0})
 {}
