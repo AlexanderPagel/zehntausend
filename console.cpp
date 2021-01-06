@@ -1,8 +1,11 @@
 #include "console.h"
 
+#ifdef TESTING
 #include <iostream>  // dbg/testing
+#endif  // TESTING
 
-#include <ncurses.h>  // L
+#include <ncurses.h>  // Linux
+#include <stdexcept>
 
 
 namespace ui
@@ -14,9 +17,9 @@ namespace console
 void clearScreen()
 {
   // Currnetly unix only
-  auto ret = system("clear");  // L
+  auto ret = system("clear");  // Linux
   if (ret == -1)
-    throw std::runtime_error("Clear Screen L failed");
+    throw std::runtime_error("Clear Screen Linux failed");
 }
 
 char getChar()
