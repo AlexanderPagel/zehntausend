@@ -152,6 +152,7 @@ class UiFactory
     HumanActor* p2 = nullptr;
     Ui::History_t* history = nullptr;
     Display* display = nullptr;
+    Average<>* average = nullptr;
 
 //    Ui& getUi() { return ui; }
 
@@ -162,6 +163,7 @@ class UiFactory
     HumanActor*    createDefaultPlayer();
     Ui::History_t* createDefaultHistory();
     Display*       createDefaultDisplay();
+    Average<>*     createDefaultAverage();
 
     // Hand ownership of external subcomponent to ui.
     // TODO Use rrefs to communicate loss of ownership to caller (?)
@@ -170,6 +172,7 @@ class UiFactory
     UiFactory& set(HumanActor*);  // Sets first not yet initialized HumanActor
     UiFactory& set(Ui::History_t*);
     UiFactory& set(Display*);
+    UiFactory& set(Average<>*);
 
     UiFactory& setMissing();
 

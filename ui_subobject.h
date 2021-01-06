@@ -19,7 +19,7 @@ class UiSubobject
     Ui* getUi() { return ui; }
     Ui const* getUi() const { return ui; }
 
-    UiSubobject(Ui* ui) : ui{ui} {} // Does this work with public inheritance?
+    explicit UiSubobject(Ui* ui) : ui{ui} {} // Does this work with public inheritance?
 };
 
 

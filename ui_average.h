@@ -41,7 +41,7 @@ class Average : public UiSubobject
     void init(Player_t const& playerCount);
 
     using UiSubobject::UiSubobject; // Requires init() after construction
-    explicit Average(Player_t const& playerCount);
+    Average(Ui* ui, Player_t const& playerCount);
 };
 
 } // namespace ui

@@ -230,6 +230,13 @@ UiFactory::createDefaultDisplay()
   return new Display{ui};
 }
 
+Average<>*
+UiFactory::createDefaultAverage()
+{
+  // Construct ui::Average object for 3 players
+  return new Average{ui, 3};
+}
+
 
 UiFactory&
 UiFactory::set(Game_t* g)
@@ -275,6 +282,14 @@ UiFactory::set(Display* d)
 }
 
 UiFactory&
+UiFactory::set(Average<>* a)
+{
+  assert(average == nullptr);
+  average = a;
+  return *this;
+}
+
+UiFactory&
 UiFactory::setMissing()
 {
   if (game    == nullptr) game    = createDefaultGame();
@@ -283,6 +298,7 @@ UiFactory::setMissing()
   if (p2      == nullptr) p2      = createDefaultPlayer();
   if (history == nullptr) history = createDefaultHistory();
   if (display == nullptr) display = createDefaultDisplay();
+  if (average == nullptr) average = createDefaultAverage();
 
   return *this;
 }
@@ -301,6 +317,7 @@ UiFactory::create()
   ui->p2 = p2;
   ui->history = history;
   ui->display = display;
+  ui->average = average;
 }
 
 // This member function is callable for rvalues only because the caller should

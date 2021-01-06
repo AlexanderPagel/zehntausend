@@ -73,8 +73,8 @@ Average<A,P>::init(Player_t const& playerCount)
 }
 
 template<typename A, typename P>
-Average<A,P>::Average(Player_t const& playerCount)
-  : stats(playerCount, {0, 0})
+Average<A,P>::Average(Ui* ui, Player_t const& playerCount)
+  : UiSubobject(ui), stats(playerCount, {0, 0})
 {}
 
 } // namespace ui
