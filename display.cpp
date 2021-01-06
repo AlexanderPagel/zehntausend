@@ -44,7 +44,9 @@ void
 Display::drawPlayerLine(Game_t::Player p)
 {
   os << "Player " << p << ":";
-  os << std::setw(pointsWidth) << getUi()->getPoints(p) << std::endl;
+  os << std::setw(pointsWidth) << getUi()->getPoints(p);
+  os << "  (" << std::setw(4) << (getUi()->getAverage(p)) << ")";
+  os << std::endl;
 }
 
 void
