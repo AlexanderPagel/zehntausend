@@ -35,7 +35,7 @@ class Average : public UiSubobject
 
   public:
     Average_type getAverage(Player_t const&) const;
-    void addDataPoint(Player_t const&, Points_type const&);
+    void addToAverage(Player_t const&, Points_type const&);
 
     bool isInit() const;
     void init(Player_t const& playerCount);

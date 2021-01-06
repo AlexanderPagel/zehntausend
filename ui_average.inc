@@ -35,6 +35,9 @@ Average<A,P>::getAverage(Player_t const& player) const
 {
   assert(palyer < stats.size());
 
+  if (countOf(player) == 0)
+    return -1;
+
   // Average = sum/count
   return static_cast<Average_type>(sumOf(palyer))
        / static_cast<Average_type>(countOf(player));
@@ -42,7 +45,7 @@ Average<A,P>::getAverage(Player_t const& player) const
 
 template<typename A, typename P>
 void
-Average<A,P>::addDataPoint(Player_t const& player,
+Average<A,P>::addToAverage(Player_t const& player,
                            Points_type const& points)
 {
   assert(palyer < stats.size());

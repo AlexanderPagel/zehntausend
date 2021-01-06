@@ -10,6 +10,7 @@ Ui::Ui()
   , p2(nullptr)
   , history(nullptr)
   , display(nullptr)
+  , average(nullptr)
 {
   // No meaningfull initialization by this ctor.
   // Class UiFactory initializes Ui objects.
@@ -110,9 +111,16 @@ Ui::getWinner() const
 void
 Ui::finishTurn()
 {
+  auto player{getPlayer()};
   try
   {
+    auto pointsBefore{getPoints(player)};
+
+    // Actually finishing turn in game subobject
     game->finishTurn();
+
+    auto pointsAfter{getPoints(player)};
+    addToAverage(player, pointsAfter - pointsBefore);
   }
   // TODO If we remake the game class we probably want regular return
   //      values. the player not getting points is not an error in
@@ -121,9 +129,22 @@ Ui::finishTurn()
   catch (illegal_move_error& err)
   {
     // TODO Here we update internal states if we wish
+    addToAverage(player, 0);
 
     // TODO Maybe we want to re--throw to inform the bot about the error
   }
+}
+
+double
+Ui::getAverage(Player_t const& player) const
+{
+  return average->getAverage(player);
+}
+
+void
+Ui::addToAverage(Player_t const& player)
+{
+  average->addToAverage(player);
 }
 
 void
@@ -147,6 +168,17 @@ Ui::startGame()
   };
 
   std::cout << "Game has finished." << std::endl;
+}
+
+Ui::~Ui()
+{
+  delete game;
+  delete bot;
+  delete p1;
+  delete p2;
+  delete history;
+  delete display;
+  delete average;
 }
 
 // =============================================================================

@@ -26,6 +26,7 @@
 #include "display.h"
 #include "history.h"
 #include "tenthousand.h"
+#include "ui_average.h"
 #include "ui_types.h"
 
 
@@ -47,14 +48,27 @@ class Ui
     // getting something running first.
 
     // Owning all these objects
+    // TODO Alternatively, derive from all of them. But that could get complex.
     Game_t*     game;
     BotActor*   bot;
     HumanActor* p1;
     HumanActor* p2;
-    History_t*  history; // TODO
+    History_t*  history; // TODO No Function yet
     Display*    display;
+    Average<>*  average;
+    // TODO Possible future subobjects:
+//    Statistics* tatistics;
+//    GameLog*    gameLog;
+//    Rollback*   rollback;
 
-    Ui(); // Private. Construction is done by class UiFactory
+    // Private. Construction is done by class UiFactory
+    Ui();
+
+    // For now lets just keep out objects as is
+    Ui(Ui const&) = delete;
+    Ui(Ui&&) = delete;
+    Ui& operator=(Ui const&) = delete;
+    Ui& operator=(Ui&&) = delete;
 
     // Objekte um algorithmen auf die history annzuwenden
     // Statistics statistics1;
@@ -66,6 +80,7 @@ class Ui
 
     //__________________________________________________________________________
     // Internal interface
+    // TODO Maybe sort replay functions by relayed subobject?
 
     // Get current "board" situation
     Game_t::Player getPlayer() const;
@@ -100,14 +115,18 @@ class Ui
     RELAY(makeMove)
 #undef RELAY
 
+    // Relaying averages
+    double getAverage(Player_t const&) const;
+    void addToAverage(Player_t const&, Points_t const&);
+
     // Print current situation in formatted way to stdout
     void rePrint();
-    // Go back in history
-    void rewind();
 
     //update buffers();
 
+    //__________________________________________________________________________
     // External Interface
+
     void startGame();
 
     // TODO free owned objects in dtor
