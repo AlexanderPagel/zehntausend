@@ -1,8 +1,9 @@
 #include "display.h"
 
 #include <array>
-#include <ostream>
+#include <cmath>
 #include <iomanip>
+#include <ostream>
 
 #include "console.h"
 #include "ui.h"
@@ -46,7 +47,7 @@ Display::drawPlayerLine(Game_t::Player p)
   os << "Player " << p << ":";
   os << std::setw(pointsWidth) << getUi()->getPoints(p);
   os << "  (" << std::setw(4) << std::fixed << std::setprecision(0)
-     << (getUi()->getAverage(p)) << ")";
+     << std::round(getUi()->getAverage(p)) << ")";
   os << std::endl;
 }
 
