@@ -49,7 +49,7 @@ Ui::act()
   // If player is no longer to move, update average for her
   if (getPlayer() != playerToMove)
   {
-    auto pointsAfter{getPoints(getPlayer())};
+    auto pointsAfter{getPoints(playerToMove)};
     addToAverage(playerToMove, pointsAfter - pointsBefore);
   }
 }
