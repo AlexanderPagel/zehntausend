@@ -57,7 +57,10 @@ static void reprint(Tenthousand<n> const& game, std::string msg = "")
 
 int main()
 {
+
   // For now I will just stash all testing in fron of main and return yolo
+
+  srand(time(nullptr));
 
   // Let UI factory create a new ui object
   ui::Ui* ui = ui::UiFactory{};
