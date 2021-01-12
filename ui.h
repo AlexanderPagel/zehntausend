@@ -27,6 +27,7 @@
 #include "history.h"
 #include "tenthousand.h"
 #include "ui_average.h"
+#include "ui_rollback.h"
 #include "ui_types.h"
 
 
@@ -56,6 +57,7 @@ class Ui
     History_t*  history; // TODO No Function yet
     Display*    display;
     Average<>*  average;
+    Rollback<>* rollback;
     // TODO Possible future subobjects:
 //    Statistics* tatistics;
 //    GameLog*    gameLog;
@@ -119,6 +121,14 @@ class Ui
     double getAverage(Player_t const&) const;
     void addToAverage(Player_t const&, Points_t const& turnPoints);
 
+    // Relay rollback, but "bind" to its own game object
+    void save();
+    void restore();
+
+    // Relay entire subobjects
+    Game_t const& getGame() const;
+    void setGame(Game_t const&);
+
     // Print current situation in formatted way to stdout
     void rePrint();
 
@@ -153,6 +163,7 @@ class UiFactory
     Ui::History_t* history = nullptr;
     Display* display = nullptr;
     Average<>* average = nullptr;
+    Rollback<Ui::Game_t>* rollback = nullptr;
 
 //    Ui& getUi() { return ui; }
 
@@ -164,6 +175,7 @@ class UiFactory
     Ui::History_t* createDefaultHistory();
     Display*       createDefaultDisplay();
     Average<>*     createDefaultAverage();
+    Rollback<Ui::Game_t>* createDefaultRollback();
 
     // Hand ownership of external subcomponent to ui.
     // TODO Use rrefs to communicate loss of ownership to caller (?)
@@ -173,6 +185,7 @@ class UiFactory
     UiFactory& set(Ui::History_t*);
     UiFactory& set(Display*);
     UiFactory& set(Average<>*);
+    UiFactory& set(Rollback<Ui::Game_t>*);
 
     UiFactory& setMissing();
 

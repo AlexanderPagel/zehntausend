@@ -1,5 +1,6 @@
 #include "ui.h"
 
+
 namespace ui
 {
 
@@ -11,6 +12,7 @@ Ui::Ui()
   , history(nullptr)
   , display(nullptr)
   , average(nullptr)
+  , rollback(nullptr)
 {
   // No meaningfull initialization by this ctor.
   // Class UiFactory initializes Ui objects.
@@ -151,6 +153,30 @@ Ui::addToAverage(Player_t const& player, Points_t const& turnPoints)
 }
 
 void
+Ui::save()
+{
+  rollback->save(*game);
+}
+
+void
+Ui::restore()
+{
+  rollback->restore(*game);
+}
+
+//Ui::Game_t const&
+//Ui::getGame() const
+//{
+//  return *game;
+//}
+
+//void
+//Ui::setGame(Game_t const& g)
+//{
+//  game = g;
+//}
+
+void
 Ui::rePrint()
 {
   display->draw();
@@ -237,6 +263,13 @@ UiFactory::createDefaultAverage()
   return new Average{ui, 3};
 }
 
+Rollback<Game_t>*
+UiFactory::createDefaultRollback()
+{
+  // Construct ui::Rollback object for type Ui::Game_t
+  return new Rollback<Game_t>{ui};
+}
+
 
 UiFactory&
 UiFactory::set(Game_t* g)
@@ -292,13 +325,14 @@ UiFactory::set(Average<>* a)
 UiFactory&
 UiFactory::setMissing()
 {
-  if (game    == nullptr) game    = createDefaultGame();
-  if (bot     == nullptr) bot     = createDefaultBot();
-  if (p1      == nullptr) p1      = createDefaultPlayer();
-  if (p2      == nullptr) p2      = createDefaultPlayer();
-  if (history == nullptr) history = createDefaultHistory();
-  if (display == nullptr) display = createDefaultDisplay();
-  if (average == nullptr) average = createDefaultAverage();
+  if (game     == nullptr) game     = createDefaultGame();
+  if (bot      == nullptr) bot      = createDefaultBot();
+  if (p1       == nullptr) p1       = createDefaultPlayer();
+  if (p2       == nullptr) p2       = createDefaultPlayer();
+  if (history  == nullptr) history  = createDefaultHistory();
+  if (display  == nullptr) display  = createDefaultDisplay();
+  if (average  == nullptr) average  = createDefaultAverage();
+  if (rollback == nullptr) rollback = createDefaultRollback();
 
   return *this;
 }
@@ -318,6 +352,7 @@ UiFactory::create()
   ui->history = history;
   ui->display = display;
   ui->average = average;
+  ui->rollback = rollback;
 }
 
 // This member function is callable for rvalues only because the caller should
@@ -330,6 +365,7 @@ UiFactory::operator Ui*() &&
 }
 
 } // namespace ui
+
 
 // Factory roadmap
 //  Yep thrown it over board. Lets construct Ui object first and

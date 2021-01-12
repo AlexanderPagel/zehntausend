@@ -13,6 +13,7 @@ namespace ui
 void
 HumanActor::respondToDieInput(char input)
 {
+  getUi()->save();
   // TODO
   // Currently, we can either sanity check inputs directly or throw them at
   // the game class and wait for an error.
@@ -35,18 +36,21 @@ HumanActor::respondToDieInput(char input)
 void
 HumanActor::respondToAll(char)
 {
+  getUi()->save();
   getUi()->putAside();
 }
 
 void
 HumanActor::respondToRoll(char)
 {
+  getUi()->save();
   getUi()->roll();
 }
 
 void
 HumanActor::respondToFinish(char c)
 {
+  getUi()->save();
   // TODO Identify whether or not there are still free points available and all
   //      respondToSuspect if true (instead of calling respondToAll())).
   //      Usesage:  if (respondToSuspect(input))
@@ -56,6 +60,12 @@ HumanActor::respondToFinish(char c)
   respondToAll(c);  // Argument is irrelevant
 
   getUi()->finishTurn();
+}
+
+void
+HumanActor::respondToRestore(char)
+{
+  getUi()->restore();
 }
 
 void
@@ -97,10 +107,18 @@ HumanActor::RespondFunc_t
 HumanActor::classifyInput(char input)
 {
   // Interface keys
+
+  // (dice #)
   if ('1' <= input && input <= '6') return &HumanActor::respondToDieInput;
+  // (All)
   if (input == 'a')                 return &HumanActor::respondToAll;
+  // (Roll)
   if (input == 'r')                 return &HumanActor::respondToRoll;
+  // (Finish)
   if (input == 'f')                 return &HumanActor::respondToFinish;
+  // (Undo)
+  if (input == 'u')                 return &HumanActor::respondToRestore;
+  // (get Lost)
   if (input == 'l')                 return &HumanActor::respondToQuit;
 
   // Unmapped keys

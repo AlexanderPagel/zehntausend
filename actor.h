@@ -44,12 +44,12 @@ class HumanActor : public UiSubobject
 
     // Functions that determine the appropriate answer towards the UI after
     // use input is known. These assume valid user character input.
-    void respondToDieInput(char);
-    void respondToAll     (char);
-    void respondToRoll    (char);
-    void respondToFinish  (char);
+    void respondToDieInput(char); // Creates rollback checkpoint
+    void respondToAll     (char); //  .
+    void respondToRoll    (char); //  .
+    void respondToFinish  (char); //  .
     void respondToQuit    (char);
-    // void respondToRewind();
+    void respondToRestore (char);
     bool respondToSuspect (char); // Input sus. Returns true if confirmed.
     void respondToInvalid (char); // Input is not mapped to functionality
 

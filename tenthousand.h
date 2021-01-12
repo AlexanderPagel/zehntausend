@@ -309,6 +309,7 @@ class Tenthousand
 {
   static_assert(P > 0);
   friend class ::ui::Ui;  // FIXME no interface for die digits and aside vectors right now
+  friend class Rollback;  // This is actually somewhat logiccal imo
 
 public:
     // Provide some "generic" types for RL interfaces.
