@@ -9,10 +9,11 @@
 
 #ifdef __linux__
 #define TENK_LINUX
-#else
+#else // FOXME not very reliable
 #define TENK_WINDOWS
 #endif
 
+// TODO Needs implementatino if used
 #define TENK_GCC
 
 

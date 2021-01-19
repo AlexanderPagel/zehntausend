@@ -21,6 +21,7 @@ namespace console
 
 void clearScreen();
 char getChar();
+void sleep(int milliseconds);
 
 } // namespace console
 

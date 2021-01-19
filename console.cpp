@@ -1,11 +1,19 @@
 #include "console.h"
+#include "platform.h" // needed for includes
 
+#include <stdexcept>
+#include <thread>
+#include <chrono> // std::chrono::milliseconds
 #ifdef TESTING
 #include <iostream>  // dbg/testing
 #endif  // TESTING
 
-#include <ncurses.h>  // Linux
-#include <stdexcept>
+#ifdef TENK_LINUX
+#include <ncurses.h>
+#endif // TENK_LINUX
+#ifdef TENK_WINDWOS
+#include <windows.h>
+#endif // TENK_WINDOWS
 
 
 namespace ui
@@ -35,6 +43,11 @@ char getChar()
   endwin();      /* End curses mode      */
 
   return c;
+}
+
+void sleep(int milliseconds)
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 #ifdef TESTING
