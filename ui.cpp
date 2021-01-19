@@ -1,5 +1,7 @@
 #include "ui.h"
 
+#include <string> // std::to_string
+
 
 namespace ui
 {
@@ -225,14 +227,37 @@ UiFactory::createDefaultBot()
   //       free bot.
   // TODO Within the ui namespace it would be simplest to use smart pointers
   //      and not care who owns what.
-  //      Alternatively we can also come up with a suitable set of rule about
+  //      Alternatively we can also come up with a suitable set of rules about
   //      who creates and owns objects.
-  Sarsa* b = new Sarsa();
 
-  std::cout << "Begin training default bot [ENTER]" << std::endl;
-  std::cin.ignore();
-  b->performLearningEpisodes(10000);
-  std::cout << "Finished training default bot [ENTER]" << std::endl;
+  // Get learning parameters interactively from std::cin
+  unsigned int count;
+  double alpha;
+  double epsilon;
+  std::cout << "Legacy:" << std::endl
+            << " steps                 | learning rate | exploration rate" << std::endl
+            << "       0  -    999     | 0.25          | 0.2" << std::endl
+            << "    1000  -   9999     | 0.18          | 0.15" << std::endl
+            << "   10000  -  99999     | 0.14          | 0.12" << std::endl
+            << "  100000+              | 0.12          | 0.1" << std::endl;
+  std::cout << "Level (> 0): ";
+  std::cin >> count; std::cin.sync(); std::cin.clear();
+  std::cout << "Learning rate (0 to 1): ";
+  std::cin >> alpha; std::cin.sync(); std::cin.clear();
+  std::cout << "Exploration (0 to 1): ";
+  std::cin >> epsilon; std::cin.sync(); std::cin.clear();
+  std::stringstream ss;
+  if (alpha <= 0 || 1 <= alpha)
+    throw std::runtime_error("Alpha " + std::to_string(alpha) + " invalid");
+  if (epsilon <= 0 || 1 <= epsilon)
+    throw std::runtime_error("Epsilon " + std::to_string(epsilon) + " invalid");
+
+  // Perform learning episodes
+  std::cout << "Running " << count << " episodes with learning rate " << alpha
+    << " and exploration " << epsilon << "..." << std::endl;
+  Sarsa* b = new Sarsa(alpha, epsilon);
+  b->performLearningEpisodes(count);
+  std::cout << "Training finished. [ENTER]" << std::endl;
   std::cin.ignore();
 
   return new BotActor{ui, *b};
