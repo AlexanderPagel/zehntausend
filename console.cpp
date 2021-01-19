@@ -24,17 +24,20 @@ namespace console
 
 void clearScreen()
 {
+#ifdef TENK_LINUX
   // Currnetly unix only
   auto ret = system("clear");  // Linux
   if (ret == -1)
-    throw std::runtime_error("Clear Screen Linux failed");
+    throw std::runtime_error("Clear Screen failed");
+#endif // TENK_LINUX
+#ifdef TENK_WINDOWS
+  System("cls");
+#endif // TENK_WINDOWS
 }
 
 char getChar()
 {
-  // FIXME Does not seem to work. Try init and end in main and never leaving
-  //       ncurses mode.
-
+#ifdef TENK_LINUX
   // This does not look efficient, but we want to block for key press anyway
   initscr();      /* Start curses mode       */
   timeout(-1);  // Blocking input
@@ -43,6 +46,11 @@ char getChar()
   endwin();      /* End curses mode      */
 
   return c;
+#endif // TENK_LINUX
+#ifdef TENK_WINDOWS
+  auto c = getch();
+  return c;
+#endif // TENK_WINDOWS
 }
 
 void sleep(int milliseconds)
@@ -75,10 +83,21 @@ int testGetChar()
   return 0;
 }
 
+int testSleep()
+{
+  std::cout << "Testing sleep(): Press [ENTER] to sleep 1 second." << std::endl;
+  std::cin.ignore();
+  sleep(1000);
+  std::cout << "Slept for 1 second." << std::endl;
+  std::cout << "Press [ENTER] to continue." << std::endl;
+  return 0;
+}
+
 int test_nothing() { return 0; }
 int i = test_nothing()
   +testClearScreen()
   +testGetChar()
+  +testSleep()
   ;
 
 } // namespace
