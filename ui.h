@@ -129,7 +129,7 @@ class Ui
     Game_t const& getGame() const;
     void setGame(Game_t const&);
 
-    // Print current situation in formatted way to stdout
+    // Relay display
     void rePrint();
 
     //update buffers();

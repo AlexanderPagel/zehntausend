@@ -158,8 +158,13 @@ BotActor::respondWithSimulatedKeyPresses(Action_t const& action)
   //      perform obviously poor actions undistirbed.
 
   // Pretend to be a human actor pressing these keys in order
+  console::sleep(1000);
   for (auto const& k : simulatedKeys)
+  {
+    console::sleep(1000);
     this->HumanActor::operator()(k);
+    getUi()->rePrint(); // No return to "game loop" draw, so redraw manually
+  }
 }
 
 void
