@@ -17,6 +17,7 @@
 #define TURN_MINIMUM 350
 
 
+namespace ui { class Ui; }
 
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------
@@ -24,6 +25,8 @@
 template<unsigned int P=1>
 class Tenthousand
 {
+    friend class ::ui::Ui;  // FIXME no interface for die digits and aside vectors right now
+    friend class Rollback;  // This is actually somewhat logiccal imo
 public:
     // Provide some "generic" types for RL interfaces.
     typedef unsigned int Player;
@@ -96,6 +99,8 @@ public:
     ~Tenthousand() = default;
 
     void print() const;
+
+    auto const& getActive() const { return _active; } // For ui::Ui
 };
 
 
