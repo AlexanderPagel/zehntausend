@@ -74,7 +74,7 @@ template<unsigned int P>
 void
 Tenthousand<P>::_abortTurn(std::string const& s)
 {
-    //_refresh();
+    _refresh();
     throw illegal_move_error{s};   // notify caller
     return;
 }
@@ -418,7 +418,8 @@ Tenthousand<P>::finishTurn()
             _abortTurn("Gotta try harder to reach the turn limit.");
 
         _points[_player] += _current;
-        if (_points[_player]>=10000){
+        if (_points[_player] >= 10000)
+        {
             std::cout <<"You win!" << std::endl;
             //ToDo: Add some functionality to finish game/start a new game/continue playing.
         }
@@ -468,6 +469,7 @@ template<unsigned int P>
 Tenthousand<P>::Tenthousand()
     : _player(0),  _points(), _cup(), _current(0), _active(), _aside()
 {
+    // TODO This shoudld probably be a "reset" or "init" member
     _points.fill(0); // reset points
     _active.fill(true);
     _aside.fill(0);

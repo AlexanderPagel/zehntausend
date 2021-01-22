@@ -2,12 +2,14 @@
 #include <cstdlib>
 
 
-//#include "tenthousand.h"
+//#include "tenK.h"
 #include "sarsa.h"
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+
+#include "ui.h"
 
 #ifdef TEST_RUN
     #error TEST_RUN is already defined
@@ -55,6 +57,31 @@ static void reprint(Tenthousand<n> const& game, std::string msg = "")
 
 int main()
 {
+
+  // For now I will just stash all testing in fron of main and return yolo
+
+  srand(time(nullptr));
+
+  // Let UI factory create a new ui object
+  ui::Ui* ui = ui::UiFactory{};
+
+  ui->startGame();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /// \tbc test / read copy constructor calls
     /// \tbc implement random state learning

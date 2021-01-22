@@ -4,7 +4,7 @@
 #include <array>
 #include <unordered_map>
 //#include "state.h"
-//#include "tenthousand.h"
+//#include "tenK.h"
 #include "tenK.h"
 #include "tenKMove.h"
 #include "tenKState.h"

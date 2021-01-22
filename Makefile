@@ -7,8 +7,7 @@ OUT = zehntausend
 # Compiler and flags
 CXX := g++
 CXXFLAGS := -Wall -Werror -Wextra -Wpedantic -std=c++17 -mcmodel=medium -march=native -MMD -MP
-OXXFLAGS := #-I/usr/include ??
-#LXXFLAGS :=
+LXXFLAGS := -lncurses
 #-L/usr/lib/ ??
 DEBUGFLAGS := -O0 -g
 RELEASEFLAGS := -Ofast -DNDEBUG
@@ -16,7 +15,7 @@ RELEASEFLAGS := -Ofast -DNDEBUG
 # Release Target
 $(OUT): CXXFLAGS += $(RELEASEFLAGS)
 $(OUT): $(OBJ)
-	$(CXX) $(OBJ) $(CXXFLAGS) -o $(OUT)
+	$(CXX) $(OBJ) $(CXXFLAGS) $(LXXFLAGS) -o $(OUT)
 
 # Debug Target
 .PHONY: debug
@@ -24,7 +23,7 @@ debug: CXXFLAGS += $(DEBUGFLAGS)
 debug: .debug
 
 .debug: $(OBJ)
-	$(CXX) $(OBJ) $(CXXFLAGS) -o $(OUT)
+	$(CXX) $(OBJ) $(CXXFLAGS) $(LXXFLAGS) -o $(OUT)
 	touch .debug
 
 # Object Targets
