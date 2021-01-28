@@ -19,6 +19,28 @@
 
 namespace ui { class Ui; }
 
+namespace refac
+{
+
+using Points_t = int;
+
+// class State represents a raw game state, that menas, the state that a RL
+// algorithm would work with.
+class State
+{
+    Cup cup;
+    std::vector<Points_t> points;
+    Player_t player;
+};
+
+// class Game representing a step-by-step interface of the game
+class Game
+{
+    
+};
+
+}
+
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------
 
