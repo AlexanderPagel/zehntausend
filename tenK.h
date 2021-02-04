@@ -26,17 +26,39 @@ using Points_t = int;
 
 // class State represents a raw game state, that menas, the state that a RL
 // algorithm would work with.
+//  - set of dice the agent can choose between
+//  - current points of agent to move
 class State
 {
-    Cup cup;
-    std::vector<Points_t> points;
-    Player_t player;
+    Throw thro;
+    Points_t points; // Current episode points
+
+  public:
+    bool isTerminal() const;
 };
 
-// class Game representing a step-by-step interface of the game
+// class Environment representing the single-player environment
+class Environment
+{
+    State state;
+
+  public:
+    static Environment randomStart();
+
+
+};
+
+// Class Game for the single-player game until 10 thousand points
 class Game
 {
-    
+};
+
+// class Game representing a step-by-step interface of the multiplayer game
+class Tenthousand
+{
+    // Points of each player
+    std::vector<Points_t> points;
+    Environment
 };
 
 }

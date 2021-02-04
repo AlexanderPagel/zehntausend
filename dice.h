@@ -26,10 +26,19 @@ using Selection_t = std::vector<bool>;
 class Throw
 {
     using Count_t = int;
-    // Use vector over array to allow move
-    std::vector<Count_t> counts;
-  public:
+    // Use vector over array to allow simple moving
+    std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
 
+  public:
+    void fill(Count_t c);
+};
+
+// Class Action represents a "raw" action. That means, all the information that
+// a RL angent would use to interact with the game.
+class Action
+{
+  Throw t;  // Selection of dice to roll
+  bool finish; // Decide whether to re-roll or finish
 };
 
 // class Dice represents a set of individual, ordered dice w/o extra
