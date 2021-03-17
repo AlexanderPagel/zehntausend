@@ -57,15 +57,15 @@ Subtypes
 
 
   Checklist:
-    - ?           []
-    - Action      []
-    - Cup         []
-    - Dice        []
-    - Digit       []
-    - Environment []
-    - Game        []
-    - State       []
-    - Throw       []
+    - ?           [ ]
+    - Action      [x]
+    - Cup         [ ]
+    - Dice        [ ]
+    - Digit       [ ]
+    - Environment [ ]
+    - Game        [ ]
+    - State       [ ]
+    - Throw       [x]
 } // namespace refac
 
 

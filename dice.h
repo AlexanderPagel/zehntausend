@@ -22,6 +22,7 @@ namespace refac
 using Digit_t = int_least8_t; // Save memory in arrays using smallest type
 using Player_t = int_fast8_t;
 using Selection_t = std::vector<bool>;
+using Points_t = int_fast32_t;
 
 // Class throw represents the rolled digits (of a hypothetical set of
 // dice). That means, the dice are represented by the number of
@@ -74,10 +75,39 @@ class Throw
 
 // Class Action represents a "raw" action. That means, all the information that
 // a RL angent would use to interact with the game.
-class Action
+struct Action
 {
-  Throw t;  // Selection of dice to roll
-  bool finish; // Decide whether to re-roll or finish
+    // Represent "none" action by
+    //  - t = {0}
+    //  - finish = true
+    // This would otherwise represent an illegal action.
+    Throw throwing;  // Throw subset that is to be rolled again
+    bool finish; // Decide whether to re-roll or finish
+
+    // Initialize as "none" action
+    Action();
+    // Test for virtual "none" action that is used when there are no
+    // legal actions to transition to the terminal state with
+    // 0 reward.
+    bool isNone() const;
+    bool operator==(Action const& other) const;
+};
+
+class State
+{
+    // - current points
+    // - current dice
+    // - unambiguous representation for terminal states
+
+    Throw thrown;
+    Points_t points;
+
+  public:
+
+    bool isTerminal() const;
+
+    Points_t takeAction(Action const& action); // Returns current points gained by transition
+
 };
 
 // class Dice represents a set of individual, ordered dice w/o extra
