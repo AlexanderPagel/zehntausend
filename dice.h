@@ -25,12 +25,30 @@ using Selection_t = std::vector<bool>;
 // individual dice.
 class Throw
 {
-    using Count_t = int;
-    // Use vector over array to allow simple moving
+  public:
+    using Count_t = int_least8_t; // Allow small arrays by using smallest type
+
+  private:
+    enum class DigitType // TODO need base type?
+    {
+      one, two, three, four, five, six, total, // 0..6
+      count, begin = 0, end = count, none = -1 // canonical enum members
+    };
+    // Use vector to allow simple move semantics
     std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
 
   public:
+    void clear();
     void fill(Count_t c);
+
+    bool any() const; // Any die contained?
+    bool operator==(Throw const& other) const = default;
+    // TODO comparison faster if comparing total first?
+    //      move total to front?
+
+    // assign defualt
+    // Copy + move default
+    // Dtor default
 };
 
 // Class Action represents a "raw" action. That means, all the information that

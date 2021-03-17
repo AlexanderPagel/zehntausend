@@ -1,3 +1,75 @@
+namespace refac
+{
+// These ideas will be implemented within the refac namespace.
+// Our goal is that we can slowly replace all "classname" by
+// "refac::new_classname"; then later remove the refac namespace in one go.
+
+
+Couple toughts about the game refactoring
+-----------------------------------------
+
+Implementation structure
+
+- Class Environment:
+  RL-Style state + action + reward implementation.
+  Potentially optimization helpful.
+  One-play
+- Class Game:
+  Game-style one-by-one selection of dice to put aside + ending turn.
+  No optimization required, more or less anything goes.
+
+Environment Implementation bases:
+
+- Class state:
+  Representation of RL-style state.
+  Internal representation of the environment.
+- Class Throw:
+  Representation of a set of thrown digits (rather than dice). No link to
+  individual dice and/or die positions is made.
+- Class Action:
+  Representatino of an RL-style action: The set of digits to be put aside (=
+  Throw) + a boolean decision to re-roll or finish the turn.
+  Additionally, a consistent "no action" representation that matches no other
+  action.
+
+Game Implementation bases:
+
+- Class Dice.
+  Representing an ordered tuple of dice, each with it's individual digits
+
+- Class TODO: classname:
+  Combining the classes "Throw" and "Dice" into a combined representation.
+  Ensuring that the "Dice" and "Throw" subobject remain consistent.
+  Basically equals the "Dice" class, but keeps a consistent throw
+  representation in the background.
+
+- Class Cup:
+  Expanding the die representation by allowing to put aside dice. Dice that are
+  put aside will not be rolled by the roll() member.
+
+Subtypes
+
+- Digit
+  Unsigned integral type for short values, representing the shown digit of a die.
+- Die
+- Player
+- ... (see dice.h using declarations)
+
+
+  Checklist:
+    - ?           []
+    - Action      []
+    - Cup         []
+    - Dice        []
+    - Digit       []
+    - Environment []
+    - Game        []
+    - State       []
+    - Throw       []
+} // namespace refac
+
+
+
 #ifndef TENK_H_INCLUDED
 #define TENK_H_INCLUDED 1
 
@@ -61,7 +133,7 @@ class Tenthousand
     Environment
 };
 
-}
+} // namespace refac
 
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------
