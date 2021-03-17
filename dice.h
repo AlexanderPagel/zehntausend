@@ -42,32 +42,39 @@ class Throw
     // Use vector to allow simple move semantics
     std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
 
-  public:
-    Throw() : counts(DigitType::count, Count_t(0)) {}
     template<typename T,
              std::enable_if_t<std::is_convertible_v<T, decltype(counts)>>
             >
     explicit Throw(T&& t) : counts(std::forward<T>(t))
     {
       assert(counts.size() == DigitType::counts);
+      assert(consistent());
     }
+
+    Count_t& operator[](DigitType d); // FIXME replace occurences with member "at"
+    Count_t& at(DigitType d);
+    Count_t& total();
+
+  public:
+    Throw() : counts(DigitType::count, Count_t(0)) {}
 
     bool any() const; // Any die contained?
     bool empty() const;
     bool operator==(Throw const& other) const = default;
+    Count_t getDigitCount(DigitType d) const;
+    bool consistent() const; // Entries non-negative, total is sum of parts
     // TODO comparison faster if comparing total first?
     //      move total to front?
 
     void fill(Count_t c);
-    // TODO needed?
-//    void add(DigitType d);
-//    void remove(DigitType d);
-//    void setDigitType(DigitType d, Count_t newVal);
+    void setDigitCount(DigitType d, Count_t newValue);
+    void add(DigitType d, Count_t c = 1);
+    void remove(DigitType d, Count_t c = 1);
+    void increment(DigitType d);
+    void decrement(DigitType d);
 
     Count_t operator[](DigitType d) const;
-    Count_t& operator[](DigitType d);
     Count_t total() const;
-    Count_t& total();
 
     // copy + move assign defualt
     // Copy + move ctor default
