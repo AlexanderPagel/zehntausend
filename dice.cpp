@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "enum.h"
+#include "randomness.h"
 
 
 namespace refac
@@ -133,6 +134,18 @@ Throw::total()
   return counts[raw(DigitType::total)];
 }
 
+Throw::DigitType
+Throw::digitToDigitType(int digit)
+{
+  // Add offset int -> DigitType
+  auto constexpr offset = raw(DigitType::one) - 1
+  auto const res = DigitType(digit + offset);
+
+  assert(legit(res));
+
+  return res;
+}
+
 Action::Action()
   : throwing(), finish(true) // == "none" action
 {}
@@ -153,9 +166,20 @@ State::State(Throw const& t, Points_t const& p)
 {}
 
 State
-State::randomStart()
+State::startState()
 {
-  // TODO import the randomness sources from kniffel or pasta
+  Throw initialThrow;
+  for (int i = 0; i < totalGameDieCount; ++i)
+  {
+    auto randomDie{randomness::randomDie()};
+    // TODO 6 separate increments to total are not necessary
+    initialThrow.increment(
+        // Convert 1-based to 0-based
+        Throw::digitToDigitType(randomDie)
+        );
+  }
+
+  return State(std::move(initialThrow), Points_t(0));
 }
 
 bool

@@ -24,6 +24,9 @@ using Player_t = int_fast8_t;
 using Selection_t = std::vector<bool>;
 using Points_t = int_fast32_t;
 
+// TODO do we want to move this somewhere else? into a class?
+int constexpr totalGameDieCount{6};
+
 // Class throw represents the rolled digits (of a hypothetical set of
 // dice). That means, the dice are represented by the number of
 // rolled '1', ..., '6' digits, without representing or ordering
@@ -76,6 +79,10 @@ class Throw
     Count_t operator[](DigitType d) const;
     Count_t total() const;
 
+    // Convert 1-based, valid digit to corresponding digit type
+    static DigitType digitToDigitType(int digit);
+//    static auto digitTypeToDigit(DigitType d) -> decltype(raw(d))
+
     // copy + move assign defualt
     // Copy + move ctor default
     // Dtor default
@@ -122,7 +129,7 @@ class State
     State(Throw const&, Points_t const&);
 
   public:
-    static State randomStart();
+    static State startState(); // Randomize 6 dice, points 0
 
     bool isTerminal() const;
     bool operator==(State const& other) const;
