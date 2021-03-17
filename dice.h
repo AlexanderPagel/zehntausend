@@ -8,9 +8,13 @@
 #define DICE_HPP_INCLUDED 1
 
 
-#include <cstdlib>
+#include <cassert>
+#include <cstdlib> // TODO needed?
 #include <array>
 #include <stdexcept>
+
+#include "enum.h"
+
 
 namespace refac
 {
@@ -38,16 +42,33 @@ class Throw
     std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
 
   public:
-    void clear();
-    void fill(Count_t c);
+    Throw() : counts(DigitType::count, Count_t(0)) {}
+    template<typename T,
+             std::enable_if_t<std::is_convertible_v<T, decltype(counts)>>
+            >
+    explicit Throw(T&& t) : counts(std::forward<T>(t))
+    {
+      assert(counts.size() == DigitType::counts);
+    }
 
     bool any() const; // Any die contained?
     bool operator==(Throw const& other) const = default;
     // TODO comparison faster if comparing total first?
     //      move total to front?
 
-    // assign defualt
-    // Copy + move default
+    void fill(Count_t c);
+    // TODO needed?
+//    void add(DigitType d);
+//    void remove(DigitType d);
+//    void setDigitType(DigitType d, Count_t newVal);
+
+    Count_t operator[](DigitType d) const;
+    Count_t& operator[](DigitType d);
+    Count_t total() const;
+    Count_t& total();
+
+    // copy + move assign defualt
+    // Copy + move ctor default
     // Dtor default
 };
 
