@@ -53,6 +53,7 @@ class Throw
     }
 
     bool any() const; // Any die contained?
+    bool empty() const;
     bool operator==(Throw const& other) const = default;
     // TODO comparison faster if comparing total first?
     //      move total to front?
@@ -77,6 +78,8 @@ class Throw
 // a RL angent would use to interact with the game.
 struct Action
 {
+    // TODO need "resign" action when an episode is a forced loss?
+
     // Represent "none" action by
     //  - t = {0}
     //  - finish = true
@@ -91,6 +94,10 @@ struct Action
     // 0 reward.
     bool isNone() const;
     bool operator==(Action const& other) const;
+
+    // Copy + move ctor default
+    // Copy + move assign default
+    // Dtor default
 };
 
 class State
@@ -98,16 +105,26 @@ class State
     // - current points
     // - current dice
     // - unambiguous representation for terminal states
+    // Represent terminal states as
+    //  - thrown = {0}
+    //  - points = 0
 
-    Throw thrown;
-    Points_t points;
+    Throw thrown{};
+    Points_t points{0};
+
+    State(Throw const&, Points_t const&);
 
   public:
+    static State randomStart();
 
     bool isTerminal() const;
+    bool operator==(State const& other) const;
 
     Points_t takeAction(Action const& action); // Returns current points gained by transition
 
+    // Copy + move ctor default
+    // Copy + move assign default
+    // Dtor default
 };
 
 // class Dice represents a set of individual, ordered dice w/o extra

@@ -19,6 +19,7 @@ Implementation structure
   No optimization required, more or less anything goes.
 
 Environment Implementation bases:
+(Completely unsanitized in release build)
 
 - Class state:
   Representation of RL-style state.
@@ -33,6 +34,7 @@ Environment Implementation bases:
   action.
 
 Game Implementation bases:
+(With runtime sanitization, where approprite, when using environment)
 
 - Class Dice.
   Representing an ordered tuple of dice, each with it's individual digits

@@ -1,10 +1,28 @@
 #include "dice.h"
 
+#include <cassert>
+
+#include "enum.h"
+
+
 namespace refac
 {
 
+bool
+Throw::any() const
+{
+  assert(count[raw(DigitType::any)] >= 0);
+  return counts[raw(DigitType::any)];
+}
+
+bool
+Throw::empty() const
+{
+  return !any();
+}
+
 void
-Throw::clear(Count_t c)
+Throw::fill(Count_t c)
 {
   counts.fill(c);
 }
@@ -44,8 +62,32 @@ bool
 Action::operator==(Action const& other) const
 {
   return (isNone() && other.isNone())
-      || (!isNone() && !other.isNone() && // not equal if only 1 == none
+      || (!isNone() && !other.isNone() && // single "none"
           finish == other.finish && throwing == other.throwing);
+}
+
+State::State(Throw const& t, Points_t const& p)
+  : thrown(t), points(p)
+{}
+
+State
+State::randomStart()
+{
+  // TODO import the randomness sources from kniffel or pasta
+}
+
+bool
+State::isTerminal()
+{
+  return thrown.empty() && points = 0;
+}
+
+bool
+State::operator==(State const& other)
+{
+  return (isTerminal() && other.isTerminal())
+      || (!isTerminal () && !other.isTerminal() && // single "none"
+          points == other.points && thrown == other.thrown);
 }
 
 } // namespace refac
