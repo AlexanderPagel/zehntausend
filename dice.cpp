@@ -362,11 +362,14 @@ Environment::fillActions()
 Points_t
 Environment::takeAction(Action const& action)
 {
+  Points_t pointDiff{0};
+
   // Special case 1: Terminal states have trivial behaviour
   if (episodeFinished())
   {
     assert(action.isNone());
-    return Points_t(0);
+    pointDiff = 0;
+    goto adjust_points;
   }
   assert(!action.isNone());
 
@@ -374,13 +377,12 @@ Environment::takeAction(Action const& action)
   if (action.isWelp())
   {
     // All current points are lost by welping
-    auto ret = -state.getPoints();
+    pointDiff = -state.getPoints();
     state = State::makeTerminalState();
-    return ret;
+    goto adjust_points;
   }
 
   // Compute immediate point diff for given action
-  Points_t pointDiff{0};
   for (auto d = DigitType::one;
        d != DigitType::six; ++d)
   {
@@ -404,6 +406,8 @@ Environment::takeAction(Action const& action)
     state.roll(totalGameDieCount);
   }
 
+adjust_points:
+  points += pointDiff;
   return pointDiff;
 }
 
