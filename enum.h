@@ -17,6 +17,7 @@
 #include <type_traits>
 
 
+// Canonical enum functions
 template<typename Enum,
          typename = std::enable_if_t<std::is_enum<Enum>::value>
         >
@@ -38,8 +39,73 @@ legit(Enum e) -> bool
   return e != Enum::none;
 }
 
-// TODO
-// Operation (two identical or just one) enum types:
-//  - comparisons
-//  - arithmetics
-//  - negation
+template<typename T,
+         typename = std::enable_if_t< std::is_same_v<T, Square>
+                                    ||false>>
+constexpr T
+operator+(T lhs, T rhs)
+{
+  return static_cast<T>(raw(lhs) + raw(rhs));
+}
+
+template<typename T,
+         typename = std::enable_if_t< std::is_same_v<T, Square>
+                                    ||false>>
+constexpr T
+operator-(T lhs, T rhs)
+{
+  return static_cast<T>(raw(lhs) - raw(rhs));
+}
+
+template<typename T, typename U,
+         typename = std::enable_if_t< std::is_same_v<T, Square>
+                                    ||false>,
+         typename = std::enable_if_t<std::is_integral_v<U>>
+        >
+constexpr T
+operator-(T& lhs, U rhs)
+{
+  return static_cast<T>(raw(lhs) - rhs);
+}
+
+template<typename T, typename U,
+         typename = std::enable_if_t< std::is_same_v<T, Square>
+                                    ||false>,
+         typename = std::enable_if_t<std::is_integral_v<U>>
+        >
+constexpr T
+operator+(T& lhs, U rhs)
+{
+  return static_cast<T>(raw(lhs) + rhs);
+}
+
+template<typename T, typename U,
+         typename = std::enable_if_t< std::is_same_v<T, Square>
+                                    ||false>,
+         typename = std::enable_if_t<std::is_integral_v<U>>
+        >
+constexpr T
+operator/(T lhs, U rhs)
+{
+  return static_cast<T>(raw(lhs) / rhs);
+}
+
+template<typename T,
+         typename = std::enable_if_t< std::is_same_v<T, Value>
+                                     ||false>>
+constexpr T
+operator-(T const& v)
+{
+  return static_cast<T>(-raw(v));
+}
+
+// Commented out because I am not sure whether I will need this or not
+/*
+template<typename Enum,
+         typename = std::enable_if_t<std::is_enum<Enum>::value>
+auto
+operator<(Enum const& lhs, Enum const& rhs) -> bool
+{
+  return raw(lhs) < raw(rhs);
+}
+*/

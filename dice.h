@@ -54,7 +54,7 @@ class Throw
       assert(consistent());
     }
 
-    Count_t& operator[](DigitType d); // FIXME replace occurences with member "at"
+    Count_t& operator[](DigitType d);
     Count_t& at(DigitType d); // No bounds checking
     Count_t& total();
 
@@ -75,6 +75,11 @@ class Throw
     void remove(DigitType d, Count_t c = 1);
     void increment(DigitType d);
     void decrement(DigitType d);
+
+    void roll(); // Re-radomize current number of dice
+    void roll(Count_t c); // Randomize c dice
+
+    Throw& operator-=(Throw const&);
 
     Count_t operator[](DigitType d) const;
     Count_t total() const;
@@ -99,19 +104,21 @@ class Action
   public:
     // TODO need "resign" action when an episode is a forced loss?
 
-    // Represent "none" action by
+    static Action makeNone();
+    static Action makeWelp();
+
+    // Represent "none" action by the default values:
     //  - t = {0}
     //  - finish = false
-    // This would otherwise represent an illegal action.
-    Throw throwing;  // Throw subset that is to be rolled again
-    bool finish; // Decide whether to re-roll or finish
+    // This pattern can never represent any (other) legal action.
+    Throw taking{};  // Throw subset that is to be scored
+    bool finish{false}; // Decide whether to re-roll or finish
 
-    // Initialize as "none" action
-    Action();
     // Test for virtual "none" action that is used when there are no
     // legal actions to transition to the terminal state with
     // 0 reward.
     bool isNone() const;
+    bool isWelp() const;
     bool operator==(Action const& other) const;
 
     // Copy + move ctor default
@@ -128,16 +135,26 @@ class State
     //  - thrown = {0}
     //  - points = 0
 
-    Throw thrown{};
+    Throw thrown{}; // TODO derive for operator-= etc?
+                    //      Also for empty()
     Points_t points{0};
 
     State(Throw const&, Points_t const&);
 
   public:
     static State startState(); // Randomize 6 dice, points 0
+    static State makeTerminalState();
 
     bool isTerminal() const;
     bool operator==(State const& other) const;
+    Points_t getPoints() const;
+    Throw const& getThrown() const;
+    void addPoints(Points_t);
+    // NOTE Behaves different to Throw::roll()
+    void roll(Count_t n); // Randomize remaining dice ('n' new if 0 remaining)
+
+    // Remove some dice without altering points
+    void operator-=(Throw const&);
 
     // Copy + move ctor default
     // Copy + move assign default
@@ -154,15 +171,17 @@ class Environment
     //      optimization case should be self-play training.
     std::vector<Action> legalActions;
 
-    void fillLegalActions();
+    void clearActions(); // TODO probably we want to remove w/o resizing vector (?)
+    void fillActions(); // Refills the actions vector (no extra clear needed)
 
   public:
     Environment();
 
-    Points_t takeAction(Action const& action); // Returns current points gained by transition
-    bool episodeFinished() const;
+    // Take known-legal action, return points gained
+    Points_t takeAction(Action const& action);
 
-    State const& getState() const { return state; }
+    bool episodeFinished() const;
+    State const& getState() const;
     std::vector<Action> const& getLegalActions() const;
 
     // Copy + move ctor default

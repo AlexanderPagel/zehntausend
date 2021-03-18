@@ -24,7 +24,7 @@ Implementation structure
   No optimization required, more or less anything goes.
 
 Environment Implementation bases:
-(Completely unsanitized in release build)
+(Completely *unsanitized*)
 
 - Class state:
   Representation of RL-style state.

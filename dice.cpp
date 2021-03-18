@@ -123,6 +123,43 @@ Throw::decrement(DigitType d)
   --counts[raw(DigitType::total)];
 }
 
+void
+Throw::roll()
+{
+  roll(total());
+}
+
+void
+Throw::roll(Count_t c)
+{
+  assert(c >= 0);
+
+  fill(0);
+  for (int i = 0; i < c; ++i)
+  {
+    auto randomdie{randomness::randomDie()}; // [1, 6]
+    // TODO 6 separate increments to total are not necessary
+    increment(
+        // Convert 1-based to 0-based
+        Throw::digitToDigitType(randomDie)
+        );
+  }
+}
+
+Throw&
+Throw::operator-=(Throw const& other)
+{
+  // TODO I could not find an STL algorithm that does in-place transformations
+  for (DigitType d = DigitType::begin;
+       d != DigitType::end; // 1-6 and total
+       ++d)
+  {
+    counts[raw(d)] -= other.counts[raw(d)];
+  }
+
+  assert(consistent());
+}
+
 Count_t
 Throw::operator[](DigitType d) const
 {
@@ -147,19 +184,36 @@ Throw::digitToDigitType(int digit)
   return res;
 }
 
-Action::Action()
-  : throwing(), finish(true) // == "none" action
-{}
+Action
+Action::makeNone()
+{
+  return Action{};
+}
+
+Action
+Action::makeWelp()
+{
+  return Action{Throw{}, true};
+}
 
 bool
-Action::isNone() const { return throwing.empty() && !finish; }
+Action::isNone() const
+{
+  return taking.empty() && !finish;
+}
+
+bool
+Action::isWelp() const
+{
+  return taking.empty() && finish;
+}
 
 bool
 Action::operator==(Action const& other) const
 {
   return (isNone() && other.isNone())
       || (!isNone() && !other.isNone() && // single "none"
-          finish == other.finish && throwing == other.throwing);
+          finish == other.finish && taking == other.taking);
 }
 
 State::State(Throw const& t, Points_t const& p)
@@ -170,17 +224,14 @@ State
 State::startState()
 {
   Throw initialThrow;
-  for (int i = 0; i < totalGameDieCount; ++i)
-  {
-    auto randomDie{randomness::randomDie()};
-    // TODO 6 separate increments to total are not necessary
-    initialThrow.increment(
-        // Convert 1-based to 0-based
-        Throw::digitToDigitType(randomDie)
-        );
-  }
-
+  initialThrow.roll(totalGameDieCount);
   return State(std::move(initialThrow), Points_t(0));
+}
+
+State
+State::makeTerminalState()
+{
+  return State();
 }
 
 bool
@@ -197,8 +248,47 @@ State::operator==(State const& other)
           points == other.points && thrown == other.thrown);
 }
 
+Points_t
+State::getPoints() const
+{
+  return points;
+}
+
+Throw const&
+State::getThrown() const
+{
+  return thrown;
+}
+
 void
-Environment::fillLegalActions()
+State::addPoints(Points_t p)
+{
+  points += p;
+}
+
+void
+State::roll(Count_t n)
+{
+  if (thrown.empty())
+    thrown.roll(n); // Randomizes n new dice
+  else
+    thrown.roll();  // Randomizes existing dice
+}
+
+void
+State::operator-=(Throw const& t)
+{
+  thrown -= t;
+}
+
+void
+Environment::clearActions()
+{
+  legalActions.clear();
+}
+
+void
+Environment::fillActions()
 {
 #ifndef INCREMENT_1
 #define INCREMENT_1(X) t.increment(DigitType:: X )
@@ -233,9 +323,11 @@ Environment::fillLegalActions()
 #error Redefinition of macro ITERATE_OVER
 #endif
 
-  // Two special cases:
-  //  - State is terminal -> only the "none" action is valid
-  //  - Non-terminal state but no dice can be selected -> only the "welp" action is valid
+  clearActions();
+
+  // Special case 1: Only the "none" action available in terminal state
+  if (episodeFinished())
+    return legalActions.push_back(Action{});
 
   using Throw::DigitType;
 
@@ -244,7 +336,7 @@ Environment::fillLegalActions()
   // iterate them in steps of 3.
   Throw t{}; // Zero-initialize
   bool first{true};
-  ITERATE_OVER(six, 3)
+  ITERATE_OVER(six, 3) // Iterate over the amount of 6s, in steps of 3
   ITERATE_OVER(five, 1)
   ITERATE_OVER(four, 3)
   ITERATE_OVER(three, 3)
@@ -253,13 +345,84 @@ Environment::fillLegalActions()
   {
     // Skip the empty action (simpler to code than beginning at first non-zero
     // action).
-    if (first) first = false, continue;
+    if (first)
+      first = false, continue;
 
     // For every non-zero selection, we can put any subset of dice aside and
     // either stop or continue.
     legalMoves.emplace_back({t, false});
     legalMoves.emplace_back({t, true});
   }
+
+  // SPecial case 2: Only the "welp" action if nothing else
+  if (legalMoves.empty())
+    legalMoves.push_back(Throw::makeWelp());
+}
+
+Points_t
+Environment::takeAction(Action const& action)
+{
+  // Special case 1: Terminal states have trivial behaviour
+  if (episodeFinished())
+  {
+    assert(action.isNone());
+    return Points_t(0);
+  }
+  assert(!action.isNone());
+
+  // Special case 2: The welp action leads to terminal state, loosing all points
+  if (action.isWelp())
+  {
+    // All current points are lost by welping
+    auto ret = -state.getPoints();
+    state = State::makeTerminalState();
+    return ret;
+  }
+
+  // Compute immediate point diff for given action
+  Points_t pointDiff{0};
+  for (auto d = DigitType::one;
+       d != DigitType::six; ++d)
+  {
+    // Every triple if 4s scores 400 etc.
+    pointDiff += action.taking[d] / 3 * 100 * digitTypeToDigit(d);
+  }
+  // All 1s and 5s of non-triples score 100 (resp. 50) each
+  pointDiff += (action.taking[DigitType::one ] - action.taking[DigitType::one ]/3*3) * 100;
+  pointDiff += (action.taking[DigitType::five] - action.taking[DigitType::five]/3*3) * 50 ;
+
+  // Compute new thrown dice
+  if (action.finish)
+  {
+    // Can ignore rolled dice if finishing
+    state = State::makeTerminalState();
+  }
+  else
+  {
+    // Need to re-roll leftovers to continue
+    state -= action.taking;
+    state.roll(totalGameDieCount);
+  }
+
+  return pointDiff;
+}
+
+bool
+Environment::episodeFinished() const
+{
+  return getState().isTerminal();
+}
+
+State const&
+Environment::getState() const
+{
+  return state;
+}
+
+std::vector<Action> const&
+Environment::getLegalActions() const
+{
+  return legalActions;
 }
 
 } // namespace refac
