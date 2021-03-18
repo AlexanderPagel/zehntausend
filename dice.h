@@ -250,6 +250,7 @@ class Cup
     void setDie(int pos, Digit_t);              // Re-assign existing die digit
     void setDie(int pos, Digit_t, bool active); // Re-assign existing die digit + activeness
     void addDie(Digit_t, bool newActive = true);   // Add new die to the end
+    void setActive(int pos, bool newActive = true);
 
     void roll(); // Randomize all active
 

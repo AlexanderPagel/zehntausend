@@ -534,10 +534,8 @@ Cup::getDie(int pos) const
 void
 Cup::setDie(int pos, Digit_t d)
 {
-  setDie(pos, d,
-      // Use old activeness as new activeness
-      std::get<bool>(getDie(pos))
-      );
+  auto [digit, active] = getDie(pos);
+  setDie(pos, d, active);
 }
 
 void
@@ -557,6 +555,13 @@ Cup::addDie(Digit_t newDie, bool newActive)
   dice.addDie(newDie);
   thrown.increment(digitToDigitType(newDie));
   active.push_back(newActive);
+}
+
+void
+Cup::setActive(int pos, bool newActive)
+{
+  auto [digit, active] = getDie(pos);
+  setDie(pos, digit, newActive);
 }
 
 void
