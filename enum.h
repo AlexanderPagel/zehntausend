@@ -37,3 +37,9 @@ legit(Enum e) -> bool
         || ((Enum::begin) <= (e) && (e) < (Enum::end)));
   return e != Enum::none;
 }
+
+// TODO
+// Operation (two identical or just one) enum types:
+//  - comparisons
+//  - arithmetics
+//  - negation

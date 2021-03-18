@@ -152,7 +152,7 @@ Action::Action()
 {}
 
 bool
-Action::isNone() const { return !throwing.any() && finish; }
+Action::isNone() const { return throwing.empty() && !finish; }
 
 bool
 Action::operator==(Action const& other) const
@@ -195,6 +195,71 @@ State::operator==(State const& other)
   return (isTerminal() && other.isTerminal())
       || (!isTerminal () && !other.isTerminal() && // single "none"
           points == other.points && thrown == other.thrown);
+}
+
+void
+Environment::fillLegalActions()
+{
+#ifndef INCREMENT_1
+#define INCREMENT_1(X) t.increment(DigitType:: X )
+#else
+#error Redefinition of macro INCREMENT_1
+#endif
+
+#ifndef INCREMENT_3
+#define INCREMENT_3(X) t.add(DigitType:: X , 3)
+#else, t.increment(
+#error Redefinition of macro INCREMENT_3
+#endif
+
+//#ifndef ITERATE_OVER_1
+//#define ITERATE_OVER_1(X) \
+//  for (; t[DigitType:: X ] <= getState().thrown[DigitType:: X ]; INCREMENT_1( X ) )
+//#else
+//#error Redefinition of macro ITERATE_OVER_1
+//#endif
+
+//#ifndef ITERATE_OVER_3
+//#define ITERATE_OVER_3(X) \
+//  for (; t[DigitType:: X ] <= getState().thrown[DigitType:: X ]; INCREMENT_3
+//#else
+//#error Redefinition of macro ITERATE_OVER_3
+//#endif
+
+#ifndef ITERATE_OVER
+#define ITERATE_OVER(X, N) \
+  for (; t[DigitType:: X ] <= getState().thrown[DigitType:: X ]; INCREMENT_ ## N )
+#else
+#error Redefinition of macro ITERATE_OVER
+#endif
+
+  // Two special cases:
+  //  - State is terminal -> only the "none" action is valid
+  //  - Non-terminal state but no dice can be selected -> only the "welp" action is valid
+
+  using Throw::DigitType;
+
+  // Iterate exhaustively over any selectable subsets of dice.
+  // Since the digits 2,3,4,6 can only be put aside in groups of three, we can
+  // iterate them in steps of 3.
+  Throw t{}; // Zero-initialize
+  bool first{true};
+  ITERATE_OVER(six, 3)
+  ITERATE_OVER(five, 1)
+  ITERATE_OVER(four, 3)
+  ITERATE_OVER(three, 3)
+  ITERATE_OVER(two, 3)
+  ITERATE_OVER(one, 1)
+  {
+    // Skip the empty action (simpler to code than beginning at first non-zero
+    // action).
+    if (first) first = false, continue;
+
+    // For every non-zero selection, we can put any subset of dice aside and
+    // either stop or continue.
+    legalMoves.emplace_back({t, false});
+    legalMoves.emplace_back({t, true});
+  }
 }
 
 } // namespace refac

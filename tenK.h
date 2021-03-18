@@ -13,7 +13,12 @@ Implementation structure
 - Class Environment:
   RL-Style state + action + reward implementation.
   Potentially optimization helpful.
-  One-play
+  One-play. Defines Legal actions and state transition. An action is "legal" if
+  it is possible to take that action (in a given state). "Illegal" actions are
+  bit-representations of the "Action" class which do not represent possible
+  actions. Every state has at least one "legal" action, the "none" action. If
+  the the "none" Actions is present, it MUST be the only available action. The
+  "none" action only occurs in terminal states.
 - Class Game:
   Game-style one-by-one selection of dice to put aside + ending turn.
   No optimization required, more or less anything goes.

@@ -35,13 +35,13 @@ class Throw
 {
   public:
     using Count_t = int_least8_t; // Allow small arrays by using smallest type
-
-  private:
     enum class DigitType // TODO need base type?
     {
       one, two, three, four, five, six, total, // 0..6
       count, begin = 0, end = count, none = -1 // canonical enum members
     };
+
+  private:
     // Use vector to allow simple move semantics
     std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
 
@@ -90,13 +90,18 @@ class Throw
 
 // Class Action represents a "raw" action. That means, all the information that
 // a RL angent would use to interact with the game.
-struct Action
+// TODO it might be faster to encode the resulting points in the
+//      Action object rather than computing them separately. However,
+//      that would somewhat break our nice RL setup.
+class Action
 {
+    // TODO need to encapsulate like the "Throw" class?
+  public:
     // TODO need "resign" action when an episode is a forced loss?
 
     // Represent "none" action by
     //  - t = {0}
-    //  - finish = true
+    //  - finish = false
     // This would otherwise represent an illegal action.
     Throw throwing;  // Throw subset that is to be rolled again
     bool finish; // Decide whether to re-roll or finish
@@ -139,13 +144,30 @@ class State
     // Dtor default
 };
 
+// Implements the game rules and state transitions
 class Environment
 {
     State state;
 
-  public:
-    Points_t takeAction(Action const& action); // Returns current points gained by transition
+    // Provide a list of legal actions at every time step.
+    // TODO We might want to change this later, if appropriate. The only
+    //      optimization case should be self-play training.
+    std::vector<Action> legalActions;
 
+    void fillLegalActions();
+
+  public:
+    Environment();
+
+    Points_t takeAction(Action const& action); // Returns current points gained by transition
+    bool episodeFinished() const;
+
+    State const& getState() const { return state; }
+    std::vector<Action> const& getLegalActions() const;
+
+    // Copy + move ctor default
+    // Copy + move assign default
+    // Dtor default
 };
 
 // class Dice represents a set of individual, ordered dice w/o extra
