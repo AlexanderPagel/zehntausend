@@ -227,7 +227,7 @@ class Dice
 // Throw setters would be ambiguous.
 //
 // The "Throw" part only represents the subset of *active* dice.
-// 
+//
 // This class is for game-style user interaction and does not require
 // optimization.
 class Cup
