@@ -9,6 +9,28 @@
 namespace refac
 {
 
+Count_t&
+Throw::operator[](DigitType d)
+{
+  return counts[raw(d)];
+}
+
+Count_t&
+Throw::at(DigitType d)
+{
+  assert(legit(d));
+  assert(d >= 0 && d < counts.size());
+
+  return (*this)[d];
+}
+
+
+Count_t&
+Throw::total()
+{
+  return counts[raw(DigitType::total)];
+}
+
 bool
 Throw::any() const
 {
@@ -107,29 +129,8 @@ Throw::operator[](DigitType d) const
   return counts[raw(d)];
 }
 
-Count_t&
-Throw::operator[](DigitType d)
-{
-  return counts[raw(d)];
-}
-
-Count_t&
-Throw::at(DigitType d)
-{
-  assert(legit(d));
-  assert(d >= 0 && d < counts.size());
-
-  return (*this)[d];
-}
-
 Count_t
 Throw::total() const
-{
-  return counts[raw(DigitType::total)];
-}
-
-Count_t&
-Throw::total()
 {
   return counts[raw(DigitType::total)];
 }

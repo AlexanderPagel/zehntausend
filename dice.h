@@ -55,7 +55,7 @@ class Throw
     }
 
     Count_t& operator[](DigitType d); // FIXME replace occurences with member "at"
-    Count_t& at(DigitType d);
+    Count_t& at(DigitType d); // No bounds checking
     Count_t& total();
 
   public:
@@ -134,11 +134,18 @@ class State
     bool isTerminal() const;
     bool operator==(State const& other) const;
 
-    Points_t takeAction(Action const& action); // Returns current points gained by transition
-
     // Copy + move ctor default
     // Copy + move assign default
     // Dtor default
+};
+
+class Environment
+{
+    State state;
+
+  public:
+    Points_t takeAction(Action const& action); // Returns current points gained by transition
+
 };
 
 // class Dice represents a set of individual, ordered dice w/o extra
