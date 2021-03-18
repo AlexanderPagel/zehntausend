@@ -19,13 +19,26 @@
 namespace refac
 {
 
-using Digit_t = int_least8_t; // Save memory in arrays using smallest type
+using Digit_t = int_least8_t; // In range [1, 6].
 using Player_t = int_fast8_t;
 using Selection_t = std::vector<bool>;
 using Points_t = int_fast32_t;
+// TODO typedef Active_t = bool?
 
 // TODO do we want to move this somewhere else? into a class?
 int constexpr totalGameDieCount{6};
+
+// While Digit_t is 1-based and the value represents a digit, DigitType is
+// 0-based (to index arrays easily). Use typed enum to avoid mixing the two
+// accidentally.
+enum class DigitType : Digit_t
+{
+  one, two, three, four, five, six, total, // 0..6
+  count, begin = 0, end = count, none = -1 // canonical enum members
+};
+
+// Convert 1-based, valid digit to corresponding digit type
+DigitType digitToDigitType(Digit_t digit);
 
 // Class throw represents the rolled digits (of a hypothetical set of
 // dice). That means, the dice are represented by the number of
@@ -35,11 +48,6 @@ class Throw
 {
   public:
     using Count_t = int_least8_t; // Allow small arrays by using smallest type
-    enum class DigitType // TODO need base type?
-    {
-      one, two, three, four, five, six, total, // 0..6
-      count, begin = 0, end = count, none = -1 // canonical enum members
-    };
 
   private:
     // Use vector to allow simple move semantics
@@ -59,7 +67,8 @@ class Throw
     Count_t& total();
 
   public:
-    Throw() : counts(DigitType::count, Count_t(0)) {}
+    Throw(); // Initialize as empty
+    explicit Throw(Count_t dieCount, DigitType initialDigit = DigitType::one);
 
     bool any() const; // Any die contained?
     bool empty() const;
@@ -84,8 +93,6 @@ class Throw
     Count_t operator[](DigitType d) const;
     Count_t total() const;
 
-    // Convert 1-based, valid digit to corresponding digit type
-    static DigitType digitToDigitType(int digit);
 //    static auto digitTypeToDigit(DigitType d) -> decltype(raw(d))
 
     // copy + move assign defualt
@@ -189,29 +196,66 @@ class Environment
     // Dtor default
 };
 
-// class Dice represents a set of individual, ordered dice w/o extra
+// Class Dice represents a set of individual, ordered dice w/o extra
 // information.
+// No optimization needed for this class.
 class Dice
 {
-    std::vector<Digit_t> dice;
+    // TODO Derive instead? size, empty, ...
+    std::vector<Digit_t> dice; // digits in range [1, 6]
 
   public:
-    static Dice random();
+    explicit Dice(Count_t dieCount, Digit_t initialDigit = 1); // Instantiate c dice
 
-    Digit_t& operator[](int i);
-    Digit_t  operator[](int i) const;
+    Digit_t  operator[](int pos) const;
+    Digit_t& operator[](int pos);
 
-    bool operator==(Dice const& rhs) const;
+    bool operator==(Dice const&) const = default;
 
     void roll();
     void roll(Selection_t const& selection);
+
+    void addDie(Digit_t);
 };
 
-// Class cup represents a set of dice where each die can be active or
-// inactive.
-class Cup : public Dice
+// Maintain a consistent triple of "Throw", "Dice" and "Selection_t" objects.
+// Throw:
+//  - getters
+// Dice:
+//  - getters
+//  - setters
+// Throw setters would be ambiguous.
+//
+// The "Throw" part only represents the subset of *active* dice.
+// 
+// This class is for game-style user interaction and does not require
+// optimization.
+class Cup
 {
-  Selection_t active;
+    Dice dice;          // All dice regardless of activeness
+    Throw thrown;       // Only active dice
+    Selection_t active; // Activeness mask for member 'dice'
+
+  public:
+    explicit Cup(Count_t dieCount, Digit_t initialDigit = 1);
+
+    bool operator==(Cup const&) const; // Exact match of digits, activeness, and positions
+    bool operator==(Throw const&) const; // Only active dice, disregarding permutations
+
+    Count_t anyCount() const;
+    Count_t activeCount(DigitType d) const;
+    Count_t inactiveCount() const;
+
+    std::pair<Digit_t, bool> getDie(int pos) const;
+    void setDie(int pos, Digit_t);              // Re-assign existing die digit
+    void setDie(int pos, Digit_t, bool active); // Re-assign existing die digit + activeness
+    void addDie(Digit_t, bool newActive = true);   // Add new die to the end
+
+    void roll(); // Randomize all active
+
+    // copy + move ctor default
+    // copy + move assign default
+    // dtor default
 };
 
 } // namespace refac

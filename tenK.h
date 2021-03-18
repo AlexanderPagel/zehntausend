@@ -44,13 +44,11 @@ Game Implementation bases:
 - Class Dice.
   Representing an ordered tuple of dice, each with it's individual digits
 
-- Class TODO: classname:
+- Class Cup
   Combining the classes "Throw" and "Dice" into a combined representation.
   Ensuring that the "Dice" and "Throw" subobject remain consistent.
   Basically equals the "Dice" class, but keeps a consistent throw
   representation in the background.
-
-- Class Cup:
   Expanding the die representation by allowing to put aside dice. Dice that are
   put aside will not be rolled by the roll() member.
 
@@ -64,14 +62,13 @@ Subtypes
 
 
   Checklist:
-    - ?           [ ]
     - Action      [x]
     - Cup         [ ]
-    - Dice        [ ]
-    - Digit       [ ]
-    - Environment [ ]
+    - Dice        [x]
+    - Digit       [x] // typedef
+    - Environment [x]
     - Game        [ ]
-    - State       [ ]
+    - State       [x]
     - Throw       [x]
 } // namespace refac
 

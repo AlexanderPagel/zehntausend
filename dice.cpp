@@ -9,6 +9,19 @@
 namespace refac
 {
 
+DigitType
+digitToDigitType(Digit_t digit)
+{
+  // Add offset int -> DigitType
+  auto constexpr offset = raw(DigitType::one) - 1
+  auto const res = DigitType(digit + offset);
+
+  assert(legit(res));
+
+  return res;
+}
+
+
 Count_t&
 Throw::operator[](DigitType d)
 {
@@ -29,6 +42,16 @@ Count_t&
 Throw::total()
 {
   return counts[raw(DigitType::total)];
+}
+
+Throw::Throw()
+  : counts(DigitType::count, Count_t(0))
+{}
+
+Throw::Throw(Count_t dieCount, DigitType initialDigit)
+  : Throw() // Initialize with zero dice
+{
+  add(initialDigit, dieCount);
 }
 
 bool
@@ -170,18 +193,6 @@ Count_t
 Throw::total() const
 {
   return counts[raw(DigitType::total)];
-}
-
-Throw::DigitType
-Throw::digitToDigitType(int digit)
-{
-  // Add offset int -> DigitType
-  auto constexpr offset = raw(DigitType::one) - 1
-  auto const res = DigitType(digit + offset);
-
-  assert(legit(res));
-
-  return res;
 }
 
 Action
@@ -427,6 +438,133 @@ std::vector<Action> const&
 Environment::getLegalActions() const
 {
   return legalActions;
+}
+
+Dice::Dice(Count_t c, Digit_t d)
+  : dice(c, d) // Number of elements = c, initial value = d
+{}
+
+Digit_t
+Dice::operator[](int pos) const
+{
+  assert(pos < (int) dice.size());
+
+  return dice[pos];
+}
+
+Digit_t&
+Dice::operator[](int pos)
+{
+  assert(pos < (int) dice.size());
+
+  return dice[pos];
+}
+
+void
+Dice::roll()
+{
+  std::transform(
+      dice.begin(), dice.end(), dice.begin(),
+      [](auto d) { d = randomness::randomDie(); }
+      );
+}
+
+void
+Dice::roll(Selection const& selection)
+{
+  assert(selection.size() == dice.size());
+
+  auto selIt = selection.begin();
+  for (auto it = dice.begin(); it != dice.end(); ++it, ++selIt)
+    if (*selit) *it = randomness::randomDie();
+}
+
+void
+Dice::addDie(Digit_t newDie)
+{
+  dice.push_back(newDie);
+}
+
+Cup::Cup(Count_t dieCount, Digit_t initialDigit
+  : dice(dieCount, initialDigit),
+    thrown(dieCount, digitToDigitType(initialDigit)),
+    active(dieCount, true)
+{}
+
+bool
+Cup::operator==(Cup const& other)
+{
+  // The "Throw" member is consistent, comparison obsolete
+  return dice == other.dice && active == other.active;
+}
+
+bool
+Cup::operator==(Throw const& t)
+{
+  return thrown == t;
+}
+
+Count_t
+Cup::anyCount() const
+{
+  return dice.size();
+}
+
+Count_t
+Cup::activeCount(DigitType d = DigitType::total) const
+{
+  return thrown[d];
+}
+
+Count_t
+Cup::inactiveCount() const
+{
+  return anyCount() - activeCount();
+}
+
+Digit_t
+Cup::getDie(int pos) const
+{
+  assert(pos < anyCount());
+  assert(pos >= 0); // TODO There is no positivity check in STL?
+
+  return std::make_pair(dice[pos], active[pos]);
+}
+
+void
+Cup::setDie(int pos, Digit_t d)
+{
+  setDie(pos, d,
+      // Use old activeness as new activeness
+      std::get<bool>(getDie(pos))
+      );
+}
+
+void
+Cup::setDie(int pos, Digit_t d, bool newActive)
+{
+  // Keep "Throw" part consistent by removing the old digit type (if was
+  // active) and adding the new one (if will be active).
+  auto [digit, oldActive] = getDie(pos);
+  if (oldActive) thrown.decrement(digitToDigitType(dice[pos]));
+  dice[pos] = d;
+  if (newActive) thrown.increment(digitToDigitType(d        ));
+}
+
+void
+Cup::addDie(Digit_t newDie, bool newActive)
+{
+  dice.addDie(newDie);
+  thrown.increment(digitToDigitType(newDie));
+  active.push_back(newActive);
+}
+
+void
+Cup::roll()
+{
+  auto it = active.cbegin();
+  for (int i = 0; i < size(); ++i, ++it)
+    if (*it) setDie(i, randomness::randomDie());
 }
 
 } // namespace refac
