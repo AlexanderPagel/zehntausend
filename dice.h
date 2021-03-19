@@ -309,7 +309,13 @@ class GameState
 // Game-like (incremental) and sanity-checked implementation of the (episodic)
 // one-player game. This class will reject actions in a terminal state as
 // illegal.
-// Only the game-related members (toggle, roll, finish) are sanity checked.
+// Only the game-related members (toggle, roll, finish) are sanity checked
+// (returning a boolean indicating success). When these interactions fail, they
+// are no-ops. That means, the object can still be used afterwards as if the
+// erroneous request had not been made.
+// Non-game-related members like getReturn() and the private member functions
+// are *not* sanity checked. Member getReturn() MUST only be called in terminal
+// states.
 class Game
 {
     GameState gameState;
@@ -325,7 +331,7 @@ class Game
     bool endSubturnWith(bool finish);
 
   public:
-    Game();
+    Game(); // Initialize new game
 
     bool isTerminal() const; // Terminal = no further interactions allowed
     Points_t getReturn() const; // Get episode return in terminal states
@@ -349,9 +355,22 @@ class Thenthousand
     std::vector<gameState> gameStates;
     std::vector<Points_t> savePoints;
     int player{0};
+    int winner{noWinner};
+
+    static decltype(winner) constexpr noWinner = -1;
+
+    // Couple helpers for (near) atomic operations for the *current player*
+    void addPoints(Points_t points);
+    void restartEnvironment();
+    void adjustWinner();
+    void incrementPlayer();
+
+    template<GameState::* Member, typename... Types>
+    bool interact(Types... args); // Helper to collect the shared cleanup/checks
 
   public:
     static constexpr int goal = 10000;
+
     Tethousand(int playerCount = 0);
 
     int playerCount() const;
@@ -365,6 +384,11 @@ class Thenthousand
     Cup const& getCup() const;
     Points_t getPoints() const; // Save player points
     Points_t getPoints(int player) const;
+
+    // Relay game interactions for the *current player*
+    bool interactToggleAside(int pos);
+    bool interactRoll();
+    bool interactFinish();
 };
 
 } // namespace refac
