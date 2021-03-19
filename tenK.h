@@ -67,7 +67,7 @@ Subtypes
     - Dice        [x]
     - Digit       [x] // typedef
     - Environment [x]
-    - Game        [ ]
+    - Game        [x]
     - State       [x]
     - Throw       [x]
 } // namespace refac
