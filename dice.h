@@ -38,7 +38,8 @@ enum class DigitType : Digit_t
 };
 
 // Convert 1-based, valid digit to corresponding digit type
-DigitType digitToDigitType(Digit_t digit);
+DigitType digitToDigitType(Digit_t   digit);
+Digit_t   digitTypeToDigit(DigitType digit);
 
 // Class throw represents the rolled digits (of a hypothetical set of
 // dice). That means, the dice are represented by the number of
@@ -64,7 +65,7 @@ class Throw
 
     Count_t& operator[](DigitType d);
     Count_t& at(DigitType d); // No bounds checking
-    Count_t& total();
+    Count_t& total(); // TODO needed?
 
   public:
     Throw(); // Initialize as empty
@@ -186,10 +187,10 @@ class Environment
 
     // Take known-legal action, return points gained
     Points_t takeAction(Action const& action);
-
     bool episodeFinished() const;
     State const& getState() const;
     std::vector<Action> const& getLegalActions() const;
+    void restart();
 
     // Copy + move ctor default
     // Copy + move assign default
@@ -250,13 +251,52 @@ class Cup
     void setDie(int pos, Digit_t);              // Re-assign existing die digit
     void setDie(int pos, Digit_t, bool active); // Re-assign existing die digit + activeness
     void addDie(Digit_t, bool newActive = true);   // Add new die to the end
+    void addDie(DigitType, bool newActive = true);
     void setActive(int pos, bool newActive = true);
+    Selection_t const& getActive() const;
 
     void roll(); // Randomize all active
 
     // copy + move ctor default
     // copy + move assign default
     // dtor default
+};
+
+// This class is the internal representation of a game-like state. It expects
+// inputs to be suitable, i.e., represent legal actions for the represented
+// game.
+class GameState
+{
+    // Internally run a normal Simulation in the 'state' object. After each
+    // change, adjust the cup by-hand to stay consistent with the new state.
+    // This is inefficient, but to do not care.
+    State state; // Needs to be declared first for ctor
+    Cup cup;
+
+    // Helpers
+    void finishStop();
+    void finishRoll();
+
+    // Replace active dice by a random permutation of the argument. Makes
+    // member 'cup' consistent to the member 'state' as long as the number of
+    // active dice in cup matches the number of dice in the state.
+    makeDigitsConsistent();
+
+  public:
+    GameState();
+
+    // Get game information
+    Cup   const& getCup  () const;
+    State const& getState() const; // Ignoring dice put aside in current
+
+    // Interact with game
+    void toggleAside(pos);
+    void finishTurn(bool roll);
+    void restart(); // Initialize new game
+
+    // Copy + move ctor default
+    // Copy + move assign default
+    // Dtor default
 };
 
 } // namespace refac

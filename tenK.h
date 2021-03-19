@@ -63,7 +63,7 @@ Subtypes
 
   Checklist:
     - Action      [x]
-    - Cup         [ ]
+    - Cup         [x]
     - Dice        [x]
     - Digit       [x] // typedef
     - Environment [x]

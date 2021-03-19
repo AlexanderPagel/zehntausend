@@ -9,16 +9,48 @@
 namespace refac
 {
 
+namespace
+{
+  auto constexpr offsetDigitToDigitType = raw(DigitType::one) - 1
+  auto constexpr offsetDigitTypeToDigit = -offsetDigitToDigitType;
+
+  // TODO Put these into some utils source or anything?
+  template<typename Input>
+  bool truePredicate(Input)
+  {
+    return true;
+  }
+  template<typename It, typename Pred>
+  auto indicesOf(It begin, It end, Pred p = truePredicate<decltype(*begin)>)
+    -> std::vector<decltype(end - begin)>
+  {
+    std::vector<decltype(end - begin)> res{};
+    for (auto it = begin; it != end; ++it)
+    {
+      // Add indices of elements that fulfill p
+      if (p(*it)) res.push_back(it - begin);
+    }
+    return res;
+  }
+} // namespace
+
 DigitType
 digitToDigitType(Digit_t digit)
 {
   // Add offset int -> DigitType
-  auto constexpr offset = raw(DigitType::one) - 1
-  auto const res = DigitType(digit + offset);
+  auto const res = DigitType(digit + offsetDigitToDigitType);
 
   assert(legit(res));
 
   return res;
+}
+
+Digit_t
+digitTypeToDigit(DigitType digit)
+{
+  assert(legit(digit));
+
+  return raw(digit) + offsetDigitTypeToDigit;
 }
 
 
@@ -370,6 +402,13 @@ Environment::fillActions()
     legalMoves.push_back(Throw::makeWelp());
 }
 
+Environment::Environment()
+  : state(State::startState()),
+    legalActions{} // initialize empty
+{
+  fillActions();
+}
+
 Points_t
 Environment::takeAction(Action const& action)
 {
@@ -438,6 +477,13 @@ std::vector<Action> const&
 Environment::getLegalActions() const
 {
   return legalActions;
+}
+
+void
+Environment::restart()
+{
+  state = State::startState();
+  fillActions();
 }
 
 Dice::Dice(Count_t c, Digit_t d)
@@ -558,6 +604,12 @@ Cup::addDie(Digit_t newDie, bool newActive)
 }
 
 void
+Cup::addDie(DigitType newDie, bool newActive)
+{
+  addDie(digitTypeToDigit(newDie), newActive);
+}
+
+void
 Cup::setActive(int pos, bool newActive)
 {
   auto [digit, active] = getDie(pos);
@@ -570,6 +622,31 @@ Cup::roll()
   auto it = active.cbegin();
   for (int i = 0; i < size(); ++i, ++it)
     if (*it) setDie(i, randomness::randomDie());
+}
+
+void
+GameState::makeDigitsConsistent()
+{
+  // Otherwise can not possibly be consistent
+  assert(cup.activeCount() == state.getThrow().total());
+
+  // Get indices of all active dice
+  auto const& freeBit = cup.getActive();
+  auto freePos = indicesOf(freeBit.begin(), freeBit.end(),
+                           [](bool b){return b});
+
+  auto nextRandomPos = [&freePos]()
+  {
+    return
+  };
+}
+
+GameState::GameState()
+  : state(State::startState()),   // Dictate initial state
+    cup(state.getThrow().total()) // Initialize to correct number of dice
+{
+  // Make member 'cup' consistent to the dictated initial state
+  makeDigitsConsistent();
 }
 
 } // namespace refac
