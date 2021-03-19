@@ -169,7 +169,8 @@ class State
     // Dtor default
 };
 
-// Implements the game rules and state transitions
+// Implements the game rules and state transitions.
+// For legal inputs only!
 class Environment
 {
     State state;
@@ -183,7 +184,7 @@ class Environment
     void fillActions(); // Refills the actions vector (no extra clear needed)
 
   public:
-    Environment();
+    Environment(); // Initialize in a normal start state
 
     // Take known-legal action, return points gained
     Points_t takeAction(Action const& action);
@@ -253,6 +254,7 @@ class Cup
     void addDie(Digit_t, bool newActive = true);   // Add new die to the end
     void addDie(DigitType, bool newActive = true);
     void setActive(int pos, bool newActive = true);
+    void toggleActive(int pos);
     Selection_t const& getActive() const;
 
     void roll(); // Randomize all active
@@ -262,32 +264,36 @@ class Cup
     // dtor default
 };
 
-// This class is the internal representation of a game-like state. It expects
-// inputs to be suitable, i.e., represent legal actions for the represented
-// game.
+// This class is the internal representation of a game-like state. Inputs MUST
+// be suitable to the situation, i.e., represent legal actions for the
+// represented game.
 class GameState
 {
-    // Internally run a normal Simulation in the 'state' object. After each
-    // change, adjust the cup by-hand to stay consistent with the new state.
-    // This is inefficient, but to do not care.
-    State state; // Needs to be declared first for ctor
+    // Internally run a normal Simulation in the 'environment' object. After
+    // each change, adjust the cup by-hand to stay consistent with the new
+    // state.
+    Environment environment;
     Cup cup;
-
-    // Helpers
-    void finishStop();
-    void finishRoll();
+    Action action{Action::makeWelp()};  // Action in construction
 
     // Replace active dice by a random permutation of the argument. Makes
     // member 'cup' consistent to the member 'state' as long as the number of
     // active dice in cup matches the number of dice in the state.
-    makeDigitsConsistent();
+    void makeDigitsConsistent();
+
 
   public:
     GameState();
 
+    // Internal consistency check
+    bool consistent() const; // TODO needed for debugging?
+
     // Get game information
-    Cup   const& getCup  () const;
-    State const& getState() const; // Ignoring dice put aside in current
+    Environment const& getEnvironment() const;
+    Cup    const& getCup   () const;
+    State  const& getState () const; // Ignoring dice put aside in current
+    Action const& getAction() const;
+    bool isTerminal() const;
 
     // Interact with game
     void toggleAside(pos);
