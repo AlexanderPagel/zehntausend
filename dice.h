@@ -341,6 +341,32 @@ class Game
     void restart();
 };
 
+// Class "Tenthousand" implements the full multiplayer game until 10k points.
+class Thenthousand
+{
+  private:
+    // TODO state and points separate or in conjunction?
+    std::vector<gameState> gameStates;
+    std::vector<Points_t> savePoints;
+    int player{0};
+
+  public:
+    static constexpr int goal = 10000;
+    Tethousand(int playerCount = 0);
+
+    int playerCount() const;
+    int activePlayer() const;
+    bool hasFinished() const;
+    int winner() const;
+
+    // Observe game properties
+    GameState const& getGameState() const;
+    State const& getState() const;
+    Cup const& getCup() const;
+    Points_t getPoints() const; // Save player points
+    Points_t getPoints(int player) const;
+};
+
 } // namespace refac
 
 template<unsigned int N>
