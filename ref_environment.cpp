@@ -20,6 +20,9 @@ Environment::clearActions()
 void
 Environment::fillActions()
 {
+  // TODO Optimization potential: Points computation on-the fly while
+  //      generating action.
+
   clearActions();
 
   // Special case 1: Only the "none" action available in terminal state
@@ -31,13 +34,12 @@ Environment::fillActions()
   // iterate them in steps of 3.
   Throw t{}; // Zero-initialize
   bool first{true};
-  // TODO Remove unnecessary tracking of the total count.
-  for (; t.getDigitCount(DigitType::six) <= getState().getThrown().getDigitCount(DigitType::six); t.add(DigitType::six, 3))
-  for (; t.getDigitCount(DigitType::five) <= getState().getThrown().getDigitCount(DigitType::five); t.increment(DigitType::five))
-  for (; t.getDigitCount(DigitType::four) <= getState().getThrown().getDigitCount(DigitType::four); t.add(DigitType::four, 3))
-  for (; t.getDigitCount(DigitType::three) <= getState().getThrown().getDigitCount(DigitType::three); t.add(DigitType::three, 3))
-  for (; t.getDigitCount(DigitType::two) <= getState().getThrown().getDigitCount(DigitType::two); t.add(DigitType::two, 3))
-  for (; t.getDigitCount(DigitType::one) <= getState().getThrown().getDigitCount(DigitType::one); t.increment(DigitType::one))
+  for (t.setDigitCount(DigitType::six, 0); t.getDigitCount(DigitType::six) <= getState().getThrown().getDigitCount(DigitType::six); t.add(DigitType::six, 3))
+  for (t.setDigitCount(DigitType::five, 0); t.getDigitCount(DigitType::five) <= getState().getThrown().getDigitCount(DigitType::five); t.increment(DigitType::five))
+  for (t.setDigitCount(DigitType::four, 0); t.getDigitCount(DigitType::four) <= getState().getThrown().getDigitCount(DigitType::four); t.add(DigitType::four, 3))
+  for (t.setDigitCount(DigitType::three, 0); t.getDigitCount(DigitType::three) <= getState().getThrown().getDigitCount(DigitType::three); t.add(DigitType::three, 3))
+  for (t.setDigitCount(DigitType::two, 0); t.getDigitCount(DigitType::two) <= getState().getThrown().getDigitCount(DigitType::two); t.add(DigitType::two, 3))
+  for (t.setDigitCount(DigitType::one, 0); t.getDigitCount(DigitType::one) <= getState().getThrown().getDigitCount(DigitType::one); t.increment(DigitType::one))
   {
     // Skip the empty action (simpler to code than beginning at first non-zero
     // action).
@@ -48,14 +50,65 @@ Environment::fillActions()
     }
 
     // For every non-zero selection, we can put any subset of dice aside and
-    // either stop or continue.
+    // continue. If we gain enough points, we can also finish.
     legalActions.emplace_back(t, false);
-    legalActions.emplace_back(t, true);
+    if (pointsWorthLimit(t, state.getPoints()) > 0)
+      legalActions.emplace_back(t, true);
   }
 
-  // SPecial case 2: Only the "welp" action if nothing else
+  // Special case 2: Only the "welp" action if nothing else
   if (legalActions.empty())
     legalActions.push_back(Action::makeWelp());
+}
+
+Points_t
+Environment::pointsWorthRaw(Throw const& thrown)
+{
+  Points_t points{0};
+
+  auto const tripleWorth = [](Count_t c, DigitType d, Points_t base = 100) -> Points_t
+  {
+    return c / 3 * base * digitTypeToDigit(d);
+  };
+  auto const singleWorth = [](Count_t c, Points_t base) -> Points_t
+  {
+    return (c - c/3*3) * base;
+  };
+
+  // Every triple of 1 scores 1000.
+  // Every triple of {2,3,4,5,6} scores 100x the digit value.
+  points += tripleWorth(thrown[DigitType::one], DigitType::one, 1000);
+  for (auto d = DigitType::two; d != DigitType::six; ++d)
+    points += tripleWorth(thrown[d], d);
+
+  // All 1s and 5s of non-triples score 100 (resp. 50) each
+  points += singleWorth(thrown[DigitType::one], 100);
+  points += singleWorth(thrown[DigitType::five], 50);
+
+  return points;
+}
+
+Points_t
+Environment::pointsWorthLimit(Throw const& thrown, Points_t startPoints)
+{
+  // TODO Worth to test if startpoints > turn limit beforehand?
+
+  if (auto sum{pointsWorthRaw(thrown) + startPoints}; sum > turnLimit)
+    return sum;
+  else
+    return Points_t{0};
+}
+
+Points_t
+Environment::pointsWorthRaw(Action const& action)
+{
+  return pointsWorthRaw(action.taking);
+}
+
+Points_t
+Environment::pointsWorthLimit(Action const& action, Points_t startPoints)
+{
+  return pointsWorthLimit(action.taking, startPoints);
 }
 
 Environment::Environment()
@@ -65,6 +118,7 @@ Environment::Environment()
   fillActions();
 }
 
+// Action must be known-legal
 Points_t
 Environment::takeAction(Action const& action)
 {
@@ -89,27 +143,19 @@ Environment::takeAction(Action const& action)
   }
 
   // Compute immediate point diff for given action
-  for (auto d = DigitType::one;
-       d != DigitType::six; ++d)
-  {
-    // Every triple if 4s scores 400 etc.
-    pointDiff += action.taking[d] / 3 * 100 * digitTypeToDigit(d);
-  }
-  // All 1s and 5s of non-triples score 100 (resp. 50) each
-  pointDiff += (action.taking[DigitType::one ] - action.taking[DigitType::one ]/3*3) * 100;
-  pointDiff += (action.taking[DigitType::five] - action.taking[DigitType::five]/3*3) * 50 ;
+  pointDiff = pointsWorthRaw(action);
 
   // Compute new thrown dice
   if (action.finish)
   {
-    // Can ignore rolled dice if finishing
+    // Can ignore leftover dice if finishing but...
     state = State::makeTerminalState();
   }
   else
   {
-    // Need to re-roll leftovers to continue
+    // ...need to re-roll leftovers to continue.
     state -= action.taking;
-    state.roll(totalGameDieCount);
+    state.roll(totalGameDieCount);  // Rolls new dice if exactly 0 left
   }
 
 adjust_points:

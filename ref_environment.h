@@ -34,7 +34,17 @@ class Environment
     void clearActions(); // Empty w/o changing cpacity
     void fillActions(); // Refills the actions vector (no extra clear needed)
 
+    // Immediate return promised by a *legal* action (throw part only)
+    static Points_t pointsWorthRaw(Throw const&);
+    // Immediate return considering the turn limit
+    static Points_t pointsWorthLimit(Throw const&, Points_t startPoints);
+    // Helper to input an entire action
+    static Points_t pointsWorthRaw(Action const&);
+    static Points_t pointsWorthLimit(Action const&, Points_t startPoints);
+
   public:
+    static Points_t constexpr turnLimit{350};
+
     Environment(); // Initialize in a normal start state
 
     // Take known-legal action, return points gained
