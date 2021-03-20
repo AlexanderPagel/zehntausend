@@ -113,7 +113,7 @@ template<typename T,
 constexpr T&
 operator++(T& v)
 {
-  return ++v;
+  return v = static_cast<T>(raw(v) + 1);
 }
 
 // Commented out because I am not sure whether I will need this or not
