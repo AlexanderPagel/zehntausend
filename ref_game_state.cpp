@@ -137,10 +137,6 @@ GameState::finishTurn(bool finish)
 void
 GameState::restart()
 {
-  // TODO Remove assert later. For now lets just make sure we don't quit too
-  //      early:
-  assert(isTerminal());
-
   environment.restart();
   cup = Cup(getState().getThrown().total()); // Create correct umber of dice
   makeDigitsConsistent();
