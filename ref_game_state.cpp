@@ -3,35 +3,41 @@
 #include <cassert>
 #include <tuple> // std::get
 
+#include "enum.h"
+#include "randomness.h"
+
 
 namespace refac
 {
 
+// Only call this member at the beginning of each subturn (when no dice have
+// been put aside yet), so that the total number of dice in 'thrown' match the
+// number of active dice in 'dice'.
 void
 GameState::makeDigitsConsistent()
 {
   // Otherwise can not possibly be consistent
-  assert(cup.activeCount() == getState().getThrow().total());
+  assert(cup.activeCount() == getState().getThrown().total());
 
-  // Only ran before constructing action
+  // Only run before constructing action
   assert(action.taking.empty());
 
   // Get indices of all active dice
   auto const& freeBit = cup.getActive();
   auto freePos = indicesOf(freeBit.begin(), freeBit.end(),
-                           [](bool b){return b});
+                           [](bool b){ return b; });
 
   // Internal object 'getState()' dictates how many of each DigitType there are
   for (DigitType d = DigitType::one; d <= DigitType::six; ++d)
-    for (auto n = getState().getThrow()[d]; n; --n)
+    for (auto n = getState().getThrown()[d]; n; --n)
     {
       // Object 'cup' is set to a random permutation of dictated digits. Only
       // active positions are considered.
-      auto posIt = pickUniformRandom(freePos);
-      cup.setDie(*posIt, d);
+      auto posIt = randomness::pickUniformRandom(freePos);
+      cup.setDie(*posIt, digitTypeToDigit(d));
 
-      // Validate correctness of indice filter. Remove assert later.
-      assert(std::get<bool>(getDie(*posIt)));
+      // Validate correctness of index filter. Remove assert later.
+      assert(std::get<bool>(cup.getDie(*posIt)));
 
       freePos.erase(posIt);
     }
@@ -42,7 +48,7 @@ GameState::makeDigitsConsistent()
 
 GameState::GameState()
   : environment(), // Dictate initial state
-    cup(getState().getThrow().total()) // Initialize to correct number of dice
+    cup(getState().getThrown().total()) // Initialize to correct number of dice
 {
   // Make member 'cup' consistent to the dictated initial state
   makeDigitsConsistent();
@@ -68,6 +74,12 @@ GameState::getState() const
   return getEnvironment().getState();
 }
 
+Action const&
+GameState::getAction() const
+{
+  return action;
+}
+
 bool
 GameState::isTerminal() const
 {
@@ -75,30 +87,29 @@ GameState::isTerminal() const
 }
 
 void
-GameState::toggleAside(pos)
+GameState::toggleAside(int pos)
 {
   assert(!isTerminal());
 
   auto [digit, aside] = cup.getDie(pos);
-  if (aside) action.taking.decrement[digitToDigitType(digit)];
-  else       action.taking.increment[digitToDigitType(digit)];
+  if (aside) action.taking.decrement(digitToDigitType(digit));
+  else       action.taking.increment(digitToDigitType(digit));
   cup.toggleActive(pos);
 }
 
-bool
+// Sets the finish member of the internally constructed action, for
+// a subsequent call to finishTurn() without argument.
+void
 GameState::selectActionFinish(bool finishes)
 {
   action.finish = finishes;
 }
 
+// Requires that selectActionFinish() was called beforehand (by the user, when
+// called directly, or by the finishTurn(bool) member.
 void
-GameState::finishTurn(bool finish)
+GameState::finishTurn()
 {
-  assert(!isTerminal());
-
-  // Finalize action
-  selectActionFinish(finish);
-
   // Use 'state' to dictate next state. Keeping 'cup' consistent.
   // Taking the constructed action in the environment makes
   environment.takeAction(action);
@@ -109,6 +120,18 @@ GameState::finishTurn(bool finish)
   // provide a throw again and numbers can legitimately mismatch.
   assert(isTerminal() ||
          getState().getThrown().total() == getCup().activeCount());
+}
+
+void
+GameState::finishTurn(bool finish)
+{
+  assert(!isTerminal());
+
+  // Finalize action
+  selectActionFinish(finish);
+
+  // Use constructed action
+  finishTurn();
 }
 
 void

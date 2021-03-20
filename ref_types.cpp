@@ -1,4 +1,4 @@
-#include "ref_types.cpp"
+#include "ref_types.h"
 
 #include "enum.h"
 
@@ -8,7 +8,7 @@ namespace refac
 
 namespace
 {
-auto constexpr offsetDigitToDigitType = raw(DigitType::one) - 1
+auto constexpr offsetDigitToDigitType = raw(DigitType::one) - 1;
 auto constexpr offsetDigitTypeToDigit = -offsetDigitToDigitType;
 }
 

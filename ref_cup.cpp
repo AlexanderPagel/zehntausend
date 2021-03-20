@@ -2,6 +2,7 @@
 
 #include <tuple> // std::make_pair
 
+#include "randomness.h"
 #include "ref_dice.h"
 #include "ref_throw.h"
 #include "ref_types.h"
@@ -10,21 +11,21 @@
 namespace refac
 {
 
-Cup::Cup(Count_t dieCount, Digit_t initialDigit
+Cup::Cup(Count_t dieCount, Digit_t initialDigit)
   : dice(dieCount, initialDigit),
     thrown(dieCount, digitToDigitType(initialDigit)),
     active(dieCount, true)
 {}
 
 bool
-Cup::operator==(Cup const& other)
+Cup::operator==(Cup const& other) const
 {
   // The "Throw" member is consistent, comparison obsolete
   return dice == other.dice && active == other.active;
 }
 
 bool
-Cup::operator==(Throw const& t)
+Cup::operator==(Throw const& t) const
 {
   return thrown == t;
 }
@@ -32,11 +33,11 @@ Cup::operator==(Throw const& t)
 Count_t
 Cup::anyCount() const
 {
-  return dice.size();
+  return dice.count();
 }
 
 Count_t
-Cup::activeCount(DigitType d = DigitType::total) const
+Cup::activeCount(DigitType d) const
 {
   return thrown[d];
 }
@@ -47,7 +48,7 @@ Cup::inactiveCount() const
   return anyCount() - activeCount();
 }
 
-Digit_t
+std::pair<Digit_t, bool>
 Cup::getDie(int pos) const
 {
   assert(pos < anyCount());
@@ -102,11 +103,17 @@ Cup::toggleActive(int pos)
   setActive(pos, !active);
 }
 
+Selection_t const&
+Cup::getActive() const
+{
+  return active;
+}
+
 void
 Cup::roll()
 {
   auto it = active.cbegin();
-  for (int i = 0; i < size(); ++i, ++it)
+  for (int i = 0; i < anyCount(); ++i, ++it)
     if (*it) setDie(i, randomness::randomDie());
 }
 

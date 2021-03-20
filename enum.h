@@ -13,9 +13,17 @@
 // enum types.
 
 
+#ifndef ENUM_H_INCLUDED
+#define ENUM_H_INCLUDED 1
+
+
 #include <cassert>
 #include <type_traits>
 
+#include "ref_types.h"
+
+
+enum class Decoy {};
 
 // Canonical enum functions
 template<typename Enum,
@@ -40,8 +48,8 @@ legit(Enum e) -> bool
 }
 
 template<typename T,
-         typename = std::enable_if_t< std::is_same_v<T, Square>
-                                    ||false>>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>>
+        >
 constexpr T
 operator+(T lhs, T rhs)
 {
@@ -49,7 +57,7 @@ operator+(T lhs, T rhs)
 }
 
 template<typename T,
-         typename = std::enable_if_t< std::is_same_v<T, Square>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>
                                     ||false>>
 constexpr T
 operator-(T lhs, T rhs)
@@ -58,7 +66,7 @@ operator-(T lhs, T rhs)
 }
 
 template<typename T, typename U,
-         typename = std::enable_if_t< std::is_same_v<T, Square>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>
                                     ||false>,
          typename = std::enable_if_t<std::is_integral_v<U>>
         >
@@ -69,7 +77,7 @@ operator-(T& lhs, U rhs)
 }
 
 template<typename T, typename U,
-         typename = std::enable_if_t< std::is_same_v<T, Square>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>
                                     ||false>,
          typename = std::enable_if_t<std::is_integral_v<U>>
         >
@@ -80,7 +88,7 @@ operator+(T& lhs, U rhs)
 }
 
 template<typename T, typename U,
-         typename = std::enable_if_t< std::is_same_v<T, Square>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>
                                     ||false>,
          typename = std::enable_if_t<std::is_integral_v<U>>
         >
@@ -91,12 +99,21 @@ operator/(T lhs, U rhs)
 }
 
 template<typename T,
-         typename = std::enable_if_t< std::is_same_v<T, Value>
+         typename = std::enable_if_t< std::is_same_v<T, Decoy>
                                      ||false>>
 constexpr T
 operator-(T const& v)
 {
   return static_cast<T>(-raw(v));
+}
+
+template<typename T,
+         typename = std::enable_if_t<std::is_same_v<T, typename refac::DigitType>>
+        >
+constexpr T&
+operator++(T& v)
+{
+  return ++v;
 }
 
 // Commented out because I am not sure whether I will need this or not
@@ -109,3 +126,6 @@ operator<(Enum const& lhs, Enum const& rhs) -> bool
   return raw(lhs) < raw(rhs);
 }
 */
+
+
+#endif // ENUM_H_INCLUDED

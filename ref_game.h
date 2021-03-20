@@ -18,6 +18,10 @@
 #define REF_GAME_H_INCLUDED 1
 
 
+#include "ref_game_state.h"
+#include "ref_types.h"
+
+
 namespace refac
 {
 
@@ -48,8 +52,12 @@ class Game
     bool roll();    // Roll remaining dice
     bool finish();  // Finish with current selection
 
-    // Initialize new game. Recovers from corrupted states.
+    // Initialize new *multiplayer* game. Recovers from corrupted states.
     void restart();
+
+    // Some functions to further inspect the components (mainly to extract the
+    // internal state).
+    GameState const& getGameState() const;
 };
 
 } // namespace refac

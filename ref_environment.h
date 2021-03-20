@@ -31,7 +31,7 @@ class Environment
     //      optimization case should be self-play training.
     std::vector<Action> legalActions;
 
-    void clearActions(); // TODO probably we want to remove w/o resizing vector (?)
+    void clearActions(); // Empty w/o changing cpacity
     void fillActions(); // Refills the actions vector (no extra clear needed)
 
   public:

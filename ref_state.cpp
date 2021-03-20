@@ -28,13 +28,13 @@ State::makeTerminalState()
 }
 
 bool
-State::isTerminal()
+State::isTerminal() const
 {
-  return thrown.empty() && points = 0;
+  return thrown.empty() && points == 0;
 }
 
 bool
-State::operator==(State const& other)
+State::operator==(State const& other) const
 {
   return (isTerminal() && other.isTerminal())
       || (!isTerminal () && !other.isTerminal() && // single "none"

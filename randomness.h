@@ -24,7 +24,7 @@ extern T randomReal(T lo, T hi);
 extern std::function<int(void)> const randomDie;
 
 template<typename T>
-auto pickUniformRandom(T const& t) -> decltype(t.begin());;
+auto pickUniformRandom(T const& t) -> decltype(t.begin());
 
 //template<typename D>
 //extern auto useGlobalRandomness(D& d) -> std::function<decltype(d(mt)) ()>;

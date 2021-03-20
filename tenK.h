@@ -1,9 +1,12 @@
-namespace refac
-{
+/*
+
 // These ideas will be implemented within the refac namespace.
 // Our goal is that we can slowly replace all "classname" by
 // "refac::new_classname"; then later remove the refac namespace in one go.
 
+
+namespace refac
+{
 
 Couple toughts about the game refactoring
 -----------------------------------------
@@ -70,8 +73,10 @@ Subtypes
     - Game        [x]
     - State       [x]
     - Throw       [x]
+
 } // namespace refac
 
+*/
 
 
 #ifndef TENK_H_INCLUDED
@@ -94,50 +99,6 @@ Subtypes
 
 
 namespace ui { class Ui; }
-
-namespace refac
-{
-
-using Points_t = int;
-
-// class State represents a raw game state, that menas, the state that a RL
-// algorithm would work with.
-//  - set of dice the agent can choose between
-//  - current points of agent to move
-class State
-{
-    Throw thro;
-    Points_t points; // Current episode points
-
-  public:
-    bool isTerminal() const;
-};
-
-// class Environment representing the single-player environment
-class Environment
-{
-    State state;
-
-  public:
-    static Environment randomStart();
-
-
-};
-
-// Class Game for the single-player game until 10 thousand points
-class Game
-{
-};
-
-// class Game representing a step-by-step interface of the multiplayer game
-class Tenthousand
-{
-    // Points of each player
-    std::vector<Points_t> points;
-    Environment
-};
-
-} // namespace refac
 
 /// ------------------------------------------------------------------------
 /// class Tenthousand ------------------------------------------------------

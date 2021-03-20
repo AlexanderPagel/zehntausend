@@ -4,6 +4,7 @@
 
 #include "randomness.h"
 #include "ref_types.h"
+#include "enum.h"
 
 
 namespace refac
@@ -19,7 +20,7 @@ Count_t&
 Throw::at(DigitType d)
 {
   assert(legit(d));
-  assert(d >= 0 && d < counts.size());
+  assert(raw(d) >= 0 && raw(d) < (int)counts.size());
 
   return (*this)[d];
 }
@@ -32,7 +33,8 @@ Throw::total()
 }
 
 Throw::Throw()
-  : counts(DigitType::count, Count_t(0))
+    // Init to DT::count copies of the value 0
+  : counts(raw(DigitType::count), Count_t(0))
 {}
 
 Throw::Throw(Count_t dieCount, DigitType initialDigit)
@@ -44,8 +46,8 @@ Throw::Throw(Count_t dieCount, DigitType initialDigit)
 bool
 Throw::any() const
 {
-  assert(count[raw(DigitType::any)] >= 0);
-  return counts[raw(DigitType::any)];
+  assert(counts[raw(DigitType::total)] >= 0);
+  return counts[raw(DigitType::total)];
 }
 
 bool
@@ -54,7 +56,14 @@ Throw::empty() const
   return !any();
 }
 
-Throw::Count_t
+bool
+Throw::operator==(Throw const& other) const
+{
+  // TODO Compare totals first, then digits
+  return counts == other.counts;
+}
+
+Count_t
 Throw::getDigitCount(DigitType d) const
 {
   assert(legit(d));
@@ -65,13 +74,14 @@ Throw::getDigitCount(DigitType d) const
 bool
 Throw::consistent() const
 {
-  Counts_t sum{0};
+  Count_t sum{0};
   for (auto d = DigitType::one;
       d <= DigitType::six;
       ++d)
   {
-    if (at(d) < 0) return false; // Ensure non-negative
-    sum += *it;
+    auto c = getDigitCount(d);
+    if (c < 0) return false; // Ensure non-negative
+    sum += c;
   }
   return sum == total(); // Ensure total is consistent
 }
@@ -151,7 +161,7 @@ Throw::roll(Count_t c)
     // TODO 6 separate increments to total are not necessary
     increment(
         // Convert 1-based to 0-based
-        Throw::digitToDigitType(randomDie)
+        digitToDigitType(randomdie)
         );
   }
 }
@@ -168,6 +178,7 @@ Throw::operator-=(Throw const& other)
   }
 
   assert(consistent());
+  return *this;
 }
 
 Count_t

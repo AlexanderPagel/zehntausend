@@ -40,7 +40,7 @@ class Cup
     bool operator==(Throw const&) const; // Only active dice, disregarding permutations
 
     Count_t anyCount() const;
-    Count_t activeCount(DigitType d) const;
+    Count_t activeCount(DigitType d = DigitType::total) const;
     Count_t inactiveCount() const;
 
     std::pair<Digit_t, bool> getDie(int pos) const;

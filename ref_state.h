@@ -28,6 +28,7 @@ class State
                     //      Also for empty()
     Points_t points{0};
 
+    State() = default; // Hopefully uses the in-class initializers
     State(Throw const&, Points_t const&);
 
   public:

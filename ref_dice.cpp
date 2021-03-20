@@ -1,6 +1,7 @@
 #include "ref_dice.h"
 
 #include <algorithm> // std::transform
+#include <cassert>
 
 #include "randomness.h"
 #include "ref_types.h"
@@ -29,23 +30,36 @@ Dice::operator[](int pos)
   return dice[pos];
 }
 
+Count_t
+Dice::count() const
+{
+  assert(dice.size() < (unsigned long long) std::numeric_limits<Count_t>::max());
+  return static_cast<Count_t>(dice.size());
+}
+
+bool
+Dice::operator==(Dice const& other) const
+{
+  return dice == other.dice;
+}
+
 void
 Dice::roll()
 {
   std::transform(
       dice.begin(), dice.end(), dice.begin(),
-      [](auto d) { d = randomness::randomDie(); }
+      [](auto&) { return randomness::randomDie(); }
       );
 }
 
 void
-Dice::roll(Selection const& selection)
+Dice::roll(Selection_t const& selection)
 {
   assert(selection.size() == dice.size());
 
   auto selIt = selection.begin();
   for (auto it = dice.begin(); it != dice.end(); ++it, ++selIt)
-    if (*selit) *it = randomness::randomDie();
+    if (*selIt) *it = randomness::randomDie();
 }
 
 void

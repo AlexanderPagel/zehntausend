@@ -6,11 +6,19 @@
 #define REF_TYPES_H_INCLUDED 1
 
 
+#include <cstdint>
+#include <vector>
+
+
 namespace refac
 {
 
+// Represent the "number" a die is showing, literally
 using Digit_t = int_least8_t; // In range [1, 6].
-using Player_t = int_fast8_t;
+// Represent the number of present game objects, like dice
+using Count_t = int_least8_t; // Allow small arrays by using smallest type.
+
+using Player_t = int_fast8_t; // TODO i think i just used int here, replace int in code?
 using Selection_t = std::vector<bool>;
 using Points_t = int_fast32_t;
 // TODO typedef Active_t = bool?
@@ -23,7 +31,7 @@ int constexpr totalGameDieCount{6};
 // accidentally.
 enum class DigitType : Digit_t
 {
-  one, two, three, four, five, six, total, // 0..6
+  one, two, three, four, five, six, total, // 0..6, 7, used to index arrays
   count, begin = 0, end = count, none = -1 // canonical enum members
 };
 
@@ -45,7 +53,7 @@ bool truePredicate(Input)
   return true;
 }
 template<typename It, typename Pred>
-auto indicesOf(It begin, It end, Pred p = truePredicate<decltype(*begin)>)
+auto indicesOf(It begin, It end, Pred p = truePredicate<decltype(*std::declval<decltype(begin)>())>)
   -> std::vector<decltype(end - begin)>
 {
   std::vector<decltype(end - begin)> res{};

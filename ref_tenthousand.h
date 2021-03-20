@@ -8,14 +8,20 @@
 #define REF_TNETHOUSAND_H_INCLUDED 1
 
 
+#include <vector>
+
+#include "ref_game.h"
+#include "ref_types.h"
+
+
 namespace refac
 {
 
-class Thenthousand
+class Tenthousand
 {
   private:
     // TODO state and points separate or in conjunction?
-    std::vector<gameState> gameStates;
+    std::vector<Game> games;
     std::vector<Points_t> savePoints;
     int player{0};
     int winner{noWinner};
@@ -28,20 +34,27 @@ class Thenthousand
     void adjustWinner();
     void incrementPlayer();
 
-    template<GameState::* Member, typename... Types>
-    bool interact(Types... args); // Helper to collect the shared cleanup/checks
+    template<typename P, typename... Types>
+    bool interact(P p, Types... args); // Helper to collect the shared cleanup/checks
+
+    // Internal, non-const version of the player getters
+    Game& getGame();
+//    GameState& getGameState();
+//    State& getState();
+//    Cup& getCup();
 
   public:
     static constexpr int goal = 10000;
 
-    Tethousand(int playerCount = 0);
+    Tenthousand(int playerCount = 0);
 
     int playerCount() const;
     int activePlayer() const;
     bool hasFinished() const;
-    int winner() const;
+    int getWinner() const;
 
     // Observe game properties
+    Game const& getGame() const;
     GameState const& getGameState() const;
     State const& getState() const;
     Cup const& getCup() const;

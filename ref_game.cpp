@@ -1,5 +1,7 @@
 #include "ref_game.h"
 
+#include <algorithm>  // std::find
+
 
 namespace refac
 {
@@ -7,8 +9,8 @@ namespace refac
 bool
 Game::scanLegalActions(Action const& action) const
 {
-  auto const& v = gameState.getEnvironment.getLegalActions();
-  return std::find(v.begin(), v.end(), action) != last;
+  auto const& v = gameState.getEnvironment().getLegalActions();
+  return std::find(v.begin(), v.end(), action) != v.end();
 }
 
 // Call only after taking an action or restarting (before dice are put aside
@@ -31,7 +33,7 @@ Game::takeConstructedAction()
 }
 
 bool
-endSubturnWith(bool finish)
+Game::endSubturnWith(bool finish)
 {
   if (isTerminal())
     return false;
@@ -49,20 +51,20 @@ endSubturnWith(bool finish)
   return true;
 }
 
-Game::Game
+Game::Game()
   // Member initialization does not matter
 {
   restart();
 }
 
 bool
-Game::isTerminal()
+Game::isTerminal() const
 {
   return gameState.isTerminal();
 }
 
 Points_t
-Game::getReturn()
+Game::getReturn() const
 {
   assert(isTerminal()); // Otherwise points are not the return.
   return gameState.getEnvironment().getState().getPoints();
@@ -75,7 +77,7 @@ Game::toggleAside(int pos)
     return false;
 
   // Internal consistency
-  assert(usable.size() == gameState.getState().getThrown().total());
+  assert((int)usable.size() == gameState.getState().getThrown().total());
 
   // Test for out of range position
   if (0 < pos || pos > gameState.getState().getThrown().total())
@@ -109,6 +111,12 @@ Game::restart()
 {
   gameState.restart();
   adjustUsable();
+}
+
+GameState const&
+Game::getGameState() const
+{
+  return gameState;
 }
 
 } // namespace refac

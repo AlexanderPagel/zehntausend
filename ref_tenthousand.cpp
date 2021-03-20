@@ -14,7 +14,7 @@ Tenthousand::addPoints(Points_t points)
 void
 Tenthousand::restartEnvironment()
 {
-  gameStates[player].restart();
+  games[player].restart();
 }
 
 void
@@ -39,23 +39,25 @@ Tenthousand::incrementPlayer()
 //  - Restart environment if episode ends
 //  - Determine winner if player reaches 'goal' points
 //  - Increment player if episode ends
-template<GameState::* Member, typename... Types>
-bool interact(Types... args)
+// @p p Pointer to member function of class "Game" that is to be called
+template<typename P, typename... Types>
+bool
+Tenthousand::interact(P p, Types... args)
 {
   assert(!hasFinished());
 
   // Class "GameState" ensures that game interactions are nops when failing.
   // Then, cleanup is unnecessary since the game states are just like before.
-  auto success{(getGameState().*Member)(args...)};
+  auto& g = getGame();
+  auto success{(g.*p)(args...)};
   if(success == false)
     return false;
 
   // If episode was finished, we need some cleanups
-  if (getGameState().isTerminal())
+  if (g.isTerminal())
   {
-    auto const& gs = getGameState();
-    addPoints(gs.getReturn());
-    gs.restart();
+    addPoints(g.getReturn());
+    g.restart();
     adjustWinner();
     incrementPlayer(); // Must be last because is changes current player
   }
@@ -63,15 +65,40 @@ bool interact(Types... args)
   return true;
 }
 
-Tenthousand::Tenthousand(int playerCount = 0)
-  : gameStates(playerCount),
+Game&
+Tenthousand::getGame()
+{
+  return games[player];
+}
+
+//GameState&
+//Tenthousand::getGameState()
+//{
+//  return getGame().getGameState();
+//}
+
+//State&
+//Tenthousand::getState()
+//{
+//  return getGameState().getState();
+//}
+
+//Cup&
+//Tenthousand::getCup()
+//{
+//  return getGameState().getCup();
+//}
+
+Tenthousand::Tenthousand(int playerCount)
+  : games(playerCount),
     savePoints(playerCount, 0)
 {}
 
 int
 Tenthousand::playerCount() const
 {
-  return static_cast<int>(gameStates.size());
+  assert(games.size() == savePoints.size());
+  return static_cast<int>(games.size());
 }
 
 int
@@ -88,28 +115,34 @@ Tenthousand::hasFinished() const
 }
 
 int
-Tenthousand::winner() const
+Tenthousand::getWinner() const
 {
   assert(hasFinished());
   return winner;
 }
 
-GameState const&
-Tenthousand::gameState() const
+Game const&
+Tenthousand::getGame() const
 {
-  return gameStates[player];
+  return games[player];
+}
+
+GameState const&
+Tenthousand::getGameState() const
+{
+  return getGame().getGameState();
 }
 
 State const&
 Tenthousand::getState() const
 {
-  return gameState().getState();
+  return getGameState().getState();
 }
 
 Cup const&
 Tenthousand::getCup() const
 {
-  return getState().getCup();
+  return getGameState().getCup();
 }
 
 Points_t
@@ -127,19 +160,19 @@ Tenthousand::getPoints(int player) const
 bool
 Tenthousand::interactToggleAside(int pos)
 {
-  return interact(&GameState::toggleAside, pos);
+  return interact(&Game::toggleAside, pos);
 }
 
 bool
 Tenthousand::interactRoll()
 {
-  return interact(&GameState::roll);
+  return interact(&Game::roll);
 }
 
 bool
 Tenthousand::interactFinish()
 {
-  return interact(&GameState:finish);
+  return interact(&Game::finish);
 }
 
 } // namespace refac

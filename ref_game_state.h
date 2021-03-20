@@ -13,6 +13,11 @@
 #define REF_GAME_STATE_H_INCLUDED 1
 
 
+#include "ref_action.h"
+#include "ref_cup.h"
+#include "ref_environment.h"
+
+
 namespace refac
 {
 
@@ -39,12 +44,12 @@ class GameState
     // Get game information
     Environment const& getEnvironment() const;
     Cup    const& getCup   () const;
-    State  const& getState () const; // Ignoring dice put aside in current
-    Action const& getAction() const;
+    State  const& getState () const;  // Disregard dice put aside in current turn
+    Action const& getAction() const;  // Make sure to set action beforehand
     bool isTerminal() const;
 
     // Interact with game
-    void toggleAside(pos);
+    void toggleAside(int pos);
     void selectActionFinish(bool finish);
     void finishTurn(); // Call selectActionFinish beforehand
     void finishTurn(bool finish);

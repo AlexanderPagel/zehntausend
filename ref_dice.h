@@ -27,7 +27,9 @@ class Dice
     Digit_t  operator[](int pos) const;
     Digit_t& operator[](int pos);
 
-    bool operator==(Dice const&) const = default;
+    Count_t count() const;
+
+    bool operator==(Dice const&) const; // TODO provide implementation
 
     void roll();
     void roll(Selection_t const& selection);

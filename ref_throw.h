@@ -22,8 +22,6 @@ namespace refac
 class Throw
 {
   public:
-    using Count_t = int_least8_t; // Allow small arrays by using smallest type
-
   private:
     // Use vector to allow simple move semantics
     std::vector<Count_t> counts; // len=7. [0-5]=digits, [6]=total.
@@ -33,7 +31,7 @@ class Throw
             >
     explicit Throw(T&& t) : counts(std::forward<T>(t))
     {
-      assert(counts.size() == DigitType::counts);
+      assert(counts.size() == (int)DigitType::count);
       assert(consistent());
     }
 
@@ -47,7 +45,7 @@ class Throw
 
     bool any() const; // Any die contained?
     bool empty() const;
-    bool operator==(Throw const& other) const = default;
+    bool operator==(Throw const& other) const; // TODO provide implementation
     Count_t getDigitCount(DigitType d) const;
     bool consistent() const; // Entries non-negative, total is sum of parts
     // TODO comparison faster if comparing total first?

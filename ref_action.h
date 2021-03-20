@@ -23,18 +23,22 @@ namespace refac
 class Action
 {
     // TODO need to encapsulate like the "Throw" class?
+
   public:
-    // TODO need "resign" action when an episode is a forced loss?
-
-    static Action makeNone();
-    static Action makeWelp();
-
     // Represent "none" action by the default values:
     //  - t = {0}
     //  - finish = false
     // This pattern can never represent any (other) legal action.
     Throw taking{};  // Throw subset that is to be scored
     bool finish{false}; // Decide whether to re-roll or finish
+
+    static Action makeNone();
+    static Action makeWelp();
+
+    Action() = default;
+    template<typename T, typename U>
+    Action(T&& t, U&& u) : taking(std::forward<T>(t)), finish(std::forward<U>(u)) {}
+    // TODO need "resign" action when an episode is a forced loss?
 
     // Test for virtual "none" action that is used when there are no
     // legal actions to transition to the terminal state with
