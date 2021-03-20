@@ -12,6 +12,8 @@
 #include <iomanip>
 #include <limits>
 
+#include "ref_tenthousand.h"
+
 // debug
 //static unsigned int d_count = 0;
 
@@ -42,14 +44,17 @@ private:
     //  - provide function to compute legal actions
     //  - provide function to construct afterstates
     //  - ...
-    using _game_t        = Tenthousand<1>;
-    using Environment_t  = _game_t;
+    using _game_t        = refac::Tenthousand;
+//    using Environment_t  = _game_t;
+    using Environment_t  = refac::Environment;
 public:
     using Game_t         = _game_t;
     using State_t        = Game_t::State_t;
     using Action_t       = Game_t::Move_t;
-    using Afterstate_t   = Game_t::Afterstate_t;
-    using ActionVector_t = Game_t::ActionVector_t;
+//    using Afterstate_t   = Game_t::Afterstate_t;
+    using Afterstate_t   = refac::Afterstate; // TODO implement
+//    using ActionVector_t = Game_t::ActionVector_t;
+    using ActionVector_t = std::vector<Action>;
 
 private:
     using _legalActionsTable_t = std::unordered_map<State_t, ActionVector_t>;

@@ -56,6 +56,7 @@ class Tenthousand
     // Observe game properties
     Game const& getGame() const;
     GameState const& getGameState() const;
+    Environment const& getEnvironment() const; // TODO implement
     State const& getState() const;
     Cup const& getCup() const;
     Points_t getPoints() const; // Save player points
@@ -65,6 +66,19 @@ class Tenthousand
     bool interactToggleAside(int pos);
     bool interactRoll();
     bool interactFinish();
+
+    // -------------------------------------------------------------------------
+
+    // Stuff that I quickly add as a hack to support the UI
+    // requirements.
+    void makeMove(Action const&); // TODO I thin not even needed since bot types keys, too (?)
+    using Player = int;
+    using State_t = State;
+    using Move_t = Action;
+    bool interactToggleAside(); // put everything aside
+    auto getPlayer() { return activePlayer(); }
+    auto getCurrent() { return getState().getPoints(); }
+    auto getActive() { return getCup().getActive(); }
 };
 
 } // namespace refac

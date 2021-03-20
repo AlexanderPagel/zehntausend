@@ -58,7 +58,7 @@ Ui::act()
   }
 }
 
-Game_t::Player
+Ui::Game_t::Player
 Ui::getPlayer() const
 {
   // TODO assert(not terminal) once gmae class has such a state
@@ -87,19 +87,22 @@ Ui::getDieDigit(int idx) const
 {
   assert(0 <= idx && idx <= 6);
 
-  return game->_cup[idx];
+  return std::get<refac::Digit_t>(game->getCup().getDie(idx));
+//  return game->_cup[idx];
 }
 
 bool
 Ui::canStopTurn() const
 {
-  return game->getPutAny();
+//  return game->getPutAny();
+  return game->getGameState().getAction().taking.any();
 }
 
 State_t
 Ui::getState() const
 {
-  return game->state();
+  // FIXME is this meant by state??
+  return game->getState();
 }
 
 Points_t

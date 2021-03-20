@@ -12,11 +12,6 @@ LXXFLAGS := -lncurses
 DEBUGFLAGS := -O0 -g
 RELEASEFLAGS := -Ofast -DNDEBUG
 
-# Release Target
-$(OUT): CXXFLAGS += $(RELEASEFLAGS)
-$(OUT): $(OBJ)
-	$(CXX) $(OBJ) $(CXXFLAGS) $(LXXFLAGS) -o $(OUT)
-
 # Debug Target
 .PHONY: debug
 debug: CXXFLAGS += $(DEBUGFLAGS)
@@ -25,6 +20,11 @@ debug: .debug
 .debug: $(OBJ)
 	$(CXX) $(OBJ) $(CXXFLAGS) $(LXXFLAGS) -o $(OUT)
 	touch .debug
+
+# Release Target
+$(OUT): CXXFLAGS += $(RELEASEFLAGS)
+$(OUT): $(OBJ)
+	$(CXX) $(OBJ) $(CXXFLAGS) $(LXXFLAGS) -o $(OUT)
 
 # Object Targets
 %.o: %.cpp
