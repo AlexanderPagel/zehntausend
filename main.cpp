@@ -11,6 +11,15 @@
 
 #include "ui.h"
 
+
+
+
+#include "ref_game.h"
+
+
+
+
+
 #ifdef TEST_RUN
     #error TEST_RUN is already defined
 #else
@@ -57,6 +66,46 @@ static void reprint(Tenthousand<n> const& game, std::string msg = "")
 
 int main()
 {
+  // That worked very well last time so will indeed just smack all my new
+  // testing in the beginning of main again.
+
+  auto newG = refac::Game{};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // For now I will just stash all testing in fron of main and return yolo
 
