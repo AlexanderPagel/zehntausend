@@ -17,10 +17,10 @@ namespace refac
 using Digit_t = int_least8_t; // In range [1, 6].
 // Represent the number of present game objects, like dice
 using Count_t = int_least8_t; // Allow small arrays by using smallest type.
+using Points_t = int_least32_t; // Have a little bit of room for arithmetic just in case
 
 using Player_t = int_fast8_t; // TODO i think i just used int here, replace int in code?
 using Selection_t = std::vector<bool>;
-using Points_t = int_fast32_t;
 // TODO typedef Active_t = bool?
 
 // TODO do we want to move this somewhere else? into a class?

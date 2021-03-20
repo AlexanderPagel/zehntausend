@@ -11,7 +11,7 @@ Sarsa::_legalActionsLookup(State_t const& s) const
     // Compute anew and cache if not found
     if( search == _legalActionsTable.end() )
     {
-        auto put = _legalActionsTable.insert( {s, Game_t::legalActions(s)} );
+        auto put = _legalActionsTable.insert( {s, Game_t::generateActions(s)} );
         assert(put.second); // Insertion took place
         search = put.first;
     }
@@ -63,7 +63,7 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 
     if( s.isTerminal() )
     {
-        return Action_t::zero();
+        return Action_t::makeNone();
     }
 
     // : compute all legal actions
@@ -72,7 +72,7 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
     if( !legalActions.empty() )
     {
         // : max over all legal actions
-        Action_t bestAction( Action_t::zero() );  /// \write std ctor and remore init;
+        Action_t bestAction( Action_t::makeNone() );  /// \write std ctor and remore init;
         double maxEstimate = std::numeric_limits<double>::lowest();
 
         for( Action_t const& a : legalActions )
@@ -83,11 +83,11 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 //            double sum = reward + gamma*afterstateEstimate;
             if( v )
             {
-                std::cout << "Action( ";
-                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
-                std::cout << " " << a.putAside()[6]
-                     << " | " << a.finishes() << " ) --> "
-                     << std::setprecision(2) << std::fixed << afterstateEstimate;
+//                std::cout << "Action( ";
+//                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
+//                std::cout << " " << a.putAside()[6]
+//                     << " | " << a.finishes() << " ) --> "
+//                     << std::setprecision(2) << std::fixed << afterstateEstimate;
             }
 
 
@@ -107,7 +107,8 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
     }
     else
     {
-        return Action_t::zero();
+        assert(false);
+        return Action_t::makeNone();
     }
 }
 
@@ -118,7 +119,7 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
     /// \tbc this is the case when S_ is already seen as terminating but the algorithm needs a dummy action A_
     if( s.isTerminal() )
     {
-        return Action_t::zero();
+        return Action_t::makeNone();
     }
 
     if( (double)std::rand()/RAND_MAX < epsilon )
@@ -131,7 +132,7 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
         }
         else
         {
-            return Action_t::zero();
+            return Action_t::makeNone();
         }
     }
     else
@@ -144,19 +145,19 @@ void
 Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 {
     unsigned int const t = n;
+    refac::Environment e;
 
     for( ; n != 0; --n )
     {
-        auto s( State_t::randomStart() ); /// \tbc moves?
+        e.restart();
+        auto s = e.getState();
 
-        while(!s.isTerminal())
+        while(!e.episodeFinished())
         {
             auto a( eGreedy(s) );
-            auto simulEnvFeedback = ( Environment_t::simulate(s, a) );
 
-            auto r  = simulEnvFeedback.first;
-            auto s_ = simulEnvFeedback.second;
-
+            auto r  = e.takeAction(a);
+            auto s_ = e.getState();
 
             auto a_( greedy(s_) );
 
@@ -169,7 +170,6 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
             _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 
             s = s_;
-//            a = a_;
         }
 
         // Print a loading bar so we know the algorithm didn't hung itself

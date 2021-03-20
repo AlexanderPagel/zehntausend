@@ -15,6 +15,7 @@
 #include "ref_action.h"
 #include "ref_state.h"
 #include "ref_types.h"
+#include "ref_afterstate.h"
 
 
 namespace refac
@@ -34,6 +35,8 @@ class Environment
     void clearActions(); // Empty w/o changing cpacity
     void fillActions(); // Refills the actions vector (no extra clear needed)
 
+  public:
+    static std::vector<Action> generateActions(State const&);
     // Immediate return promised by a *legal* action (throw part only)
     static Points_t pointsWorthRaw(Throw const&);
     // Immediate return considering the turn limit
@@ -42,7 +45,6 @@ class Environment
     static Points_t pointsWorthRaw(Action const&);
     static Points_t pointsWorthLimit(Action const&, Points_t startPoints);
 
-  public:
     static Points_t constexpr turnLimit{350};
 
     Environment(); // Initialize in a normal start state
@@ -57,6 +59,11 @@ class Environment
     // Copy + move ctor default
     // Copy + move assign default
     // Dtor default
+
+    // ---------------------------------------------------------------------------
+
+    // Some dirty hacks that i just throw here to silence the RL algo
+    static Afterstate afterstate(State const&, Action const&);
 };
 
 } // namespace refac

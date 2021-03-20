@@ -20,6 +20,11 @@ Environment::clearActions()
 void
 Environment::fillActions()
 {
+  legalActions = generateActions(getState());
+  return;
+
+  // FIXME Remove the leftovers after this
+
   // TODO Optimization potential: Points computation on-the fly while
   //      generating action.
 
@@ -59,6 +64,55 @@ Environment::fillActions()
   // Special case 2: Only the "welp" action if nothing else
   if (legalActions.empty())
     legalActions.push_back(Action::makeWelp());
+}
+
+std::vector<Action>
+Environment::generateActions(State const& state)
+{
+  // TODO Optimization potential: Points computation on-the fly while
+  //      generating action.
+
+  std::vector<Action> legalActions{};
+
+  // Special case 1: Only the "none" action available in terminal state
+  if (state.isTerminal())
+  {
+    legalActions.push_back(Action::makeNone());
+    return legalActions;
+  }
+
+  // Iterate exhaustively over any selectable subsets of dice.
+  // Since the digits 2,3,4,6 can only be put aside in groups of three, we can
+  // iterate them in steps of 3.
+  Throw t{}; // Zero-initialize
+  bool first{true};
+  for (t.setDigitCount(DigitType::six, 0); t.getDigitCount(DigitType::six) <= state.getThrown().getDigitCount(DigitType::six); t.add(DigitType::six, 3))
+  for (t.setDigitCount(DigitType::five, 0); t.getDigitCount(DigitType::five) <= state.getThrown().getDigitCount(DigitType::five); t.increment(DigitType::five))
+  for (t.setDigitCount(DigitType::four, 0); t.getDigitCount(DigitType::four) <= state.getThrown().getDigitCount(DigitType::four); t.add(DigitType::four, 3))
+  for (t.setDigitCount(DigitType::three, 0); t.getDigitCount(DigitType::three) <= state.getThrown().getDigitCount(DigitType::three); t.add(DigitType::three, 3))
+  for (t.setDigitCount(DigitType::two, 0); t.getDigitCount(DigitType::two) <= state.getThrown().getDigitCount(DigitType::two); t.add(DigitType::two, 3))
+  for (t.setDigitCount(DigitType::one, 0); t.getDigitCount(DigitType::one) <= state.getThrown().getDigitCount(DigitType::one); t.increment(DigitType::one))
+  {
+    // Skip the empty action (simpler to code than beginning at first non-zero
+    // action).
+    if (first)
+    {
+      first = false;
+      continue;
+    }
+
+    // For every non-zero selection, we can put any subset of dice aside and
+    // continue. If we gain enough points, we can also finish.
+    legalActions.emplace_back(t, false);
+    if (pointsWorthLimit(t, state.getPoints()) > 0)
+      legalActions.emplace_back(t, true);
+  }
+
+  // Special case 2: Only the "welp" action if nothing else
+  if (legalActions.empty())
+    legalActions.push_back(Action::makeWelp());
+
+  return legalActions;
 }
 
 Points_t
