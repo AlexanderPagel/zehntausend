@@ -94,8 +94,10 @@ namespace
 
 char digitToChar(int digit)
 {
-  assert(0 <= digit && digit < 6);
-  return '1' + digit;
+  // If digit definition ever changes we can change assert. For now
+  // we expect digits in range [1, 6].
+  assert(1 <= digit && digit <= 6);
+  return '0' + digit;
 }
 
 } // namespace
