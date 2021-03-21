@@ -18,52 +18,9 @@ Environment::clearActions()
 }
 
 void
-Environment::fillActions()
+Environment::fillActions() const
 {
   legalActions = generateActions(getState());
-  return;
-
-  // FIXME Remove the leftovers after this
-
-  // TODO Optimization potential: Points computation on-the fly while
-  //      generating action.
-
-  clearActions();
-
-  // Special case 1: Only the "none" action available in terminal state
-  if (episodeFinished())
-    return legalActions.push_back(Action{});
-
-  // Iterate exhaustively over any selectable subsets of dice.
-  // Since the digits 2,3,4,6 can only be put aside in groups of three, we can
-  // iterate them in steps of 3.
-  Throw t{}; // Zero-initialize
-  bool first{true};
-  for (t.setDigitCount(DigitType::six, 0); t.getDigitCount(DigitType::six) <= getState().getThrown().getDigitCount(DigitType::six); t.add(DigitType::six, 3))
-  for (t.setDigitCount(DigitType::five, 0); t.getDigitCount(DigitType::five) <= getState().getThrown().getDigitCount(DigitType::five); t.increment(DigitType::five))
-  for (t.setDigitCount(DigitType::four, 0); t.getDigitCount(DigitType::four) <= getState().getThrown().getDigitCount(DigitType::four); t.add(DigitType::four, 3))
-  for (t.setDigitCount(DigitType::three, 0); t.getDigitCount(DigitType::three) <= getState().getThrown().getDigitCount(DigitType::three); t.add(DigitType::three, 3))
-  for (t.setDigitCount(DigitType::two, 0); t.getDigitCount(DigitType::two) <= getState().getThrown().getDigitCount(DigitType::two); t.add(DigitType::two, 3))
-  for (t.setDigitCount(DigitType::one, 0); t.getDigitCount(DigitType::one) <= getState().getThrown().getDigitCount(DigitType::one); t.increment(DigitType::one))
-  {
-    // Skip the empty action (simpler to code than beginning at first non-zero
-    // action).
-    if (first)
-    {
-      first = false;
-      continue;
-    }
-
-    // For every non-zero selection, we can put any subset of dice aside and
-    // continue. If we gain enough points, we can also finish.
-    legalActions.emplace_back(t, false);
-    if (pointsWorthLimit(t, state.getPoints()) > 0)
-      legalActions.emplace_back(t, true);
-  }
-
-  // Special case 2: Only the "welp" action if nothing else
-  if (legalActions.empty())
-    legalActions.push_back(Action::makeWelp());
 }
 
 std::vector<Action>
@@ -168,9 +125,7 @@ Environment::pointsWorthLimit(Action const& action, Points_t startPoints)
 Environment::Environment()
   : state(State::startState()),
     legalActions{} // Initialize empty
-{
-  fillActions();
-}
+{}
 
 // Action must be known-legal
 Points_t
@@ -217,7 +172,7 @@ adjust_points:
   // TODO Alternatively work on state and return different to points
   //      at beginning of this function.
   state.addPoints(pointDiff);
-  fillActions();
+//  fillActions();
   // Return immediate reward R
   return pointDiff;
 }
@@ -237,6 +192,8 @@ Environment::getState() const
 std::vector<Action> const&
 Environment::getLegalActions() const
 {
+  if (legalActions.empty())
+    fillActions();
   return legalActions;
 }
 

@@ -37,10 +37,11 @@ class Environment
     //      optimization case should be self-play training.
     // TODO Up for testing: Generate only when requested. Currently RL
     //      algorithm caches this vector anyway, not sure which is faster.
-    std::vector<Action> legalActions;
+    // TODO Not clear what should happend with this during a copy
+    mutable std::vector<Action> legalActions;
 
     void clearActions(); // Empty w/o changing cpacity
-    void fillActions(); // Refills the actions vector (no extra clear needed)
+    void fillActions() const; // Refills the actions vector (no extra clear needed)
 
   public:
     static std::vector<Action> generateActions(State const&);
