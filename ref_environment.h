@@ -4,6 +4,11 @@
 // *not* validated in any way. Actions that are input must be valid in the
 // given state. The easiert way to ensure this is to select an action from the
 // provided list of legal actions.
+//
+// Environment implements part of what oculd be considered and
+// "independent ruleset". The other part being the "Afterstate"
+// class that uses environmental knowledge to represent state-action
+// pairs.
 
 
 #ifndef REF_ENVIRONMENT_H_INCLUDED
@@ -30,6 +35,8 @@ class Environment
     // Provide a list of legal actions at every time step.
     // TODO We might want to change this later, if appropriate. The only
     //      optimization case should be self-play training.
+    // TODO Up for testing: Generate only when requested. Currently RL
+    //      algorithm caches this vector anyway, not sure which is faster.
     std::vector<Action> legalActions;
 
     void clearActions(); // Empty w/o changing cpacity
