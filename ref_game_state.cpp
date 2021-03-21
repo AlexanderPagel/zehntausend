@@ -161,6 +161,7 @@ void
 GameState::restart()
 {
   environment.restart();
+//  cupResize();
   cup = Cup(getState().getThrown().total()); // Create correct umber of dice
   makeDigitsConsistent();
   action = Action::makeWelp();

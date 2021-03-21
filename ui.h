@@ -124,6 +124,7 @@ class Ui
     RELAY_NAME(finishTurn, interactFinish)
     RELAY(makeMove)
 #undef RELAY
+#undef RELAY_NAME
 
     // Relaying averages
     double getAverage(Player_t const&) const;

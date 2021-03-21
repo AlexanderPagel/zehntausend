@@ -66,11 +66,6 @@ class Environment
     // Copy + move ctor default
     // Copy + move assign default
     // Dtor default
-
-    // ---------------------------------------------------------------------------
-
-    // Some dirty hacks that i just throw here to silence the RL algo
-    static Afterstate afterstate(State const&, Action const&);
 };
 
 } // namespace refac
