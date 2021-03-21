@@ -192,7 +192,7 @@ Environment::takeAction(Action const& action)
   {
     // All current points are lost by welping
     pointDiff = -state.getPoints();
-    state = State::makeTerminalState();
+    state.setTerminal();
     goto adjust_points;
   }
 
@@ -203,7 +203,7 @@ Environment::takeAction(Action const& action)
   if (action.finish)
   {
     // Can ignore leftover dice if finishing but...
-    state = State::makeTerminalState();
+    state.setTerminal();
   }
   else
   {

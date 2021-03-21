@@ -30,7 +30,7 @@ State::makeTerminalState()
 bool
 State::isTerminal() const
 {
-  return thrown.empty() && points == 0;
+  return terminal;
 }
 
 bool
@@ -57,6 +57,12 @@ void
 State::addPoints(Points_t p)
 {
   points += p;
+}
+
+void
+State::setTerminal(bool t)
+{
+  terminal = t;
 }
 
 void

@@ -20,13 +20,11 @@ class State
     // - current points
     // - current dice
     // - unambiguous representation for terminal states
-    // Represent terminal states as
-    //  - thrown = {0}
-    //  - points = 0
 
     Throw thrown{}; // TODO derive for operator-= etc?
                     //      Also for empty()
     Points_t points{0};
+    bool terminal{false};
 
     State() = default; // Hopefully uses the in-class initializers
     State(Throw const&, Points_t const&);
@@ -40,6 +38,7 @@ class State
     Points_t getPoints() const;
     Throw const& getThrown() const;
     void addPoints(Points_t);
+    void setTerminal(bool t = true);
     // NOTE Behaves different to Throw::roll()
     void roll(Count_t n); // Randomize remaining dice, or 'n' new if 0 remaining
 
