@@ -113,8 +113,8 @@ GameState::finishTurn()
   // Use 'state' to dictate next state. Keeping 'cup' consistent.
   // Taking the constructed action in the environment makes
   environment.takeAction(action);
-  makeDigitsConsistent();
   action = Action::makeWelp();
+  makeDigitsConsistent();
 
   // If terminal state is reached, environment will not (and doesn't need to)
   // provide a throw again and numbers can legitimately mismatch.
