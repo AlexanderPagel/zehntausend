@@ -175,5 +175,12 @@ Tenthousand::interactFinish()
   return interact(&Game::finish);
 }
 
+void
+Tenthousand::interactToggleAside()
+{
+  for (Count_t i = 0; i < totalGameDieCount; ++i)
+    interactToggleAside(i);
+}
+
 } // namespace refac
 

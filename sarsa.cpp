@@ -77,7 +77,7 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 
         for( Action_t const& a : legalActions )
         {
-            Afterstate_t as( _game_t::afterstate(s, a) );                                          // not: only allows legal afterstates (i hope)
+            Afterstate_t as(s, a);
 //            double reward = Environment_t::simulate(s, a).first;
             double afterstateEstimate ( _afterstateValueLookup(as) );      /// \bc write lookup function that checks if existing and else throws error or exits or sth
 //            double sum = reward + gamma*afterstateEstimate;
@@ -161,8 +161,8 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 
             auto a_( greedy(s_) );
 
-            Afterstate_t as ( Environment_t::afterstate(s,a) );
-            Afterstate_t as_ ( Environment_t::afterstate(s_,a_) );
+            Afterstate_t as (s , a );
+            Afterstate_t as_(s_, a_);
 
             double prev = _afterstateValueLookup( as );
             double nextEst = _afterstateValueLookup( as_ );

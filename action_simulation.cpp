@@ -1,5 +1,6 @@
 #include "action_simulation.h"
 
+#include "ref_types.h"
 #include "ui.h"
 #include "ui_types.h"
 
@@ -30,12 +31,12 @@ ActionSimulation::inferPressesToPutAside(Ui const& ui, Action_t const& action)
   // "n" == number of times a die showing "digit" need to be put aside to fulfill action
   // "pos" == index where we search for a die showing "digit" to be put aside
 
-  for (int digit = Game_t::Figure::ONE; digit <= Game_t::Figure::SIX; ++digit)
-    if (int n = action.putAside()[digit]; n > 0)
+  for (auto digit = refac::DigitType::one; digit <= refac::DigitType::six; ++digit)
+    if (auto n = action.taking[digit]; n > 0)
     {
       // Test each possible position to find corresponding die
       for (int pos = 0; pos < 6; ++pos)
-        if (!ui.getDieAside(pos) && ui.getDieDigit(pos) == digit)
+        if (!ui.getDieAside(pos) && ui.getDieDigit(pos) == digitTypeToDigit(digit))
         {
           addKeyPressForPos(pos); --n;
           if (n == 0) break;
@@ -55,14 +56,17 @@ void
 ActionSimulation::inferPressesToCompleteTurn(Action_t const& action)
 {
   // If action does not finish, add key press for rolling, else for finish
-  addKeyPressForEnd(!action.finishes());
+  addKeyPressForEnd(!action.finish);
 }
 
 ActionSimulation::ActionSimulation(Ui const& ui, Action_t const& action)
 {
+  assert(!action.isNone());
+
   // TODO This is checking for the zero action. Probably need a member for this in the action type
-  if (action.putAside()[Game_t::Throw_t::TOTAL] == 0 && action.finishes() == false)
+  if (action.taking[refac::DigitType::total] == 0 && action.finish == false)
   {
+    assert(false && "None actions should not happen, ever, in the refactoring");
     // Map zero action to simply finishing immediately
     addKeyPressForEnd(false);
     return;
