@@ -132,7 +132,7 @@ Environment::pointsWorthRaw(Throw const& thrown)
   // Every triple of 1 scores 1000.
   // Every triple of {2,3,4,5,6} scores 100x the digit value.
   points += tripleWorth(thrown[DigitType::one], DigitType::one, 1000);
-  for (auto d = DigitType::two; d != DigitType::six; ++d)
+  for (auto d = DigitType::two; d <= DigitType::six; ++d)
     points += tripleWorth(thrown[d], d);
 
   // All 1s and 5s of non-triples score 100 (resp. 50) each
