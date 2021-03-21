@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "randomness.h"
+
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
 {
@@ -122,16 +124,19 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
         return Action_t::makeNone();
     }
 
-    if( (double)std::rand()/RAND_MAX < epsilon )
+    if (randomness::epsilonRandom(epsilon))
+//    if( (double)std::rand()/RAND_MAX < epsilon )
     {
         auto legalActions = std::move( _legalActionsLookup(s) );
 
         if( !legalActions.empty() )
         {
-            return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
+            return *randomness::pickUniformRandom(legalActions);
+//            return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
         }
         else
         {
+            assert(false); // Unreachable with refactored implementation
             return Action_t::makeNone();
         }
     }

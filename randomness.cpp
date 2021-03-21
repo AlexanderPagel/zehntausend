@@ -13,4 +13,9 @@ int randomInt(int lo, int hi)
 
 std::function<int(void)> const randomDie{std::bind(randomInt, 1, 6)};
 
+bool epsilonRandom(double eps)
+{
+  return randomReal(0.0, 1.0) < eps;
+}
+
 } // namespace randomness

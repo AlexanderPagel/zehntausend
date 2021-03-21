@@ -44,7 +44,7 @@ class Environment
 
   public:
     static std::vector<Action> generateActions(State const&);
-    // Immediate return promised by a *legal* action (throw part only)
+    // Immediate return promised by any action, pretending it is legal
     static Points_t pointsWorthRaw(Throw const&);
     // Immediate return considering the turn limit
     static Points_t pointsWorthLimit(Throw const&, Points_t startPoints);

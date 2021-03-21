@@ -175,10 +175,19 @@ Tenthousand::interactFinish()
   return interact(&Game::finish);
 }
 
+// -----------------------------------------------------------------------------
+
 bool
 Tenthousand::interactToggleAside()
 {
   return interact(&Game::toggleMax);
+}
+
+Points_t
+Tenthousand::getCurrent() const
+{
+  return getState().getPoints()
+       + Environment::pointsWorthRaw(getGameState().getAction());
 }
 
 } // namespace refac
