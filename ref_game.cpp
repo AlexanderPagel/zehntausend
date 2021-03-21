@@ -103,6 +103,7 @@ Game::findDigit(DigitType d, bool a, bool u)
   // Unreachable: Caller must ensure search is successfull (for example by
   // checking the "Throw" part of the state when searching for a usable die).
   assert(false);
+  return 0; // Unreachable
 }
 
 Game::Game()
