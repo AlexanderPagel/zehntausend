@@ -46,6 +46,15 @@ GameState::makeDigitsConsistent()
   assert(freePos.empty());
 }
 
+void
+GameState::cupResize()
+{
+  // This assert can be removed if the game rule change in a way
+  // breaking this rule.
+  assert(cup.activeCount() == 0); // Only after roll
+  cup = Cup(getState().getThrown().total());
+}
+
 GameState::GameState()
   : environment(), // Dictate initial state
     cup(getState().getThrown().total()) // Initialize to correct number of dice
@@ -114,7 +123,21 @@ GameState::finishTurn()
   // Taking the constructed action in the environment makes
   environment.takeAction(action);
   action = Action::makeWelp();
-  makeDigitsConsistent();
+  // TODO Alternatively check if action has/would re-roll all dice. I did not
+  //      like that alternative as much because it relies on game mechanics.
+  // If taking the constructed action changes the number of dice left we simply reset the cup. (This would scramble the non-changing dice if the
+  if (!isTerminal())
+  {
+    if (getState().getThrown().total() != cup.activeCount())
+    {
+      // Only option following game rules is that all dice were re-activated by
+      // action. Remove this assert if the game rules change to allow different
+      // behaviour.
+      assert(getState().getThrown().total() == cup.anyCount());
+      cupResize();
+    }
+    makeDigitsConsistent();
+  }
 
   // If terminal state is reached, environment will not (and doesn't need to)
   // provide a throw again and numbers can legitimately mismatch.

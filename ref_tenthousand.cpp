@@ -7,7 +7,7 @@ namespace refac
 void
 Tenthousand::addPoints(Points_t points)
 {
-  assert(points > 0);
+  assert(0 <= points);
   savePoints[player] += points;
 }
 

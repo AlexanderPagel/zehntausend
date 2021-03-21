@@ -34,6 +34,10 @@ class GameState
     // member 'cup' consistent to the member 'state' as long as the number of
     // active dice in cup matches the number of dice in the state.
     void makeDigitsConsistent();
+    // Resizes cup based on environment. Used when environment state gets new
+    // dice by rolling after putting every (remaining) die aside. Overwrites
+    // all digits; call makeDigitsConsistent() afterwards.
+    void cupResize();
 
   public:
     GameState();

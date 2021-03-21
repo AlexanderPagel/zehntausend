@@ -95,7 +95,7 @@ Game::findDigit(DigitType d, bool a, bool u)
 {
   for ( Count_t i = 0; i < getGameState().getCup().anyCount(); ++i)
     if (auto [digit, active] = getGameState().getCup().getDie(i);
-        digit == digitTypeToDigit(d) && active == a && usable[u])
+        digit == digitTypeToDigit(d) && active == a && usable[i] == u)
     {
       return i;
     }
@@ -129,16 +129,16 @@ Game::getReturn() const
 bool
 Game::toggleMax()
 {
-  auto const action = scanForMaxAction();
+  auto const maxAction = scanForMaxAction();
 
   // Adjust game state to match the desired max action
   // TODO I think we way want a shorthand for this. for_DigitTypeNumbers maybe?
   for (DigitType d = DigitType::one; d <= DigitType::six; ++d)
   {
-    while (action.taking[d] > getGameState().getAction().taking[d])
+    while (maxAction.taking[d] > getGameState().getAction().taking[d])
       putDigitAside(d);
-    while (action.taking[d] > getGameState().getAction().taking[d])
-      putDigitIn(d);
+    while (maxAction.taking[d] < getGameState().getAction().taking[d])
+      putDigitIn(d); // Fix erroneoulsy put aside dice
   }
 
   return true;
