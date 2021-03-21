@@ -1,6 +1,7 @@
 #ifndef SARSA_HPP_INCLUDED
 #define SARSA_HPP_INCLUDED
 
+
 #include <array>
 #include <unordered_map>
 //#include "state.h"
@@ -14,6 +15,7 @@
 
 #include "ref_tenthousand.h"
 #include "ref_afterstate.h"
+
 
 // debug
 //static unsigned int d_count = 0;

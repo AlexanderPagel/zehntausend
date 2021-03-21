@@ -2,6 +2,7 @@
 //
 // Provide basic types underlying the Game and Environment simulation.
 
+
 #ifndef REF_TYPES_H_INCLUDED
 #define REF_TYPES_H_INCLUDED 1
 
@@ -29,6 +30,9 @@ int constexpr totalGameDieCount{6};
 // While Digit_t is 1-based and the value represents a digit, DigitType is
 // 0-based (to index arrays easily). Use typed enum to avoid mixing the two
 // accidentally.
+// TODO Maybe put back into class "Throw" because that should be the only class
+//      allowed to rely on the specific values. Can even put using declaration
+//      in the throw header.
 enum class DigitType : Digit_t
 {
   one, two, three, four, five, six, total, // 0..6, 7, used to index arrays
@@ -38,7 +42,6 @@ enum class DigitType : Digit_t
 // Convert 1-based, valid digit to corresponding digit type
 DigitType digitToDigitType(Digit_t   digit);
 Digit_t   digitTypeToDigit(DigitType digit);
-
 
 } // namespace refac
 
