@@ -60,7 +60,7 @@ class Game
     // Interactions return "true" if the interaction is successfull, otherwise,
     // they return "false" and might leave the object in a corrupted state. In
     // this case, restart() must be called before using the object otherwise.
-    bool toggleAside(); // Maximize dice put aside
+    bool toggleMax(); // Maximize dice put aside
     bool toggleAside(int pos);
     bool roll();    // Roll remaining dice
     bool finish();  // Finish with current selection

@@ -2,6 +2,8 @@
 
 #include <algorithm>  // std::find
 
+#include "enum.h"
+
 
 namespace refac
 {
@@ -93,7 +95,7 @@ Game::findDigit(DigitType d, bool a, bool u)
 {
   for ( Count_t i = 0; i < getGameState().getCup().anyCount(); ++i)
     if (auto [digit, active] = getGameState().getCup().getDie(i);
-        digit == digitTypeToDigit(d) && active = a && usable[u])
+        digit == digitTypeToDigit(d) && active == a && usable[u])
     {
       return i;
     }
@@ -124,9 +126,10 @@ Game::getReturn() const
 
 // Maximizes dice put aside. If necessary, puts erroneously taken out dice back
 // into the cup to form a legal action.
-bool toggleAside()
+bool
+Game::toggleMax()
 {
-  auto action = scanForMaxAction();
+  auto const action = scanForMaxAction();
 
   // Adjust game state to match the desired max action
   // TODO I think we way want a shorthand for this. for_DigitTypeNumbers maybe?

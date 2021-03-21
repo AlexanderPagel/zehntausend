@@ -75,7 +75,7 @@ class Tenthousand
     using Player = int;
     using State_t = State;
     using Move_t = Action;
-    void interactToggleAside(); // put everything aside
+    bool interactToggleAside(); // put everything aside (return value meaningless currently)
     auto getPlayer() { return activePlayer(); }
     auto getCurrent() { return getState().getPoints(); } // TODO this needs to reflect on the currently in-consruction action, too
     auto getActive() { return getCup().getActive(); }
