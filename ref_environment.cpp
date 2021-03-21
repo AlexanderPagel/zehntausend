@@ -172,7 +172,9 @@ adjust_points:
   // TODO Alternatively work on state and return different to points
   //      at beginning of this function.
   state.addPoints(pointDiff);
-//  fillActions();
+
+  clearActions();
+
   // Return immediate reward R
   return pointDiff;
 }
