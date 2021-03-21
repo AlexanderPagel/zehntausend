@@ -97,7 +97,7 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
             }
 
 
-            if( afterstateEstimate >= maxEstimate )
+            if( afterstateEstimate > maxEstimate )
             {
                 if( v ) std::cout << std::setw(3) << "*";
 
