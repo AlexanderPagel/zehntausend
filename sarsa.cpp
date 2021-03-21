@@ -77,8 +77,12 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
         Action_t bestAction( Action_t::makeNone() );  /// \write std ctor and remore init;
         double maxEstimate = std::numeric_limits<double>::lowest();
 
-        for( Action_t const& a : legalActions )
+        // As a bit of a hack we loop backwards (best actions are generated
+        // last). Not technically required nor forbidden.
+        for (auto it = std::crbegin(legalActions); it != std::crend(legalActions); ++it)
+//        for( Action_t const& a : legalActions )
         {
+            auto const& a = *it;
             Afterstate_t as(s, a);
 //            double reward = Environment_t::simulate(s, a).first;
             double afterstateEstimate ( _afterstateValueLookup(as) );      /// \bc write lookup function that checks if existing and else throws error or exits or sth
