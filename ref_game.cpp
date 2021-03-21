@@ -13,6 +13,23 @@ Game::scanLegalActions(Action const& action) const
   return std::find(v.begin(), v.end(), action) != v.end();
 }
 
+Action
+Game::scanForMaxAction() const
+{
+  auto const& v = gameState.getEnvironment().getLegalActions();
+  // Comparator to find maximal finishing action
+  auto const hasLess = [](Action const& a1, Action const& a2)
+  {
+    return a1.taking.total() < a2.taking.total();
+  };
+  // Guaranteed at least 1 legal action (none or welp action)
+  auto maxAct = v.crbegin();  // Reverse because I believe largest action is always last
+  for (auto it = v.crbegin(); it != v.crend(); ++it)
+    if (hasLess(*maxAct, *it)) maxAct = it;
+
+  return *maxAct;
+}
+
 // Call only after taking an action or restarting (before dice are put aside
 // during the subturn).
 void
@@ -51,6 +68,41 @@ Game::endSubturnWith(bool finish)
   return true;
 }
 
+// Find for an active die showing the desired digit and put it aside. Used to
+// automatically put aside the dice for the maxAction.
+void
+Game::putDigitAside(DigitType d)
+{
+  // Search for position of active die with digit d
+  auto pos = findDigit(d, true);
+  toggleAside(pos);
+}
+
+// Find for an active die showing the desired digit and put it aside. Used to
+// automatically put aside the dice for the maxAction.
+void
+Game::putDigitIn(DigitType d)
+{
+  // Search for position of inactive, usable die with digit d
+  auto pos = findDigit(d, false);
+  toggleAside(pos);
+}
+
+Count_t
+Game::findDigit(DigitType d, bool a, bool u)
+{
+  for ( Count_t i = 0; i < getGameState().getCup().anyCount(); ++i)
+    if (auto [digit, active] = getGameState().getCup().getDie(i);
+        digit == digitTypeToDigit(d) && active = a && usable[u])
+    {
+      return i;
+    }
+
+  // Unreachable: Caller must ensure search is successfull (for example by
+  // checking the "Throw" part of the state when searching for a usable die).
+  assert(false);
+}
+
 Game::Game()
   // Member initialization does not matter
 {
@@ -68,6 +120,25 @@ Game::getReturn() const
 {
   assert(isTerminal()); // Otherwise points are not the return.
   return gameState.getEnvironment().getState().getPoints();
+}
+
+// Maximizes dice put aside. If necessary, puts erroneously taken out dice back
+// into the cup to form a legal action.
+bool toggleAside()
+{
+  auto action = scanForMaxAction();
+
+  // Adjust game state to match the desired max action
+  // TODO I think we way want a shorthand for this. for_DigitTypeNumbers maybe?
+  for (DigitType d = DigitType::one; d <= DigitType::six; ++d)
+  {
+    while (action.taking[d] > getGameState().getAction().taking[d])
+      putDigitAside(d);
+    while (action.taking[d] > getGameState().getAction().taking[d])
+      putDigitIn(d);
+  }
+
+  return true;
 }
 
 bool

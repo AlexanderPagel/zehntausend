@@ -31,6 +31,7 @@ class Game
     Selection_t usable;  // Not yet scored dice
 
     bool scanLegalActions(Action const&) const; // Return true if action is legal
+    Action scanForMaxAction() const;
     void adjustUsable(); // Set usable <- current active dice
     void takeConstructedAction(); // Take action and adjust the usable vector to new state
 
@@ -38,6 +39,17 @@ class Game
     // Returns false if intended action is illegal (can be passed as return
     // from roll() and finish()).
     bool endSubturnWith(bool finish);
+
+    // TODO I think the following helpers would be better suited for the GameState class:
+    // Helper that searches for an active die with digit d and puts that die
+    // aside. Given digit must be present in the game state.
+    void putDigitAside(DigitType d);
+    // Helper that searches for an inactive but usable die with digit d and
+    // puts that die back in. Given digit must be present in the game state.
+    void putDigitIn(DigitType d);
+    // Helper that finds a position of a die with the given digit and
+    // activeness and usableness. Call MUST ensure that such a die exists.
+    Count_t findDigit(DigitType d, bool active = true, bool usable = true);
 
   public:
     Game(); // Initialize new game
@@ -48,6 +60,7 @@ class Game
     // Interactions return "true" if the interaction is successfull, otherwise,
     // they return "false" and might leave the object in a corrupted state. In
     // this case, restart() must be called before using the object otherwise.
+    bool toggleAside(); // Maximize dice put aside
     bool toggleAside(int pos);
     bool roll();    // Roll remaining dice
     bool finish();  // Finish with current selection

@@ -77,7 +77,7 @@ class Tenthousand
     using Move_t = Action;
     void interactToggleAside(); // put everything aside
     auto getPlayer() { return activePlayer(); }
-    auto getCurrent() { return getState().getPoints(); }
+    auto getCurrent() { return getState().getPoints(); } // TODO this needs to reflect on the currently in-consruction action, too
     auto getActive() { return getCup().getActive(); }
 };
 
