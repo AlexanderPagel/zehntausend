@@ -147,7 +147,7 @@ Environment::pointsWorthLimit(Throw const& thrown, Points_t startPoints)
 {
   // TODO Worth to test if startpoints > turn limit beforehand?
 
-  if (auto sum{pointsWorthRaw(thrown) + startPoints}; sum > turnLimit)
+  if (auto sum{pointsWorthRaw(thrown) + startPoints}; sum >= turnLimit)
     return sum;
   else
     return Points_t{0};
