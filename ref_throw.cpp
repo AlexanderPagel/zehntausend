@@ -137,7 +137,7 @@ Throw::increment(DigitType d)
 void
 Throw::decrement(DigitType d)
 {
-  assert(counts[raw(d)] > 0);
+  assert(0 < counts[raw(d)]);
 
   --counts[raw(d               )];
   --counts[raw(DigitType::total)];

@@ -214,6 +214,8 @@ Environment::takeAction(Action const& action)
 
 adjust_points:
   // Accumulate total return G
+  // TODO Alternatively work on state and return different to points
+  //      at beginning of this function.
   state.addPoints(pointDiff);
   // Return immediate reward R
   return pointDiff;

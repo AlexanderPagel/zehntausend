@@ -77,10 +77,11 @@ Game::toggleAside(int pos)
     return false;
 
   // Internal consistency
-  assert((int)usable.size() == gameState.getState().getThrown().total());
+  assert((int)usable.size() == gameState.getCup().anyCount());
 
   // Test for out of range position
-  if (0 < pos || pos > gameState.getState().getThrown().total())
+  if (pos < 0 || gameState.getCup().anyCount()-1 < pos)
+//  if (0 < pos || pos > gameState.getState().getThrown().total())
     return false;
 
   // Test for illegal put aside by game logic
