@@ -92,8 +92,8 @@ GameState::toggleAside(int pos)
   assert(!isTerminal());
 
   auto [digit, aside] = cup.getDie(pos);
-  if (aside) action.taking.decrement(digitToDigitType(digit));
-  else       action.taking.increment(digitToDigitType(digit));
+  if (aside) action.taking.increment(digitToDigitType(digit));
+  else       action.taking.decrement(digitToDigitType(digit));
   cup.toggleActive(pos);
 }
 
