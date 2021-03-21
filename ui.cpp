@@ -131,12 +131,14 @@ Ui::finishTurn()
 {
   try
   {
-    game->finishTurn();
+    game->interactFinish();
   }
   // TODO If we remake the game class we probably want regular return
   //      values. the player not getting points is not an error in
   //      the program. The return value can then also be passed on
   //      normally to the actor (or other callers).
+  // TODO We remade the game and now have regular return values. Think about
+  // what to do with this.
   catch (illegal_move_error& err) // Turn has also finished
   {
     // TODO Here we update internal states if we wish
@@ -220,7 +222,7 @@ Ui::~Ui()
 Game_t*
 UiFactory::createDefaultGame()
 {
-  return new std::remove_reference_t<decltype(*game)>{};
+  return new std::remove_reference_t<decltype(*game)>(3);
 }
 
 BotActor*
@@ -275,7 +277,7 @@ UiFactory::createDefaultPlayer()
 Ui::History_t*
 UiFactory::createDefaultHistory()
 {
-  return new History<State_t>{ui};
+  return new History<refac::Tenthousand>{ui};
 }
 
 Display*

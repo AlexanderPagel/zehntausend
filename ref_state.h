@@ -54,4 +54,7 @@ class State
 } // namespace refac
 
 
+#include "ref_state.inc"
+
+
 #endif // REF_STATE_H_INCLUDED

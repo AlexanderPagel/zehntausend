@@ -33,7 +33,7 @@ template<typename A, typename P>
 typename Average<A,P>::Average_type
 Average<A,P>::getAverage(Player_t const& player) const
 {
-  assert(player < stats.size());
+  assert(player < (int)stats.size());
 
   if (countOf(player) == 0)
     return -1;
@@ -48,7 +48,7 @@ void
 Average<A,P>::addToAverage(Player_t const& player,
                            Points_type const& points)
 {
-  assert(player < stats.size());
+  assert(player < (int) stats.size());
 
   sumOf(player) += points;
   ++countOf(player);

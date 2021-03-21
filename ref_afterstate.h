@@ -14,6 +14,9 @@
 
 #include "ref_types.h"
 
+#include "ref_action.h"
+#include "ref_state.h"
+
 
 namespace refac
 {
@@ -52,7 +55,7 @@ class Afterstate
 
     Afterstate() = default; // Indetermined
 
-    static Aferstate createTerminalTransition();
+    static Afterstate createTerminalTransition();
     static Afterstate createFromTransition(State const&, Action const&);
 
   public:
@@ -71,6 +74,8 @@ class Afterstate
 
     // Construct afterstate from *legal* state-action pair.
     Afterstate(State const&, Action const&);
+
+    friend struct std::hash<refac::Afterstate>;
 };
 // TODO Can do better than 12 byte if storing/using 2 byte points
 static_assert(sizeof(Afterstate) == 12);
@@ -82,13 +87,13 @@ struct std::hash<refac::Afterstate>
 {
   size_t operator()(refac::Afterstate const& x) const
   {
-    return std::hash<uint32_t>
+    return std::hash<int>()
     (
       x.fromTerminal()
-      ? (1 << (sizeof(uint32_t)*8 -1)) // Highest bit = from terminal y/n
-      : ( x.diceLeft()     <<   0 |
-          x.points()       <<   3 |
-          x.pointsBefore() <<  15) // reserving 12 bit for < 4096 points
+      ? ( (int) -1) // Highest bit = from terminal y/n
+      : ( (int)x.diceLeft()   <<   0 |
+          (int)x.pointsAfter  <<   3 |
+          (int)x.pointsBefore <<  15) // reserving 12 bit for < 4096 points
     );
   }
 };

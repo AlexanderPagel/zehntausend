@@ -25,7 +25,7 @@ Afterstate::createTerminalTransition()
 }
 
 Afterstate
-Afterstate::createFromTransition(State const& state, Action const& action)=
+Afterstate::createFromTransition(State const& state, Action const& action)
 {
   // Special case: Terminal states
   if (state.isTerminal())
@@ -40,7 +40,7 @@ Afterstate::createFromTransition(State const& state, Action const& action)=
   if (action.finish)
   {
     as.x.diceLeft = 0; // Arbitrary dummy value
-    as.intoTerminal = true;
+    as.x.intoTerminal = true;
     if (action.isWelp())
     {
       // Case 1: Finish by welping (= lose all points)
@@ -60,8 +60,8 @@ Afterstate::createFromTransition(State const& state, Action const& action)=
     auto const countAdjust = [&](Count_t c)
     {
       auto tmp{c - action.taking.total()};
-      return tmp == 0 ? Environment::totalGameDieCount : tmp;;
-    }
+      return tmp == 0 ? totalGameDieCount : tmp;
+    };
     // TODO Here is potential speedup by storing the associated worth
     //      within each action.
     as.pointsAfter = Environment::pointsWorthRaw(action);
@@ -76,7 +76,7 @@ Afterstate::createFromTransition(State const& state, Action const& action)=
 Count_t
 Afterstate::diceLeft() const
 {
-  return diceLeft;
+  return x.diceLeft;
 }
 
 bool
@@ -105,7 +105,7 @@ Afterstate::pointGain() const
 }
 
 bool
-Afterstate::operator==(Afterstate const& other)
+Afterstate::operator==(Afterstate const& other) const
 {
   // Special case: acting in a terminal state
   if (fromTerminal() || other.fromTerminal())

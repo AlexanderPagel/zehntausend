@@ -132,6 +132,8 @@ int main()
 
 
 
+  // The simulation refactoring made pretty much all of this break
+  /*
     /// \tbc test / read copy constructor calls
     /// \tbc implement random state learning
 
@@ -418,6 +420,7 @@ std::cout << "[Preparation]" << std::endl;
 
     cleanup:
     delete bot;
+    */
 
     return 0;
 }
