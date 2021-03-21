@@ -71,8 +71,9 @@ Cup::setDie(int pos, Digit_t d, bool newActive)
   // active) and adding the new one (if will be active).
   auto [digit, oldActive] = getDie(pos);
   if (oldActive) thrown.decrement(digitToDigitType(dice[pos]));
-  dice[pos] = d;
   if (newActive) thrown.increment(digitToDigitType(d        ));
+  dice[pos] = d;
+  active[pos] = newActive;
 }
 
 void
