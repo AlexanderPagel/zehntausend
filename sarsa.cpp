@@ -52,18 +52,18 @@ Sarsa::_afterstateValueUpdate(Afterstate_t const& as) const -> double&
 }
 
 auto
-Sarsa::greedy(State_t const& s, bool v) const -> Action_t
+Sarsa::greedy(State_t const& s, bool v) const -> Action_t const&
 {
 
-    if( s.isTerminal() )
-    {
-        return Action_t::makeNone();
-    }
+//    if( s.isTerminal() )
+//    {
+//        return Action_t::makeNone();
+//    }
 
     // : compute all legal actions
     ActionVector_t const& legalActions( _legalActionsLookup(s) );    /// \bc check for move semantics?
 
-    if( !legalActions.empty() )
+    assert(!std::empty(legalActions));
     {
         // : max over all legal actions
         auto bestAction = std::crend(legalActions);
@@ -101,40 +101,40 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
         }
 //            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
 //            if( v ) std::cin.ignore();
-        if (bestAction == std::crend(legalActions))
-        {
+//        if (bestAction == std::crend(legalActions))
+//        {
             // Unreachable unless some return estimate is double::lowest
-            assert(false);
-            return Action_t::makeNone();
-        }
+//            assert(false);
+//            return Action_t::makeNone();
+//        }
         return *bestAction;
     }
-    else
-    {
-        assert(false);
-        return Action_t::makeNone();
-    }
+//    else
+//    {
+//        assert(false);
+//        return Action_t::makeNone();
+//    }
 }
 
 
 auto
-Sarsa::eGreedy(State_t const& s) const -> Action_t
+Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 {
     /// \tbc this is the case when S_ is already seen as terminating but the algorithm needs a dummy action A_
-    if( s.isTerminal() )
-    {
-        return Action_t::makeNone();
-    }
+//    if( s.isTerminal() )
+//    {
+//        return Action_t::makeNone();
+//    }
 
     // TODO speed difference=
-//    if (randomness::epsilonRandom(epsilon))
-    if( (double)std::rand()/RAND_MAX < epsilon )
+    if (randomness::epsilonRandom(epsilon))
+//    if( (double)std::rand()/RAND_MAX < epsilon )
     {
         auto const& legalActions = _legalActionsLookup(s);
 
         assert(!legalActions.empty());
-//        return *randomness::pickUniformRandom(legalActions);
-        return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
+        return *randomness::pickUniformRandom(legalActions);
+//        return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
     }
     else
     {

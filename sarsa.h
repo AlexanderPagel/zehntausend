@@ -73,8 +73,8 @@ public:
     ActionVector_t const& _legalActionsLookup(State_t const&) const;
 
 public:
-    Action_t greedy (State_t const& s, bool v=false) const;   // rvalue obj versions?
-    Action_t eGreedy(State_t const& s) const;   // rvalue obj versions?
+    Action_t const& greedy (State_t const& s, bool v=false) const;   // rvalue obj versions?
+    Action_t const& eGreedy(State_t const& s) const;   // rvalue obj versions?
 
 public:
     void performLearningEpisodes(
