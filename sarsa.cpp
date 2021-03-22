@@ -29,23 +29,16 @@ Sarsa::_afterstateValueLookup(Afterstate_t const& as) const
         return 0;
 
     /// \tbc the following correct? :
-    // no special case for ending afterstates because the environment decides on whether to follow with a terminating state or not.
-    // this knowledge must not coded into the learning agent
+    // no special case for ending afterstates because the environment decides
+    // on whether to follow with a terminating state or not. this knowledge
+    // must not coded into the learning agent
 
-    Afterstate_t transf( as );
-
-    // : transform
-    /// \tbc ther should be a function pointer member to do this transformation
-//    if( transf.points() > 2000 )
-//        transf.points() = 2000;
-
-    auto i = _afterstateValueTable.find( transf );
+    auto i = _afterstateValueTable.find( as );
 
     if( i == _afterstateValueTable.end() )
     {
-        auto put = _afterstateValueTable.insert( {transf, 500} ); /// \bc make variable
-        if( put.second == false )
-            exit(43258);
+        auto put = _afterstateValueTable.insert( {as, 500} ); /// TODO Use variable
+        assert(put.second); // Not found previously so must be inserted anew
         i = put.first;
     }
 
@@ -55,8 +48,7 @@ Sarsa::_afterstateValueLookup(Afterstate_t const& as) const
 auto
 Sarsa::_afterstateValueUpdate(Afterstate_t const& as) const -> double&
 {
-    Afterstate_t transf( as );
-    return _afterstateValueTable.at( transf );
+    return _afterstateValueTable.at(as);
 }
 
 auto
