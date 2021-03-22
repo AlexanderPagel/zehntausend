@@ -1,7 +1,20 @@
 #include "randomness.h"
 
+#include <ctime>
+#include <cstdlib>
+
+
 namespace randomness
 {
+
+namespace
+{
+
+// Call srand() during static initialization. Static initialization itself must
+// not use randomness.
+int i = (std::srand(std::time(0)), 0);
+
+}
 
 // Only static variable to avoid static initialization yeet
 decltype(std::declval<std::mt19937>()) mt{std::mt19937(std::random_device{}())};

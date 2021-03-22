@@ -66,7 +66,7 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
     if( !legalActions.empty() )
     {
         // : max over all legal actions
-        Action_t bestAction( Action_t::makeNone() );  /// \write std ctor and remore init;
+        auto bestAction = std::crend(legalActions);
         double maxEstimate = std::numeric_limits<double>::lowest();
 
         // As a bit of a hack we loop backwards (best actions are generated
@@ -91,17 +91,23 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
 
             if( afterstateEstimate > maxEstimate )
             {
-                if( v ) std::cout << std::setw(3) << "*";
+//                if( v ) std::cout << std::setw(3) << "*";
 
-                bestAction = a;
+                bestAction = it;
                 maxEstimate = afterstateEstimate;
             }
 
-            if( v ) std::cout << std::endl;
+//            if( v ) std::cout << std::endl;
         }
-            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
-            if( v ) std::cin.ignore();
-        return bestAction;
+//            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
+//            if( v ) std::cin.ignore();
+        if (bestAction == std::crend(legalActions))
+        {
+            // Unreachable unless some return estimate is double::lowest
+            assert(false);
+            return Action_t::makeNone();
+        }
+        return *bestAction;
     }
     else
     {
@@ -120,10 +126,11 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
         return Action_t::makeNone();
     }
 
-    if (randomness::epsilonRandom(epsilon))
-//    if( (double)std::rand()/RAND_MAX < epsilon )
+    // TODO speed difference=
+//    if (randomness::epsilonRandom(epsilon))
+    if( (double)std::rand()/RAND_MAX < epsilon )
     {
-        auto legalActions = std::move( _legalActionsLookup(s) );
+        auto const& legalActions = _legalActionsLookup(s);
 
         if( !legalActions.empty() )
         {
