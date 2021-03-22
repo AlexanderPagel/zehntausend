@@ -77,6 +77,10 @@ Environment::pointsWorthRaw(Throw const& thrown)
 {
   Points_t points{0};
 
+  // Shortcut: Test for welp action
+  if (thrown.total() == 0)
+    return 0;
+
   auto const tripleWorth = [](Count_t c, DigitType d, Points_t base = 100) -> Points_t
   {
     return c / 3 * base * digitTypeToDigit(d);
@@ -203,7 +207,8 @@ void
 Environment::restart()
 {
   state = State::startState();
-  fillActions();
+  clearActions();
+//  fillActions();
 }
 
 } // namespace refac
