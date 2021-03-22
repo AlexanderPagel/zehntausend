@@ -261,7 +261,7 @@ Tenthousand<P>::legalMoves(State_t const& s) -> MoveVector_t
         unsigned int sum = f[ONE]+f[TWO]+f[THREE]+f[FOUR]+f[FIVE]+f[SIX];
         Move_t m( Throw_t({f[ONE],f[TWO],f[THREE],f[FOUR],f[FIVE],f[SIX],sum}), true );
         if( legal(s, m))    /// \tbc SOME double checks still here
-            movVec.push_back( std::move(m) );
+            movVec.push_back( m );
         m.finishes() = false;
         if( legal(s, m))
             movVec.push_back( std::move(m) );
