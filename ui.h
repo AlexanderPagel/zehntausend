@@ -25,7 +25,6 @@
 #include "actor.h"
 #include "display.h"
 #include "history.h"
-#include "tenK.h"
 #include "ui_average.h"
 #include "ui_rollback.h"
 #include "ui_types.h"

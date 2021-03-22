@@ -14,6 +14,7 @@
 
 
 #include <ostream>
+#include <iostream>
 
 #include "ui_types.h"
 #include "ui_subobject.h"

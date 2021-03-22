@@ -1,5 +1,6 @@
 #include "action_simulation.h"
 
+#include "enum.h"
 #include "ref_types.h"
 #include "ui.h"
 #include "ui_types.h"

@@ -6,9 +6,6 @@
 #include <unordered_map>
 //#include "state.h"
 //#include "tenK.h"
-#include "tenK.h"
-#include "tenKMove.h"
-#include "tenKState.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -34,7 +31,6 @@
 //unsigned int constexpr numberOfStates = (2000/50+1) * 7; // including points == 0 and dice number == 0
 
 class Sarsa;
-template class Tenthousand<1>;
 
 /// \tbc template with type parameter derived from environment
 class Sarsa

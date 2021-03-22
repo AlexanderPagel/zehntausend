@@ -55,14 +55,14 @@ std::string dToS(double d)
 
 /// \tbc define #TEST and #NOTEST to execute depending on global constexpr?
 
-template<unsigned int n>
-static void reprint(Tenthousand<n> const& game, std::string msg = "")
-{
-    std::cout << std::endl << std::endl;
-    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
-    std::cout << std::string(80,'-') << std::endl;
-    game.print();
-}
+//template<unsigned int n>
+//static void reprint(Tenthousand<n> const& game, std::string msg = "")
+//{
+//    std::cout << std::endl << std::endl;
+//    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
+//    std::cout << std::string(80,'-') << std::endl;
+//    game.print();
+//}
 
 int main()
 {

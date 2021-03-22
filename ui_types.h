@@ -6,7 +6,6 @@
 #define UI_TYPES_INCLUDED 1
 
 
-#include "tenK.h"
 #include "ref_tenthousand.h"
 
 
