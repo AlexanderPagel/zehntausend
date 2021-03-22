@@ -223,6 +223,13 @@ UiFactory::createDefaultGame()
 BotActor*
 UiFactory::createDefaultBot()
 {
+#ifdef PG
+  auto s = new Sarsa(0.1, 0.1);
+  // 1M training episodes
+  s->performLearningEpisodes(1000000);
+  delete s;
+  exit(1);
+#endif
   // FIXME Sarsa bot creation is currently a memory leak: Bot actor will not
   //       free bot.
   // TODO Within the ui namespace it would be simplest to use smart pointers
