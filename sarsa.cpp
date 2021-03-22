@@ -132,16 +132,9 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
     {
         auto const& legalActions = _legalActionsLookup(s);
 
-        if( !legalActions.empty() )
-        {
-            return *randomness::pickUniformRandom(legalActions);
-//            return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
-        }
-        else
-        {
-            assert(false); // Unreachable with refactored implementation
-            return Action_t::makeNone();
-        }
+        assert(!legalActions.empty());
+//        return *randomness::pickUniformRandom(legalActions);
+        return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
     }
     else
     {
