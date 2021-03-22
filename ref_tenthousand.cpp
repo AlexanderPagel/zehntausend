@@ -20,9 +20,25 @@ Tenthousand::restartEnvironment()
 void
 Tenthousand::adjustWinner()
 {
-  assert(!hasFinished());
-  if(getPoints() >= goal)
-    winner = player;
+  assert(!hasFinished()); // Only called from interact() member
+  assert(playerCount() > 0);
+
+  // Only if last player to move: Give every players the same number of turns
+  if (getPlayer() != playerCount()-1)
+    return;
+
+  // TODO Write generic find_max().
+  auto maxPoints{getPoints()};
+  auto maxPlayer{getPlayer()};
+  for (int i = 0; i < playerCount(); ++i)
+    if (getPoints(i) > maxPoints)
+    {
+      maxPoints = getPoints(i);
+      maxPlayer = i;
+    }
+
+  if (maxPoints >= goal)
+    winner = maxPlayer;
 }
 
 void
@@ -59,7 +75,7 @@ Tenthousand::interact(P p, Types... args)
     addPoints(g.getReturn());
     g.restart();
     adjustWinner();
-    incrementPlayer(); // Must be last because is changes current player
+    incrementPlayer(); // Must be last because it changes current player
   }
 
   return true;
@@ -92,7 +108,9 @@ Tenthousand::getGame()
 Tenthousand::Tenthousand(int playerCount)
   : games(playerCount),
     savePoints(playerCount, 0)
-{}
+{
+  assert(playerCount > 0);
+}
 
 int
 Tenthousand::playerCount() const
