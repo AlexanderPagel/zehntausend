@@ -61,7 +61,7 @@ GameState::GameState()
 {
   // Make member 'cup' consistent to the dictated initial state
   makeDigitsConsistent();
-  
+
   // TODO Maybe just restart()? Performance does not matter anyway
 }
 
