@@ -115,15 +115,13 @@ Ui::getPoints(Player_t player) const
 bool
 Ui::isOver() const
 {
-  // TODO
-  return false;
+  return game->hasFinished();
 }
 
 Game_t::Player
 Ui::getWinner() const
 {
-  // TODO
-  return 0;
+  return game->getWinner();
 }
 
 void
@@ -182,13 +180,12 @@ Ui::startGame()
   // "Game loop"
   while (!isOver())
   {
-    std::cout << "Starting new round." << std::endl;
     rePrint();
     act();  // Current player makes 1 game input
-    std::cout << "Round is over." << std::endl;
   };
 
-  std::cout << "Game has finished." << std::endl;
+  std::cout << "The winner is: " << getWinner() << " [ENTER]" << std::endl;
+  std::cin.ignore();
 }
 
 Ui::~Ui()
