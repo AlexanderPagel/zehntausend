@@ -1,13 +1,19 @@
 # Build
 .debug
 .depend
-*.o
+.profile
 *.d
+*.o
 zehntausend
+
+# Profile
+analysis.txt
+gmon.out
 
 # Edit
 *.swp
 Session.vim
+SessionSplit.vim
 tags
 
 # Misc
