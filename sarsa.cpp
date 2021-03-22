@@ -57,13 +57,15 @@ Sarsa::_afterstateValueUpdate(Afterstate_t const& as) const -> double&
     return _afterstateValueTable.at( transf );
 }
 
+Sarsa::Action_t const Sarsa::zeroStatic = Action_t::zero();
+
 auto
-Sarsa::greedy(State_t const& s, bool v) const -> Action_t
+Sarsa::greedy(State_t const& s, bool) const -> Action_t const&
 {
 
     if( s.isTerminal() )
     {
-        return Action_t::zero();
+        return zeroStatic;
     }
 
     // : compute all legal actions
@@ -72,58 +74,59 @@ Sarsa::greedy(State_t const& s, bool v) const -> Action_t
     if( !legalActions.empty() )
     {
         // : max over all legal actions
-        Action_t bestAction( Action_t::zero() );  /// \write std ctor and remore init;
+        auto bestAction = legalActions.crbegin();
         double maxEstimate = std::numeric_limits<double>::lowest();
 
-        for( Action_t const& a : legalActions )
+        for (auto it = legalActions.crbegin(); it != legalActions.crend(); ++it)
         {
+            auto const& a = *it;
             Afterstate_t as( _game_t::afterstate(s, a) );                                          // not: only allows legal afterstates (i hope)
 //            double reward = Environment_t::simulate(s, a).first;
             double afterstateEstimate ( _afterstateValueLookup(as) );      /// \bc write lookup function that checks if existing and else throws error or exits or sth
 //            double sum = reward + gamma*afterstateEstimate;
-            if( v )
-            {
-                std::cout << "Action( ";
-                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
-                std::cout << " " << a.putAside()[6]
-                     << " | " << a.finishes() << " ) --> "
-                     << std::setprecision(2) << std::fixed << afterstateEstimate;
-            }
+//            if( v )
+//            {
+//                std::cout << "Action( ";
+//                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
+//                std::cout << " " << a.putAside()[6]
+//                     << " | " << a.finishes() << " ) --> "
+//                     << std::setprecision(2) << std::fixed << afterstateEstimate;
+//            }
 
 
             if( afterstateEstimate >= maxEstimate )
             {
-                if( v ) std::cout << std::setw(3) << "*";
+//                if( v ) std::cout << std::setw(3) << "*";
 
-                bestAction = a;
+                bestAction = it;
                 maxEstimate = afterstateEstimate;
             }
 
-            if( v ) std::cout << std::endl;
+//            if( v ) std::cout << std::endl;
         }
-            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
-            if( v ) std::cin.ignore();
-        return bestAction;
+//            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
+//            if( v ) std::cin.ignore();
+        return *bestAction;
     }
     else
     {
-        return Action_t::zero();
+        return zeroStatic;
     }
 }
 
 
 auto
-Sarsa::eGreedy(State_t const& s) const -> Action_t
+Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 {
     /// \tbc this is the case when S_ is already seen as terminating but the algorithm needs a dummy action A_
     if( s.isTerminal() )
     {
-        return Action_t::zero();
+        return zeroStatic;
     }
 
     if( (double)std::rand()/RAND_MAX < epsilon )
     {
-        auto legalActions = std::move( _legalActionsLookup(s) );
+        auto const& legalActions =  _legalActionsLookup(s);
 
         if( !legalActions.empty() )
         {
@@ -131,7 +134,7 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t
         }
         else
         {
-            return Action_t::zero();
+            return zeroStatic;
         }
     }
     else
