@@ -58,7 +58,7 @@ Ui::act()
   }
 }
 
-Game_t::Player
+Ui::Game_t::Player
 Ui::getPlayer() const
 {
   // TODO assert(not terminal) once gmae class has such a state
@@ -87,19 +87,22 @@ Ui::getDieDigit(int idx) const
 {
   assert(0 <= idx && idx <= 6);
 
-  return game->_cup[idx];
+  return std::get<refac::Digit_t>(game->getCup().getDie(idx));
+//  return game->_cup[idx];
 }
 
 bool
 Ui::canStopTurn() const
 {
-  return game->getPutAny();
+//  return game->getPutAny();
+  return game->getGameState().getAction().taking.any();
 }
 
 State_t
 Ui::getState() const
 {
-  return game->state();
+  // FIXME is this meant by state??
+  return game->getState();
 }
 
 Points_t
@@ -112,34 +115,19 @@ Ui::getPoints(Player_t player) const
 bool
 Ui::isOver() const
 {
-  // TODO
-  return false;
+  return game->hasFinished();
 }
 
 Game_t::Player
 Ui::getWinner() const
 {
-  // TODO
-  return 0;
+  return game->getWinner();
 }
 
 void
 Ui::finishTurn()
 {
-  try
-  {
-    game->finishTurn();
-  }
-  // TODO If we remake the game class we probably want regular return
-  //      values. the player not getting points is not an error in
-  //      the program. The return value can then also be passed on
-  //      normally to the actor (or other callers).
-  catch (illegal_move_error& err) // Turn has also finished
-  {
-    // TODO Here we update internal states if we wish
-
-    // TODO Maybe we want to re--throw to inform the bot about the error
-  }
+  game->interactFinish();
 }
 
 double
@@ -192,13 +180,12 @@ Ui::startGame()
   // "Game loop"
   while (!isOver())
   {
-    std::cout << "Starting new round." << std::endl;
     rePrint();
     act();  // Current player makes 1 game input
-    std::cout << "Round is over." << std::endl;
   };
 
-  std::cout << "Game has finished." << std::endl;
+  std::cout << "The winner is: " << getWinner() << " [ENTER]" << std::endl;
+  std::cin.ignore();
 }
 
 Ui::~Ui()
@@ -217,19 +204,20 @@ Ui::~Ui()
 Game_t*
 UiFactory::createDefaultGame()
 {
-  return new std::remove_reference_t<decltype(*game)>{};
+  return new std::remove_reference_t<decltype(*game)>(3);
 }
 
 BotActor*
 UiFactory::createDefaultBot()
 {
 #ifdef PG
-  auto s = new Sarsa(0.1, 0.1);
-  // 1M training episodes
+  auto s = new Sarsa(0.0, 0.1);
+  // 1M training episodes fr profiling
   s->performLearningEpisodes(1000000);
   delete s;
   exit(1);
 #endif
+
   // FIXME Sarsa bot creation is currently a memory leak: Bot actor will not
   //       free bot.
   // TODO Within the ui namespace it would be simplest to use smart pointers
@@ -279,7 +267,7 @@ UiFactory::createDefaultPlayer()
 Ui::History_t*
 UiFactory::createDefaultHistory()
 {
-  return new History<State_t>{ui};
+  return new History<refac::Tenthousand>{ui};
 }
 
 Display*

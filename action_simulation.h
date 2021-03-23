@@ -13,6 +13,7 @@
 
 
 #include "ui_types.h"
+#include "ui.h"
 
 
 namespace ui

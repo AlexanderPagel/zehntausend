@@ -11,6 +11,15 @@
 
 #include "ui.h"
 
+
+
+
+#include "ref_game.h"
+
+
+
+
+
 #ifdef TEST_RUN
     #error TEST_RUN is already defined
 #else
@@ -46,20 +55,17 @@ std::string dToS(double d)
 
 /// \tbc define #TEST and #NOTEST to execute depending on global constexpr?
 
-template<unsigned int n>
-static void reprint(Tenthousand<n> const& game, std::string msg = "")
-{
-    std::cout << std::endl << std::endl;
-    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
-    std::cout << std::string(80,'-') << std::endl;
-    game.print();
-}
+//template<unsigned int n>
+//static void reprint(Tenthousand<n> const& game, std::string msg = "")
+//{
+//    std::cout << std::endl << std::endl;
+//    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
+//    std::cout << std::string(80,'-') << std::endl;
+//    game.print();
+//}
 
 int main()
 {
-
-  // For now I will just stash all testing in fron of main and return yolo
-
   srand(time(nullptr));
 
   // Let UI factory create a new ui object
@@ -83,6 +89,8 @@ int main()
 
 
 
+  // The simulation refactoring made pretty much all of this break
+  /*
     /// \tbc test / read copy constructor calls
     /// \tbc implement random state learning
 
@@ -369,6 +377,7 @@ std::cout << "[Preparation]" << std::endl;
 
     cleanup:
     delete bot;
+    */
 
     return 0;
 }

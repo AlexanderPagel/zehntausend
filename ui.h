@@ -25,10 +25,10 @@
 #include "actor.h"
 #include "display.h"
 #include "history.h"
-#include "tenK.h"
 #include "ui_average.h"
 #include "ui_rollback.h"
 #include "ui_types.h"
+#include "ref_tenthousand.h"
 
 
 namespace ui
@@ -37,9 +37,9 @@ namespace ui
 class Ui
 {
   public:
-    using Game_t = Tenthousand<3>;
+    using Game_t = refac::Tenthousand;
 
-    using History_t = History<Game_t::State_t>;
+    using History_t = History<Game_t>;
   private:
 
     friend class UiFactory;
@@ -111,11 +111,19 @@ class Ui
     template<typename... Types> \
     auto f(Types... args) { return game-> f (args...); }
 #endif
-    RELAY(putAside)
-    RELAY(roll)
-    RELAY(finishTurn)
+#ifdef RELAY_NAME
+#error Redefinition of macro RELAY_NAME
+#else
+#define RELAY_NAME(f, orig) \
+    template<typename... Types> \
+    auto f(Types... args) { return game-> orig (args...); }
+#endif
+    RELAY_NAME(putAside, interactToggleAside)
+    RELAY_NAME(roll, interactRoll)
+    RELAY_NAME(finishTurn, interactFinish)
     RELAY(makeMove)
 #undef RELAY
+#undef RELAY_NAME
 
     // Relaying averages
     double getAverage(Player_t const&) const;

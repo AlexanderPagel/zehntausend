@@ -1,0 +1,215 @@
+There is no README.
+This is just notes.
+
+--------------------------------------------------------------------------------
+Game Ruleset and Terminology
+--------------------------------------------------------------------------------
+
+  1 Terminal State and "None" Action:
+    There is exactly 1 terminal state that compares equal only to itself. Only
+    the "none" action is legal in the terminal state, transitioning into the
+    terminal state with reward 0. The "none" action is illegal in all other
+    states.
+    This state (transition) is used to allow the Q-learning implementation to
+    query a' even if s' is already terminal.
+
+  2 "Welp" Action:
+    When the player can not ut any die aside, and also can not finish (turn
+    limit not reached), they have exactly 1 legal action that is the "welp"
+    action. The "welp" actions transitions into the terminal state with total
+    return 0. That means, the reward from transitioning with the welp action is
+    exactly "minus the current points". The "welp" actions is illegal in all
+    other states.
+
+  3 Ordinary Legal Actions:
+    In any state in which (1) and (2) do not apply, all actions continuing play
+    into the next time step are legal: Players may put aside any subset S of
+    dice with |S| >= 1. If they reach the turn limit, they may choose to finish
+    or roll.
+    // TODO Actions that finish w/o putting every possible die aside my be
+            considered illegal. The current interactive implementation already
+            automatically puts everything aside upon finish and learning/bots
+            might benefit from it. Action generation and search through legal
+            actions might be sped up.
+
+--------------------------------------------------------------------------------
+Programming Conventions / Implementation Paradigms
+--------------------------------------------------------------------------------
+
+  1 Legal Behaviour:
+    Most classes expect inputs to be valid in the game-rule sense: Actions that
+    are passed to be performed must be allowed by the game rules (as described
+    above). This is intended to ease computation of reward and transitions.
+    Only class "Game" implements rule enforcement. The interaction member of
+    this class perform no-ops, and return false, when the requested action is
+    not possible.
+
+  2 Valid Behaviour:
+    All classes expect inputs to be valid in the technical sense: Setting
+    variables occurs only within the expected scope, indices that are passed
+    must be in range, we can not remove more dice than exist, and we can not
+    request the winner if the game has not finished yet.
+    Member calls are never explicitly sanity checked by the implementation.
+
+  3 Base Types:
+    All integral base types are signed types. They are aggressively sized down
+    to allow for denser packing. They will likely be allowed to be larger once
+    the necessity for small types is tested.
+    DigitType  [0, 5] represent die digits, zero based. 6 a total. Used for
+               indexing of arrays that have an entry for each category. 1 byte
+    Digit_t    Digits as shown by dice (in range [1,6]). 1 byte
+    Count_t    Represent the number of dice/digits. 1 byte
+    Selection_t = std::vector<bool>. Used to add boolean flags to other vectors.
+
+--------------------------------------------------------------------------------
+Simulation Classes Layout:
+--------------------------------------------------------------------------------
+
+  LEGEND:
+  -------
+
+  Class: Brief
+    - Data member {type}
+    - Data members of {types}
+    -> Implemented Behaviour
+    -> Guarantees
+    -> Benefits
+
+  RL SIMULATION (area for optimization):
+  --------------------------------------
+
+  Throw: Just dice
+    - {std::vector} of rolled {DigitTypes = enum ['one', 'two', ..., 'six', ...]}
+    - Total number {Count_t} of dice
+    -> Represents unordered set of dice
+    -> Keep total counter consistent with reset
+    -> Use total counter for emptiness test
+    -> Subtract small sets of dice from larger sets of dice
+  State: Full RL state
+    - Throw {Throw} of currently available DigitTypes
+    - Points {Points_t}
+    - terminal flag {bool}
+    -> Randomize (roll) dice
+    -> Identify the unique terminal state
+    -> Sample start states // TODO -> move to environment
+  Action: Full RL Action
+    - Decision of {DigitTypes} to put aside as {Throw}
+    - {boolean} decision of whether to roll (f) or finish (t)
+    -> Identify the unique "none" action
+    -> Test for welp
+  Environment: Full RL-Environment
+    - Internal {State} of the environment
+    - {std::vector} of legal {Action}s (sometimes)
+    -> Generate {std:vector} of legal {Action}s in internal {State}
+    -> Implement state transitions from {Action} inputs
+    -> Implement reward function (~ point updates)
+    -> (re)start and detect ends of episodes
+  Afterstate: (s, a) representation for Q-learning
+    - points before action
+    - points after action
+    - number of dice left for next roll
+    - flags to identify transitions including terminal states
+    - welping flag (not really needed, covered by points) // TODO Remove?
+
+  GAME SIMULATION (no optimization required):
+  -------------------------------------------
+
+  Dice: Just *Ordered* dice
+    - {std::vector} of rolled {Digit_t}s
+    -> Represents *ordered* set of rolled dice
+    -> Needed for consistent display of a game state to humans
+  Cup: Dice + Activeness
+    - An ordered set of {Dice}
+    - An active flag for each die as {std::vector<bool>}
+    - A set of unordered dice as {Throw}, consistent with the subset of active
+      dice
+    -> Represents a cup of dice that can be either active (in) or inactive
+       (aisde)
+    -> Provides setter that keep the internal representation consistent
+    -> // TODO Should provide the keep-throw-consistent feature currently given
+          by {GameState}
+  GameState: Internally RL environment, externally incremented die moving
+    - The game {Environment}
+    - A {Cup} of ordered dice, kept consistent with the environment
+    - An {Action} that can be constructed interactively by putting dice aside
+    -> Provides the game mechanics that is experience for the die game in human
+       play
+    -> Internally works on the RL-style environment implementation, but present
+       a consistent interface on ordered dice
+  Game: Rule-Enforcement
+    - An internal {GameState}
+    - Usable flags as {std::vector<bool>} to help enforcing game rules
+    -> Provides the rule-enforced, interactive one-player game
+    -> Attempts for illegal actions result in no-ops
+    -> Attempts for illegal actions signaled by returnvalues
+  Tenthousand: Interactive multiplayer
+    - An {std::vector} of {Game}s (one for each player)
+    - A point bank (saved points for each player) as {std::vector} of {Points_t}
+    - A current player
+    - A winner
+    -> More than 1 player competing with each other
+    -> Players act one-by-one by putting dice aside
+    -> First to 10000 points wins
+
+--------------------------------------------------------------------------------
+Performance Ideas
+--------------------------------------------------------------------------------
+
+  This is a cluster of ideas to speed up the implementation. Mainly just written
+  down for later evaluation, counteracting memory loss.
+
+  1 I suspect that the use of default-allocated std::vector objects is the main
+    new source of overhead. Since for the most part, the range of possible
+    values is very limited, one might try to replace them by larger
+    array-of-byte-objects or with even more dense packing using bit fields.
+
+  2 Algorithmic potential speedup may be found in action generation: Produce
+    actions considering only '1' digits first, then expand them by adding the
+    actions considering '1' and '2' digits, and so on. Benefit is that action
+    can be created with very little local variables to be kept track of.
+
+  3 Action generation could happen in a dedicated memory area. There is
+    a maximal number of generated actions and no need to allocate each of them
+    on heap every round.
+
+  4 Actions must not be represented by Action objects. Instead, they could be
+    identified by a hash table key that maps them to a statically stored action
+    object. A vector of legal actions would then only be a vector of keys
+    referring to the static objects. Not very sure this idea is even sound.
+
+  5 Within the Q-learning algorithm, if a_ ban be reused in the next time step
+    if the greedy action is taken (which is likely). This saves the repeated
+    search for the max action. The loss from not using the update from the
+    previous time step should be negligible.
+
+  6 Within the Q-learning algorithm, action vectors vould be stored in a sorted
+    fashion, considerably increasing the search time for max actions.
+    Options to keep action vector sorting up to date:
+    1 After an action was taken and is updated, the vector A(s) of legal
+      actions within that state is adjusted (if required) to reflect the new
+      values. (Maybe with some probability.)
+    2 Periodically re-sort all stored action vectors? Finding the maximizing
+      action may become noisy.
+
+  7 Store (raw) action points within each action. Action generation loops
+    through digitocunts anyway, would be simple to also add points for each die
+    on top. Potentially also synergizes well with (2). Especially compelling
+    since (currently) action vectores are cached by the RL algorithm anyway
+    - the point simulation would become much easier in the speed-critical
+    sections.
+
+  8 Within the Q-learning algorithm, store legal afterstate vectors rather than
+    legal actions vectors. Since afterstates are by construction the
+    deterministic part of the state transition, we can simply store tuples
+    state -> (afterstate, action) rather than computing the afterstate anew
+    every single time.
+
+  9 Store hash in afterstate. This builds on top of 8. If afterstates are cached
+    (rather than re-computed each time), the Q-value lookup could be sped up by
+    adding the pre-hash (= constructed value given to std::hash<>) to each entry
+    (potentially even the hash value itself, using no-op has hasher afterwards).
+
+  10 Compute next state from afterstate. The afterstate contains information
+     that can be useful for the state transition computation: The amount of
+     secured points and also the amount of dice left to be rolled. (This idea is
+     similar to (7).

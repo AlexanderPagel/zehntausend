@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "randomness.h"
+
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
 {
@@ -11,7 +13,7 @@ Sarsa::_legalActionsLookup(State_t const& s) const
     // Compute anew and cache if not found
     if( search == _legalActionsTable.end() )
     {
-        auto put = _legalActionsTable.insert( {s, Game_t::legalActions(s)} );
+        auto put = _legalActionsTable.insert( {s, Game_t::generateActions(s)} );
         assert(put.second); // Insertion took place
         search = put.first;
     }
@@ -27,23 +29,16 @@ Sarsa::_afterstateValueLookup(Afterstate_t const& as) const
         return 0;
 
     /// \tbc the following correct? :
-    // no special case for ending afterstates because the environment decides on whether to follow with a terminating state or not.
-    // this knowledge must not coded into the learning agent
+    // no special case for ending afterstates because the environment decides
+    // on whether to follow with a terminating state or not. this knowledge
+    // must not coded into the learning agent
 
-    Afterstate_t transf( as );
-
-    // : transform
-    /// \tbc ther should be a function pointer member to do this transformation
-//    if( transf.points() > 2000 )
-//        transf.points() = 2000;
-
-    auto i = _afterstateValueTable.find( transf );
+    auto i = _afterstateValueTable.find( as );
 
     if( i == _afterstateValueTable.end() )
     {
-        auto put = _afterstateValueTable.insert( {transf, 500} ); /// \bc make variable
-        if( put.second == false )
-            exit(43258);
+        auto put = _afterstateValueTable.insert( {as, 500} ); /// TODO Use variable
+        assert(put.second); // Not found previously so must be inserted anew
         i = put.first;
     }
 
@@ -53,48 +48,48 @@ Sarsa::_afterstateValueLookup(Afterstate_t const& as) const
 auto
 Sarsa::_afterstateValueUpdate(Afterstate_t const& as) const -> double&
 {
-    Afterstate_t transf( as );
-    return _afterstateValueTable.at( transf );
+    return _afterstateValueTable.at(as);
 }
 
-Sarsa::Action_t const Sarsa::zeroStatic = Action_t::zero();
-
 auto
-Sarsa::greedy(State_t const& s, bool) const -> Action_t const&
+Sarsa::greedy(State_t const& s, bool v) const -> Action_t const&
 {
 
-    if( s.isTerminal() )
-    {
-        return zeroStatic;
-    }
+//    if( s.isTerminal() )
+//    {
+//        return Action_t::makeNone();
+//    }
 
     // : compute all legal actions
     ActionVector_t const& legalActions( _legalActionsLookup(s) );    /// \bc check for move semantics?
 
-    if( !legalActions.empty() )
+    assert(!std::empty(legalActions));
     {
         // : max over all legal actions
-        auto bestAction = legalActions.crbegin();
+        auto bestAction = std::crend(legalActions);
         double maxEstimate = std::numeric_limits<double>::lowest();
 
-        for (auto it = legalActions.crbegin(); it != legalActions.crend(); ++it)
+        // As a bit of a hack we loop backwards (best actions are generated
+        // last). Not technically required nor forbidden.
+        for (auto it = std::crbegin(legalActions); it != std::crend(legalActions); ++it)
+//        for( Action_t const& a : legalActions )
         {
             auto const& a = *it;
-            Afterstate_t as( _game_t::afterstate(s, a) );                                          // not: only allows legal afterstates (i hope)
+            Afterstate_t as(s, a);
 //            double reward = Environment_t::simulate(s, a).first;
             double afterstateEstimate ( _afterstateValueLookup(as) );      /// \bc write lookup function that checks if existing and else throws error or exits or sth
 //            double sum = reward + gamma*afterstateEstimate;
-//            if( v )
-//            {
+            if( v )
+            {
 //                std::cout << "Action( ";
 //                for(int i=0;i<6;++i) std::cout << a.putAside()[i];
 //                std::cout << " " << a.putAside()[6]
 //                     << " | " << a.finishes() << " ) --> "
 //                     << std::setprecision(2) << std::fixed << afterstateEstimate;
-//            }
+            }
 
 
-            if( afterstateEstimate >= maxEstimate )
+            if( afterstateEstimate > maxEstimate )
             {
 //                if( v ) std::cout << std::setw(3) << "*";
 
@@ -106,12 +101,19 @@ Sarsa::greedy(State_t const& s, bool) const -> Action_t const&
         }
 //            if( v ) std::cout << std::endl << "[ENTER]" << std::endl;
 //            if( v ) std::cin.ignore();
+//        if (bestAction == std::crend(legalActions))
+//        {
+            // Unreachable unless some return estimate is double::lowest
+//            assert(false);
+//            return Action_t::makeNone();
+//        }
         return *bestAction;
     }
-    else
-    {
-        return zeroStatic;
-    }
+//    else
+//    {
+//        assert(false);
+//        return Action_t::makeNone();
+//    }
 }
 
 
@@ -119,23 +121,20 @@ auto
 Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 {
     /// \tbc this is the case when S_ is already seen as terminating but the algorithm needs a dummy action A_
-    if( s.isTerminal() )
-    {
-        return zeroStatic;
-    }
+//    if( s.isTerminal() )
+//    {
+//        return Action_t::makeNone();
+//    }
 
-    if( (double)std::rand()/RAND_MAX < epsilon )
+    // TODO speed difference=
+    if (randomness::epsilonRandom(epsilon))
+//    if( (double)std::rand()/RAND_MAX < epsilon )
     {
-        auto const& legalActions =  _legalActionsLookup(s);
+        auto const& legalActions = _legalActionsLookup(s);
 
-        if( !legalActions.empty() )
-        {
-            return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
-        }
-        else
-        {
-            return zeroStatic;
-        }
+        assert(!legalActions.empty());
+        return *randomness::pickUniformRandom(legalActions);
+//        return legalActions.at( rand() % legalActions.size() ); // note: should be sufficiently even distributed even when not perfect
     }
     else
     {
@@ -147,24 +146,24 @@ void
 Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
 {
     unsigned int const t = n;
+    refac::Environment e;
 
     for( ; n != 0; --n )
     {
-        auto s( State_t::randomStart() ); /// \tbc moves?
+        e.restart();
+        auto s = e.getState();
 
-        while(!s.isTerminal())
+        while(!e.episodeFinished())
         {
             auto a( eGreedy(s) );
-            auto simulEnvFeedback = ( Environment_t::simulate(s, a) );
 
-            auto r  = simulEnvFeedback.first;
-            auto s_ = simulEnvFeedback.second;
-
+            auto r  = e.takeAction(a);
+            auto s_ = e.getState();
 
             auto a_( greedy(s_) );
 
-            Afterstate_t as ( Environment_t::afterstate(s,a) );
-            Afterstate_t as_ ( Environment_t::afterstate(s_,a_) );
+            Afterstate_t as (s , a );
+            Afterstate_t as_(s_, a_);
 
             double prev = _afterstateValueLookup( as );
             double nextEst = _afterstateValueLookup( as_ );
@@ -172,7 +171,6 @@ Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
             _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
 
             s = s_;
-//            a = a_;
         }
 
         // Print a loading bar so we know the algorithm didn't hung itself
