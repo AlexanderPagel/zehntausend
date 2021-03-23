@@ -145,15 +145,8 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 void
 Sarsa::performLearningEpisodes(unsigned int n, unsigned int, std::ostream&)
 {
-    refac::Environment e;
-
     for (; n != 0; --n)
-    {
       performLearningEpisode();
-    }
-
-    return;
-
 }
 
 Sarsa::Reward_t
