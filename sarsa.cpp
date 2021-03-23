@@ -143,47 +143,47 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 }
 
 void
-Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
+Sarsa::performLearningEpisodes(unsigned int n, unsigned int, std::ostream&)
 {
-    unsigned int const t = n;
     refac::Environment e;
 
-    for( ; n != 0; --n )
+    for (; n != 0; --n)
     {
-        e.restart();
-        auto s = e.getState();
-
-        while(!e.episodeFinished())
-        {
-            auto a( eGreedy(s) );
-
-            auto r  = e.takeAction(a);
-            auto s_ = e.getState();
-
-            auto a_( greedy(s_) );
-
-            Afterstate_t as (s , a );
-            Afterstate_t as_(s_, a_);
-
-            double prev = _afterstateValueLookup( as );
-            double nextEst = _afterstateValueLookup( as_ );
-
-            _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
-
-            s = s_;
-        }
-
-        // Print a loading bar so we know the algorithm didn't hung itself
-        if( l != 0 )
-            if( t != 0 )
-                if( n % (int)(t/l+1) == 0 ) /// \tbc get an exact loading function?
-                    os << "=";
+      performLearningEpisode();
     }
 
     return;
 
 }
 
+Sarsa::Reward_t
+Sarsa::performLearningEpisode()
+{
+  e.restart();
+  while(!e.episodeFinished())
+  {
+    auto const& s = e.getState();
+
+    auto const& a( eGreedy(s) );
+
+    auto const& r  = e.takeAction(a); // FIXME Can use const-ref?
+    auto const& s_ = e.getState();
+
+    auto const& a_( greedy(s_) );
+
+    Afterstate_t as (s , a );
+    Afterstate_t as_(s_, a_);
+
+    double prev = _afterstateValueLookup( as );
+    double nextEst = _afterstateValueLookup( as_ );
+
+    // TODO Provide normal update function.
+    _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
+  }
+
+  // TODO we need environment::getReturn
+  return e.getState().getPoints();
+}
 
 Sarsa::Sarsa(double alph, double epsil, double gam)
     : alpha{alph}, epsilon{epsil}, gamma{gam}, _afterstateValueTable{}, _legalActionsTable()
