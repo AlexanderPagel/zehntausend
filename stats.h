@@ -32,6 +32,9 @@
 //
 // Maybe implement removal operation later.
 // [https://stackoverflow.com/questions/30876298/removing-a-prior-sample-while-using-welfords-method-for-computing-single-pass-v]:
+//  Mk = Mk-1 + (xk – Mk-1) / k
+//  Sk = Sk-1 + (xk – Mk-1) * (xk – Mk)
+//  =>
 //  Mk-1 = Mk - (xk - Mk) / (k - 1).
 //  Sk-1 = Sk - (xk – Mk-1) * (xk – Mk).
 // Looks stable enough to me since the changes look very similar in size to the
@@ -44,6 +47,7 @@
 #define STATS_H_INCLUDED 1
 
 
+#include <cmath>
 #include <tuple>
 
 
@@ -52,21 +56,21 @@ namespace stats
 
 // TODO Move Mean and Stat classes into dedicated stats.h header.
 // TODO Put implementation in .inc file
-template<typename T, typename M = double,
-         typename = std::enable_if_t<std::is_floating_point_v<M>>
-        >
+template<typename T, typename M = double>
 class Stats
 {
+    static_assert(std::is_floating_point_v<M>);
+
   public:
     using Long_type = uint64_t;
     using Value_type = T; // T: Type we want to aggregate and compute the mean over
     using Mean_type = M; // M: Floating point type used for computations
-    using StdDeviation_type = Variance_type;
     using Variance_type = Mean_type;
+    using StdDeviation_type = Variance_type;
     // Not sure how much is actually needed, but better not take the 32 bit bet
-    static_assert(sizeof(Value_type) >= 8);
-    static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
-    static_assert(sizeof(Mean_type) >= 4); // TODO Makes sense for floats?
+//    static_assert(sizeof(Value_type) >= 8);
+//    static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
+//    static_assert(sizeof(Mean_type) >= 4); // TODO Makes sense for floats?
 
   protected:
     Long_type n{0};
@@ -79,9 +83,11 @@ class Stats
 
 
     // Add *only* to the mean parts 'n' and 'sum'
-    void addToMean(Value_type t);
+    void addToMean(Value_type v);
+    void removeFromMean(Value_type v);
     // Update mean *and* variance parts
-    void updateVarianceAndMean(T t);
+    void addValue(Value_type v);
+    void removeValue(Value_type v);
 
   public:
     bool hasMean() const { return getN() > 0; }
@@ -104,6 +110,7 @@ class Stats
 
     // Easiert to use from outside
     Stats& operator+=(Value_type t);
+    Stats& operator-=(Value_type t);
     // Easier to type in derived classes
 };
 

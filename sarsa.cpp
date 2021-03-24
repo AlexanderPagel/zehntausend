@@ -13,7 +13,7 @@ Sarsa::_legalActionsLookup(State_t const& s) const
     // Compute anew and cache if not found
     if( search == _legalActionsTable.end() )
     {
-        auto put = _legalActionsTable.insert( {s, Game_t::generateActions(s)} );
+        auto put = _legalActionsTable.insert( {s, Environment_t::generateActions(s)} );
         assert(put.second); // Insertion took place
         search = put.first;
     }

@@ -2,14 +2,14 @@ namespace stats
 {
 
 template<typename T, typename M>
-auto Stats<T,M>::offsetFromMean(T t) const -> Mean_type
+auto Stats<T,M>::offsetFromMean(Value_type v) const -> Mean_type
 {
-  return getN() != 0 ? static_cast<Mean_type>(t) - Base_type::getMean()
-                     : t;
+  return getN() != 0 ? static_cast<Mean_type>(v) - getMean()
+                     : v;
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::varFinalize(bool sample) -> Variance_type
+auto Stats<T,M>::varFinalize(bool sample) const -> Variance_type
 {
   // TODO Needed?
   assert(squareSum / static_cast<Variance_type>(getN()) >= 0);
@@ -28,26 +28,44 @@ auto Stats<T,M>::varFinalize(bool sample) -> Variance_type
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::stdDeviationFinalize(bool sample) const -> StdDeviation_type
+auto Stats<T,M>::stdDeviationFinalize(bool sample) const
+  -> StdDeviation_type
 {
-  return getN() > 0 ? std::sqrt(varFinalize(sample));
+  return getN() > 0 ? std::sqrt(varFinalize(sample))
+                    : -1;
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::addToMean(Value_type t)
+auto Stats<T,M>::addToMean(Value_type v) -> void
 {
   ++n;
-  sum += t;
+  sum += v;
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::updateVarianceAndMean(T t)
+auto Stats<T,M>::removeFromMean(Value_type v) -> void
 {
-  // Offset from old mean
-  Mean_type const offset { offsetFromMean(t) };
-  Base_type::addToMean(t);
-  Mean_type const offsetNew { offsetFromMean(t) };
+  assert(getN() > 0);
+  --n;
+  sum -= v;
+}
+
+template<typename T, typename M>
+auto Stats<T,M>::addValue(Value_type v) -> void
+{
+  Mean_type const offset { offsetFromMean(v) };
+  addToMean(v);
+  Mean_type const offsetNew { offsetFromMean(v) };
   squareSum += offset * offsetNew;;
+}
+
+template<typename T, typename M>
+auto Stats<T,M>::removeValue(Value_type v) -> void
+{
+  auto oldDiff {offsetFromMean(v)};
+  removeFromMean(v);
+  auto newDiff {offsetFromMean(v)};
+  squareSum -= oldDiff * newDiff;
 }
 
 template<typename T, typename M>
@@ -64,7 +82,7 @@ auto Stats<T,M>::getVariance() const -> Mean_type
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::getSampleVariance() const
+auto Stats<T,M>::getSampleVariance() const -> Variance_type
 {
   return varFinalize(true);
 }
@@ -83,7 +101,7 @@ auto Stats<T,M>::getSampleStdDeviation() const -> StdDeviation_type
 
 template<typename T, typename M>
 auto Stats<T,M>::operator()() const
-  -> std::pair<Mean_type, Mean_type>
+  -> StatRecord
 {
   return std::make_pair(
     getN(), getSum(), getMean(),
@@ -93,9 +111,16 @@ auto Stats<T,M>::operator()() const
 }
 
 template<typename T, typename M>
-auto Stats<T,M>::operator+=(Value_type t) -> Stats&
+auto Stats<T,M>::operator+=(Value_type v) -> Stats&
 {
-  updateVarianceAndMean(t);
+  addValue(v);
+  return *this;
+}
+
+template<typename T, typename M>
+auto Stats<T,M>::operator-=(Value_type v) -> Stats&
+{
+  removeValue(v);
   return *this;
 }
 

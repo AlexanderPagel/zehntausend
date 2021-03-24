@@ -12,6 +12,7 @@
 
 #include "sarsa.h" // Bot
 #include "stats.h"
+#include "ringbuffer.h"
 
 
 namespace rl
@@ -25,7 +26,7 @@ class Evaluator
 
   public:
     using Bot_type = Sarsa; // TODO Eventually template param?
-    using Value_type = double;
+    using Value_type = Bot_type::Return_t;
 
   private:
     struct Parameters
@@ -33,18 +34,22 @@ class Evaluator
       int trainingEpisodes;
       int evaluationEpisodes;
       // Step sizes for  runnign averages during training
+      // TODO Concrete parameters up for debate.
       std::vector<int> steps { 20000, 100000, 400000 };
     } parameters;
-    std::vector<Stats<double>> stats;
+    std::vector<Stats<Value_type>> stats;
+    Ringbuffer<Value_type> buffer; // Store values for running average
 
-    void evaluateTraining(std::shared_ptr<Bot_type>);
-    void evaluateFull(std::shared_ptr<Bot_type>);
+    // Generate training statistics
+    void evaluateTraining(Bot_type&);
+    // Generate final (stationary) statistics
+    void evaluateFull(Bot_type&);
 
   public:
     Evaluator(int training, int test);
 
     // Evaluate bot with the configurated parameters
-    Value_type operator()(std::shared_ptr<Bot_type>);
+    void operator()(Bot_type&);
 };
 
 } // namespace rl

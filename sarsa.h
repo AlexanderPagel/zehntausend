@@ -45,9 +45,8 @@ private:
     //  - ...
     using _game_t        = refac::Environment;
 //    using Environment_t  = _game_t;
-    using Environment_t  = refac::Environment;
 public:
-    using Game_t         = _game_t;
+    using Environment_t  = refac::Environment;
     using State_t        = refac::State;
     using Action_t       = refac::Action;
 //    using Afterstate_t   = Game_t::Afterstate_t;
