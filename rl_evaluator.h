@@ -45,6 +45,8 @@ class Evaluator
     // Generate final (stationary) statistics
     void evaluateFull(Bot_type&);
 
+    void writeLogEntry(int) const;
+
   public:
     Evaluator(int training, int test);
 

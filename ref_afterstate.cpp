@@ -107,7 +107,7 @@ Afterstate::pointGain() const
 bool
 Afterstate::operator==(Afterstate const& other) const
 {
-  // Special case: acting in a terminal state
+  // Special case: Acting in a terminal state
   if (fromTerminal() || other.fromTerminal())
     return fromTerminal() == other.fromTerminal();
 

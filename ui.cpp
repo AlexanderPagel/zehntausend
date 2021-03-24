@@ -2,6 +2,9 @@
 
 #include <string> // std::to_string
 
+// FIXME testing
+#include "rl_evaluator.h"
+
 
 namespace ui
 {
@@ -210,9 +213,15 @@ UiFactory::createDefaultGame()
 BotActor*
 UiFactory::createDefaultBot()
 {
+  // FIXME testing
+  auto bot = new Sarsa(0.003, 0.08);
+  rl::Evaluator eval(40000000, 1000000);
+  eval(*bot);
+  return new BotActor{ui, *bot};
+
 #ifdef PG
-  auto s = new Sarsa(0.0, 0.1);
-  // 1M training episodes fr profiling
+  auto s = new Sarsa(0.1, 0.1);
+  // 1M training episodes for profiling
   s->performLearningEpisodes(1000000);
   delete s;
   exit(1);

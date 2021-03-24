@@ -11,6 +11,7 @@
 
 #include "ui.h"
 
+#include "rl_evaluator.h"
 
 
 
@@ -66,14 +67,25 @@ std::string dToS(double d)
 
 int main()
 {
-  srand(time(nullptr));
 
-  // Let UI factory create a new ui object
+  // Smacking test at front in main again
+//  auto bot = Sarsa(0.003, 0.8);
+//  rl::Evaluator eval(100000000, 10000000);
+//  eval(bot);
+
+
+
+
+
+
+
+
+  // Ui-bound game loop.
   ui::Ui* ui = ui::UiFactory{};
-
   ui->startGame();
 
 
+  return 2;
 
 
 
