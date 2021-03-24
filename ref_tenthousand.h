@@ -80,6 +80,7 @@ class Tenthousand
     Points_t getCurrent() const;
 //    auto getCurrent() { return getState().getPoints(); } // TODO this needs to reflect on the currently in-consruction action, too
     auto getActive() { return getCup().getActive(); }
+    auto getUsable(int i) {return getGame().isUsable(i); }
 };
 
 } // namespace refac

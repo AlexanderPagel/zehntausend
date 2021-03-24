@@ -72,6 +72,13 @@ Ui::getTurnPoints() const
 }
 
 bool
+Ui::getDieAvailable(int die) const
+{
+  assert(0 <= die and die < 6);
+  return game->getUsable(die);
+}
+
+bool
 Ui::getDieAside(int die) const
 {
   // TODO In the game class i currently named this "active" instead of "aside".

@@ -71,6 +71,11 @@ class Game
     // Some functions to further inspect the components (mainly to extract the
     // internal state).
     GameState const& getGameState() const;
+
+    //--------------------------------------------------------------------------
+    // TODO think about where to put these
+    // Some stuff that I quickly dump here to satisfy Ui requirements.
+    bool isUsable(int i) const;
 };
 
 } // namespace refac

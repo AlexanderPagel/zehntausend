@@ -195,4 +195,11 @@ Game::getGameState() const
   return gameState;
 }
 
+bool
+Game::isUsable(int i) const
+{
+  assert(0 <= i && i < (int)usable.size());
+  return usable[i];
+}
+
 } // namespace refac

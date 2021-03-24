@@ -67,12 +67,22 @@ Display::drawPlayerToMoveLine()
 void
 Display::drawCurrentThrowLine()
 {
+  auto const dieAppearance = [this](int i) -> std::string
+  {
+    if (!getUi()->getDieAvailable(i))
+      return "   ";
+    else if (getUi()->getDieAside(i))
+      return std::string(" ") + dieChar(i) + " ";
+    else
+      return std::string("[") + dieChar(i) + "]";
+  };
+
   os << "     |    " << std::setw(currentPointsWidth) << getUi()->getTurnPoints();
   os << (getUi()->canStopTurn() ? "   " : " ->");
   for (int i = 0; i < 6; ++i)
   {
-    if (getUi()->getDieAside(i)) os << "  " << dieChar(i) << " ";
-    else                         os << " [" << dieChar(i) << "]";
+    os << " ";
+    os << dieAppearance(i);
   }
   os << std::endl;
 }

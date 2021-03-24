@@ -87,6 +87,7 @@ class Ui
     // Get current "board" situation
     Game_t::Player getPlayer() const;
     Points_t getTurnPoints() const;
+    bool getDieAvailable(int die) const;
     bool getDieAside(int die) const;
     int getDieDigit(int die) const;
     bool canStopTurn() const;
