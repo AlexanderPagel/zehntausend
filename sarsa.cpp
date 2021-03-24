@@ -155,17 +155,13 @@ Sarsa::performLearningEpisode()
   e.restart();
   while(!e.episodeFinished())
   {
-    auto const& s = e.getState();
-
-    auto const& a( eGreedy(s) );
-
-    auto const& r  = e.takeAction(a); // FIXME Can use const-ref?
+    //          v
+    auto const& s = e.getState(); // Referenced state changes at takeAction()
+    auto const& a( eGreedy(s) ); Afterstate_t as (s , a );
+    auto const& r  = e.takeAction(a);
     auto const& s_ = e.getState();
-
-    auto const& a_( greedy(s_) );
-
-    Afterstate_t as (s , a );
-    Afterstate_t as_(s_, a_);
+    auto const& a_( greedy(s_) ); Afterstate_t as_(s_, a_);
+    //          ^
 
     double prev = _afterstateValueLookup( as );
     double nextEst = _afterstateValueLookup( as_ );
