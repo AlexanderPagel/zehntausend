@@ -38,11 +38,14 @@ class Evaluator
       int trainingEpisodes;
       int evaluationEpisodes;
       // Step sizes for  runnign averages during training
-      // TODO Concrete parameters up for debate.
       std::vector<int> steps { 100000, 1000000, 10000000 };
     } parameters;
     std::vector<Stats_type> stats;
     Ringbuffer<Value_type> buffer; // Store values for running average
+
+    // TODO Could use a "RunningStats" class that has it's own ring buffer (or
+    //      is provided a ringbuffer from the outside, allowing multiple stats
+    //      objects to use the same ringbuffer.
 
     // Generate training statistics
     void evaluateTraining(Bot_type&);
