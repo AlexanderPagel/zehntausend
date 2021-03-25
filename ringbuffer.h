@@ -7,6 +7,7 @@
 #define RINGBUFFER_H_INCLUDED 1
 
 
+#include <cassert>
 #include <vector>
 
 
@@ -27,6 +28,7 @@ class Ringbuffer
     int size() const;
 
     // Queries n-th previously inserted value. 0 for last inserted value.
+    // Parameter n must be in range (-size() , size()).
     Value_type const& operator[](int) const;
     // Insert new value, returning value that was replaced.
     Value_type operator<<(Value_type const&);

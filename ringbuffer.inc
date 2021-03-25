@@ -20,7 +20,9 @@ auto Ringbuffer<T>::offsetBackwards(int i) const -> int
 template<typename T>
 Ringbuffer<T>::Ringbuffer(int len)
   : buffer(len)
-{}
+{
+  assert(len > 1); // Some member won't work otherwise
+}
 
 template<typename T>
 auto Ringbuffer<T>::size() const -> int
@@ -37,11 +39,10 @@ auto Ringbuffer<T>::operator[](int i) const -> Value_type const&
 template<typename T>
 auto Ringbuffer<T>::operator<<(Value_type const& v) -> Value_type
 {
-  // TODO Can remove copying if we secretly make buffer
-  //      1 larger. But then we need toconsider that when
-  //      looking forward (maybe just disallow).
-  auto tmp {buffer[pos]};
-  buffer[pos] = v;
+  auto const& tmp {buffer[pos]};
   pos = ringIndex(pos + 1);
+  buffer[pos] = v;
   return tmp;
+
+  // TODO Is it UB returning buffer[0] if it was never initialized?
 }
