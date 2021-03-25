@@ -68,9 +68,9 @@ class Stats
     using Variance_type = Mean_type;
     using StdDeviation_type = Variance_type;
     // Not sure how much is actually needed, but better not take the 32 bit bet
-//    static_assert(sizeof(Value_type) >= 8);
-//    static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
-//    static_assert(sizeof(Mean_type) >= 4); // TODO Makes sense for floats?
+    static_assert(sizeof(Value_type) >= 8); // We can use templates to ensure this automatically
+    static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
+    static_assert(sizeof(Mean_type) >= 4); // TODO Makes sense for floats?
 
   protected:
     Long_type n{0};

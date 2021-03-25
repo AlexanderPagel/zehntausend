@@ -58,7 +58,7 @@ Evaluator::writeLogEntry(int i) const
   //      nubmer of logs should be small compared to the number of training
   //      steps in between.
   cout << i << ":   ";
-  auto const out = [](Stats<Value_type> const& s) -> void
+  auto const out = [](Stats_type const& s) -> void
   {
     auto [n, sum, mean, var, o, svar, so] = s();
     cout << fixed << setprecision(0)              << mean << " o "

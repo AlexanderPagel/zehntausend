@@ -28,6 +28,10 @@ class Evaluator
     using Bot_type = Sarsa; // TODO Eventually template param?
     using Value_type = Bot_type::Return_t;
 
+    using Stats_type = Stats<long long>;
+    static_assert(std::is_integral_v<Value_type>,
+        "Need to adjust Stats<> type parameter");
+
   private:
     struct Parameters
     {
@@ -37,7 +41,7 @@ class Evaluator
       // TODO Concrete parameters up for debate.
       std::vector<int> steps { 20000, 100000, 400000 };
     } parameters;
-    std::vector<Stats<Value_type>> stats;
+    std::vector<Stats_type> stats;
     Ringbuffer<Value_type> buffer; // Store values for running average
 
     // Generate training statistics
