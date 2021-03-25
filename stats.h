@@ -70,12 +70,12 @@ class Stats
     // Not sure how much is actually needed, but better not take the 32 bit bet
     static_assert(sizeof(Value_type) >= 8); // We can use templates to ensure this automatically
     static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
-    static_assert(sizeof(Mean_type) >= 4); // TODO Makes sense for floats?
+    static_assert(sizeof(Mean_type) >= 8); // TODO Makes sense for floats?
 
   protected:
     Long_type n{0};
     Value_type sum{0};
-    Variance_type squareSum { 0 };
+    Variance_type squareSum {0};
 
     Mean_type offsetFromMean(Value_type v) const;
     Variance_type varFinalize(bool sample) const;
@@ -90,6 +90,10 @@ class Stats
     void removeValue(Value_type v);
 
   public:
+    // Initialize with nonzero counter. Used for initial inertia of runnign
+    // averages.
+    explicit Stats(Long_type initialCounter = 0);
+
     bool hasMean() const { return getN() > 0; }
     bool hasVariance() const { return getN() > 1; }
     bool hasStdDeviation() const { return hasVariance(); }

@@ -39,7 +39,7 @@ class Evaluator
       int evaluationEpisodes;
       // Step sizes for  runnign averages during training
       // TODO Concrete parameters up for debate.
-      std::vector<int> steps { 20000, 100000, 400000 };
+      std::vector<int> steps { 100000, 1000000, 10000000 };
     } parameters;
     std::vector<Stats_type> stats;
     Ringbuffer<Value_type> buffer; // Store values for running average

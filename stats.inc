@@ -11,13 +11,9 @@ auto Stats<T,M>::offsetFromMean(Value_type v) const -> Mean_type
 template<typename T, typename M>
 auto Stats<T,M>::varFinalize(bool sample) const -> Variance_type
 {
-  // TODO Needed?
-  assert(squareSum / static_cast<Variance_type>(getN()) >= 0);
-
   // Divide by N-1 for sample variance
   auto divisor {static_cast<Variance_type>(getN() - int(sample))};
 
-  // TODO Need this sanitization?
   // Sanitize with std::abs in case inaccurate float operations produce
   // negative.
   // TODO Wikipedia algorithm only computes var for n > 1, rather than n > 0.
@@ -67,34 +63,39 @@ auto Stats<T,M>::removeValue(Value_type v) -> void
 }
 
 template<typename T, typename M>
+Stats<T,M>::Stats(Long_type initialCounter)
+  : n{initialCounter}
+{}
+
+template<typename T, typename M>
 auto Stats<T,M>::getMean() const -> Mean_type
 {
-  return getN() > 0 ? static_cast<Mean_type>(sum) / static_cast<Mean_type>(n)
-                    : 0;
+  return hasMean() ? static_cast<Mean_type>(sum) / static_cast<Mean_type>(n)
+                   : 0;
 }
 
 template<typename T, typename M>
 auto Stats<T,M>::getVariance() const -> Mean_type
 {
-  return getN() > 0 ? varFinalize(false) : -1;
+  return hasVariance() ? varFinalize(false) : -1;
 }
 
 template<typename T, typename M>
 auto Stats<T,M>::getSampleVariance() const -> Variance_type
 {
-  return getN() > 1 ? varFinalize(true) : -1;
+  return hasVariance() ? varFinalize(true) : -1;
 }
 
 template<typename T, typename M>
 auto Stats<T,M>::getStdDeviation() const -> StdDeviation_type
 {
-  return getN() > 0 ? stdDeviationFinalize(false) : -1;
+  return hasStdDeviation() ? stdDeviationFinalize(false) : -1;
 }
 
 template<typename T, typename M>
 auto Stats<T,M>::getSampleStdDeviation() const -> StdDeviation_type
 {
-  return getN() > 1 ? stdDeviationFinalize(true) : -1;
+  return hasStdDeviation() ? stdDeviationFinalize(true) : -1;
 }
 
 template<typename T, typename M>
