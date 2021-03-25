@@ -236,7 +236,7 @@ UiFactory::createDefaultBot()
   unsigned int count;
   double alpha;
   double epsilon;
-  std::cout << "Legacy:" << std::endl
+  std::cout << "Legacy (per-move, x10 on startup):" << std::endl
             << " steps                 | learning rate | exploration rate" << std::endl
             << "       0  -    999     | 0.25          | 0.2" << std::endl
             << "    1000  -   9999     | 0.18          | 0.15" << std::endl
