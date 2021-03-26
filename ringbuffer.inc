@@ -1,7 +1,7 @@
 template<typename T>
 auto Ringbuffer<T>::ringIndex(int i) const -> int
 {
-  // i must be in (-size, 2*size - 1)
+  // i must be in [-size, 2*size - 1]
   if (i < 0) i += size();
   else if (i >= size()) i -= size();
 
@@ -12,7 +12,7 @@ auto Ringbuffer<T>::ringIndex(int i) const -> int
 template<typename T>
 auto Ringbuffer<T>::offsetBackwards(int i) const -> int
 {
-  assert(i < size());
+  assert(i <= size());
   assert(i > -size());
   return ringIndex(pos - i);
 }
@@ -21,7 +21,15 @@ template<typename T>
 Ringbuffer<T>::Ringbuffer(int len)
   : buffer(len)
 {
-  assert(len > 1); // Some member won't work otherwise
+  // operator<< overwrites reference otherwise
+  assert(sizeCheck());
+}
+
+template<typename T>
+Ringbuffer<T>::Ringbuffer(int len, Value_type const& init)
+  : buffer(len, init)
+{
+  assert(sizeCheck());
 }
 
 template<typename T>

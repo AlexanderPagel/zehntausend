@@ -5,8 +5,7 @@
 // these stats for RL algorithm evaluation and returns are typically in range
 // [0, 2000].
 
-// References:
-//
+// Addition operation:
 // Wikipedia [https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance]:
 //  # For a new value newValue, compute the new count, new mean, the new M2.
 //  # mean accumulates the mean of the entire dataset
@@ -30,7 +29,7 @@
 //          (mean, variance, sampleVariance) = (mean, M2 / count, M2 / (count - 1))
 //          return (mean, variance, sampleVariance)
 //
-// Maybe implement removal operation later.
+// Removal operation:
 // [https://stackoverflow.com/questions/30876298/removing-a-prior-sample-while-using-welfords-method-for-computing-single-pass-v]:
 //  Mk = Mk-1 + (xk – Mk-1) / k
 //  Sk = Sk-1 + (xk – Mk-1) * (xk – Mk)
@@ -48,7 +47,10 @@
 
 
 #include <cmath>
+#include <memory>
 #include <tuple>
+
+#include "ringbuffer.h"
 
 
 namespace stats
@@ -72,7 +74,7 @@ class Stats
     static_assert(sizeof(Long_type) >= 4); // 32 bit should be enough for counting only
     static_assert(sizeof(Mean_type) >= 8); // TODO Makes sense for floats?
 
-  protected:
+  private:
     Long_type n{0};
     Value_type sum{0};
     Variance_type squareSum {0};
@@ -80,7 +82,6 @@ class Stats
     Mean_type offsetFromMean(Value_type v) const;
     Variance_type varFinalize(bool sample) const;
     StdDeviation_type stdDeviationFinalize(bool sample) const;
-
 
     // Add *only* to the mean parts 'n' and 'sum'
     void addToMean(Value_type v);
@@ -112,10 +113,32 @@ class Stats
                    StdDeviation_type, Variance_type, StdDeviation_type>;
     StatRecord operator()() const;
 
-    // Easiert to use from outside
-    Stats& operator+=(Value_type t);
-    Stats& operator-=(Value_type t);
-    // Easier to type in derived classes
+    Stats& operator+=(Value_type v);
+    Stats& operator-=(Value_type v);
+};
+
+template<typename T, typename M = double>
+class RunningStats : public Stats<T,M>
+{
+    using Base_type = Stats<T,M>;
+
+  public:
+    using typename Base_type::Value_type;
+    using Buffer_type = Ringbuffer<Value_type>;
+    using Drag_type = unsigned;
+
+  private:
+    std::shared_ptr<Ringbuffer<Value_type>> ringBuffer;
+    Drag_type drag;
+
+  public:
+    // Passed buffer must be large enough
+    explicit RunningStats(Drag_type drag);
+    explicit RunningStats(std::shared_ptr<Buffer_type>);
+    explicit RunningStats(std::shared_ptr<Buffer_type>, Drag_type);
+
+    RunningStats& operator+=(Value_type v);
+    RunningStats& operator-=(Value_type v) = delete; // Hide Base_type version
 };
 
 } // namespace stats

@@ -1,6 +1,10 @@
 namespace stats
 {
 
+// -----------------------------------------------------------------------------
+// Stats
+// -----------------------------------------------------------------------------
+
 template<typename T, typename M>
 auto Stats<T,M>::offsetFromMean(Value_type v) const -> Mean_type
 {
@@ -121,6 +125,36 @@ auto Stats<T,M>::operator-=(Value_type v) -> Stats&
 {
   removeValue(v);
   return *this;
+}
+
+// -----------------------------------------------------------------------------
+// RunningStats
+// -----------------------------------------------------------------------------
+
+template<typename T, typename M>
+RunningStats<T,M>::RunningStats(Drag_type d, Value_type init)
+  : RunningStats(std::make_shared<Buffer_type>(d, Value_type{init}), d)
+{}
+
+template<typename T, typename M>
+RunningStats<T,M>::RunningStats(std::shared_ptr<Buffer_type> b)
+  : RunningStats(b, b->size())
+{}
+
+template<typename T, typename M>
+RunningStats<T,M>::RunningStats(std::shared_ptr<Buffer_type> b,
+                                     Drag_type d)
+  : ringBuffer{b}, drag{d}
+{
+  // Rungbuffer must be large enough
+  assert(b->size() >= d);
+}
+
+template<typename T, typename M>
+auto RunningStats<T,M>::operator+=(Value_type v) -> RunningStats&
+{
+  // I just noticed the other stats objects don't know about this
+  auto old = ringBuffer << v;
 }
 
 } // namespace stats
