@@ -20,7 +20,7 @@ class Ringbuffer
     int pos {0}; // TODO Using iterator worth it?
 
     // operator<< would alias overwrite reference otherwise
-    bool sizeCheck() const { size() > 1; }
+    bool sizeCheck() const { return size() > 1; }
 
     int ringIndex(int i) const;
     int offsetBackwards(int i) const;

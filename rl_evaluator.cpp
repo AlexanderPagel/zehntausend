@@ -76,9 +76,10 @@ Evaluator::writeLogEntry(int i) const
   cout << i << ":   ";
   auto const out = [](Stats_type const& s) -> void
   {
-    auto [n, sum, mean, var, o, svar, so] = s();
-    cout << fixed << setprecision(0)              << mean << " o "
-         << fixed << setprecision(0) << std::left << so << ",   ";
+    auto [n, sum, mean, ci, var, o, svar, so] = s();
+    cout << fixed << setprecision(0)              << mean << " +- "
+         << fixed << setprecision(0) << std::left << ci   << " o "
+         << fixed << setprecision(0) << std::left << so   << ",    ";
   };
   for (auto it = stats.crbegin(); it != stats.crend(); ++it)
     out(*it);

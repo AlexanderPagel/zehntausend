@@ -106,17 +106,20 @@ class Stats
     Variance_type getSampleVariance() const;
     StdDeviation_type getStdDeviation() const;
     StdDeviation_type getSampleStdDeviation() const;
+    StdDeviation_type getRoundaboutConfidence() const;
 
-    // Get (N, sum, mean, var, o, sample_var, sample_o)
+    // Get (N, sum, mean, CI, var, o, sample_var, sample_o)
     using StatRecord
-      = std::tuple<Long_type, Value_type, Mean_type, Variance_type,
-                   StdDeviation_type, Variance_type, StdDeviation_type>;
+      = std::tuple<Long_type, Value_type, Mean_type, StdDeviation_type,
+                   Variance_type, StdDeviation_type,
+                   Variance_type, StdDeviation_type>;
     StatRecord operator()() const;
 
     Stats& operator+=(Value_type v);
     Stats& operator-=(Value_type v);
 };
 
+/*
 template<typename T, typename M = double>
 class RunningStats : public Stats<T,M>
 {
@@ -140,6 +143,7 @@ class RunningStats : public Stats<T,M>
     RunningStats& operator+=(Value_type v);
     RunningStats& operator-=(Value_type v) = delete; // Hide Base_type version
 };
+*/
 
 } // namespace stats
 

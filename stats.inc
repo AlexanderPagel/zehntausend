@@ -103,11 +103,22 @@ auto Stats<T,M>::getSampleStdDeviation() const -> StdDeviation_type
 }
 
 template<typename T, typename M>
+auto Stats<T,M>::getRoundaboutConfidence() const -> StdDeviation_type
+{
+  if (!hasMean() || !hasStdDeviation() || getN() < 1)
+  return StdDeviation_type{0};
+
+  auto so = getSampleStdDeviation();
+  auto interval {1.96 * so / std::sqrt(static_cast<StdDeviation_type>(getN()))};
+  return StdDeviation_type{interval};
+}
+
+template<typename T, typename M>
 auto Stats<T,M>::operator()() const
   -> StatRecord
 {
   return std::make_tuple(
-    getN(), getSum(), getMean(),
+    getN(), getSum(), getMean(), getRoundaboutConfidence(),
     getVariance(), getStdDeviation(),
     getSampleVariance(), getSampleStdDeviation()
     );
@@ -131,6 +142,7 @@ auto Stats<T,M>::operator-=(Value_type v) -> Stats&
 // RunningStats
 // -----------------------------------------------------------------------------
 
+/*
 template<typename T, typename M>
 RunningStats<T,M>::RunningStats(Drag_type d, Value_type init)
   : RunningStats(std::make_shared<Buffer_type>(d, Value_type{init}), d)
@@ -156,5 +168,6 @@ auto RunningStats<T,M>::operator+=(Value_type v) -> RunningStats&
   // I just noticed the other stats objects don't know about this
   auto old = ringBuffer << v;
 }
+*/
 
 } // namespace stats
