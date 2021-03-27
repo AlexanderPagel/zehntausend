@@ -33,9 +33,9 @@ Evaluator::evaluateTraining(Bot_type& bot)
       stats[i] += finalReturn;
       if (episode >= parameters.steps[i])
         stats[i] -= buffer[parameters.steps[i]];
-      else
+//      else
         // Stats have zero-inertia
-        stats[i] -= Value_type{0};
+//        stats[i] -= Value_type{0};
     }
 
     if ((episode + 1) % parameters.steps.front() == 0)
@@ -98,7 +98,7 @@ Evaluator::Evaluator(int training, int test)
 
   // Create one Stats object for each stepsize
   for (unsigned i = 0; i < parameters.steps.size() ; ++i)
-    stats.emplace_back(parameters.steps[i]);
+    stats.emplace_back(0);
   // Create stats object for final eval
   stats.emplace_back(0);
 }

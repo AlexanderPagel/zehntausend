@@ -213,14 +213,6 @@ UiFactory::createDefaultGame()
 BotActor*
 UiFactory::createDefaultBot()
 {
-  // FIXME testing
-//  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
-  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27
-  rl::Evaluator eval(50000000, 1000000);
-  eval(*bot);
-  exit(2);
-  return new BotActor{ui, *bot};
-
 #ifdef PG
   auto s = new Sarsa(0.1, 0.1);
   // 1M training episodes for profiling
@@ -228,6 +220,15 @@ UiFactory::createDefaultBot()
   delete s;
   exit(1);
 #endif
+
+  // FIXME testing
+//  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
+//  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27 (50M)
+  auto bot = new Sarsa(0.001, 0.15);
+  rl::Evaluator eval(110000000, 5000000);
+  eval(*bot);
+  exit(2);
+  return new BotActor{ui, *bot};
 
   // FIXME Sarsa bot creation is currently a memory leak: Bot actor will not
   //       free bot.
