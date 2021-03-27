@@ -214,7 +214,8 @@ BotActor*
 UiFactory::createDefaultBot()
 {
   // FIXME testing
-  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
+//  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
+  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27
   rl::Evaluator eval(50000000, 1000000);
   eval(*bot);
   exit(2);
