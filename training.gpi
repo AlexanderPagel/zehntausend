@@ -1,0 +1,13 @@
+# Set the output to a png file
+set terminal png size 1920,1080
+set output 'training.png'
+
+# Set appearance options
+set grid # plot a grid below data
+set title 'Training' # PGN title
+set style data lines
+
+# Plot training run
+print "Plotting data..."
+plot for [col = 2:19:6] "stats.dat" using 1:col w lp
+print "Plotting done"

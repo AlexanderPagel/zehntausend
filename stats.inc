@@ -285,4 +285,41 @@ auto NStats<T,M>::operator+=(Value_type v) -> NStats&
   return *this;
 }
 
+// -----------------------------------------------------------------------------
+// Nonmember functions
+// -----------------------------------------------------------------------------
+
+template<typename TT, typename MM>
+auto operator<<(std::ostream& os, Stats<TT,MM> const& stats) -> std::ostream&
+{
+  using namespace std;
+  auto const& [n, sum, mean, ci, var, o, svar, so] = stats();
+  // Format such that the raw numbers have their own columns
+  os <<            fixed << setprecision(2) << mean
+     << " (+- " << fixed << setprecision(2) << ci << " )"
+     << " o "   << fixed << setprecision(2) << so;
+  return os;
+}
+
+template<typename T, typename M>
+auto operator<<(std::ostream& os, NStats<T,M> const& runningStats)
+  -> std::ostream&
+{
+  assert(runningStats.stats.size() > 0);
+
+  auto const& stats {runningStats.getStats()};
+
+  // Output drag values collectively at beginning of line
+  using namespace std;
+  os << "[" << stats.front().getDrag();
+  for (auto it = std::next(stats.begin()); it != stats.end(); ++it)
+    os << "," << it->getDrag();
+
+  // Individually append each stats object
+  for (auto const& s : stats)
+    os << s;
+
+  return os;
+}
+
 } // namespace stats

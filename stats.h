@@ -48,14 +48,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 #include <tuple>
 
 #include "ringbuffer.h"
-
-// FIXME testing only
-#include <iostream>
-
 
 namespace stats
 {
@@ -196,7 +194,17 @@ class NStats
     Buffer_type const& getBuffer() const;
 
     NStats& operator+=(Value_type v);
+
+    template<typename TT, typename MM>
+    friend auto operator<<(std::ostream& os, NStats<TT,MM> const& runningStats)
+      -> std::ostream&;
 };
+
+template<typename T, typename M>
+std::ostream& operator<<(std::ostream&, Stats<T,M> const&);
+
+//template<typename T, typename M>
+//std::ostream& operator<<(std::ostream&, NStats<T,M> const&);
 
 } // namespace stats
 

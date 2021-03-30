@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$1" == "training" ]; then
+  make zehntausend -j4 &&
+  echo "1000000 0.1 0.1" | ./zehntausend | tee stats.dat &&
+  gnuplot "training.gpi" &&
+  _png "training.png"
+fi

@@ -9,6 +9,7 @@
 
 #include <cmath> // sqrt
 #include <memory>
+#include <fstream>
 
 #include "sarsa.h" // Bot
 #include "stats.h"
@@ -37,14 +38,15 @@ class Evaluator
   private:
     // TODO Eventually the stats drag should be adjustable by (ctor)
     // Stats with different amount of drag for training
-    NStats<StatsValue_type> runningStats {{100000, 1000000, 10000000}};
+    NStats<StatsValue_type> runningStats {{10000, 300000, 10000000}};
     Stats<StatsValue_type> finalStats;
+    // TODO Use as minimum, then train until largest running stats for the first time
     int trainingEpisodes;
     int evaluationEpisodes;
+    mutable std::ofstream ofs; // TODO have as input to eval functions?
 
-    // TODO Could use a "RunningStats" class that has it's own ring buffer (or
-    //      is provided a ringbuffer from the outside, allowing multiple stats
-    //      objects to use the same ringbuffer.
+  public:
+    static std::string outFile;
 
     // Generate training statistics
     void evaluateTraining(Bot_type&);
@@ -52,6 +54,8 @@ class Evaluator
     void evaluateFull(Bot_type&);
 
     void writeLogEntry(int) const;
+    void writeTrainingLog(int) const;
+    void writeEvaluationLog(int) const;
 
   public:
     Evaluator(int training, int test);
