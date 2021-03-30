@@ -248,6 +248,4 @@ auto NStats<T,M>::operator+=(Value_type v) -> NStats&
   return *this;
 }
 
-
-
 } // namespace stats
