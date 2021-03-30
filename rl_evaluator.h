@@ -26,20 +26,21 @@ class Evaluator
     using Bot_type = Sarsa; // TODO Eventually template param?
     using Value_type = Bot_type::Return_t;
 
-    using Stats_type = Stats<long long>;
-    static_assert(std::is_integral_v<Value_type>,
+    using StatsValue_type = long long;
+    using Stats_type = Stats<StatsValue_type>;
+    using RunningStats_type = NStats<StatsValue_type>;
+    static_assert(std::is_integral_v<StatsValue_type>,
         "Need to adjust Stats<> type parameter");
+    static_assert(std::is_convertible_v<Value_type, StatsValue_type>,
+        "Returns are processed by stats");
 
   private:
-    struct Parameters
-    {
-      int trainingEpisodes;
-      int evaluationEpisodes;
-      // Step sizes for  runnign averages during training
-      std::vector<int> steps { 100000, 1000000, 10000000 };
-    } parameters;
-    std::vector<Stats_type> stats;
-    Ringbuffer<Value_type> buffer; // Store values for running average
+    // TODO Eventually the stats drag should be adjustable by (ctor)
+    // Stats with different amount of drag for training
+    NStats<StatsValue_type> runningStats {{100000, 1000000, 10000000}};
+    Stats<StatsValue_type> finalStats;
+    int trainingEpisodes;
+    int evaluationEpisodes;
 
     // TODO Could use a "RunningStats" class that has it's own ring buffer (or
     //      is provided a ringbuffer from the outside, allowing multiple stats

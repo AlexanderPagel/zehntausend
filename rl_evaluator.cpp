@@ -1,8 +1,9 @@
 #include "rl_evaluator.h"
 
-#include <memory>
-#include <iostream>
+#include <algorithm>
 #include <iomanip>
+#include <iostream>
+#include <memory>
 
 
 namespace rl
@@ -19,26 +20,16 @@ void logResult(T const& t)
 void
 Evaluator::evaluateTraining(Bot_type& bot)
 {
-  for (int episode = 0; episode < parameters.trainingEpisodes; ++episode)
+  for (int episode = 0; episode < trainingEpisodes; ++episode)
   {
     // Get new data point
     auto const finalReturn { bot.performLearningEpisode() };
-    /*auto const old*/ {buffer << finalReturn;};
+    runningStats += finalReturn;
 
+    // FIXME testing
     logResult(finalReturn);
 
-    // Update runnign average stats
-    for (int i = 0; i < (int)parameters.steps.size(); ++i)
-    {
-      stats[i] += finalReturn;
-      if (episode >= parameters.steps[i])
-        stats[i] -= buffer[parameters.steps[i]];
-//      else
-        // Stats have zero-inertia
-//        stats[i] -= Value_type{0};
-    }
-
-    if ((episode + 1) % parameters.steps.front() == 0)
+    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
       writeLogEntry(episode + 1);
   }
 }
@@ -46,23 +37,20 @@ Evaluator::evaluateTraining(Bot_type& bot)
 void
 Evaluator::evaluateFull(Bot_type& bot)
 {
-  // Stats object to be used
-  auto& s {stats.back()};
-
   Bot_type::Environment_t e;
-  for (int episode = 0; episode < parameters.evaluationEpisodes; ++episode)
+  for (int episode = 0; episode < evaluationEpisodes; ++episode)
   {
     // Generate new data point
     for (e.restart(); !e.episodeFinished();
          e.takeAction(bot.greedy(e.getState())))
       ; // Empty
-    s += e.getState().getPoints(); // TODO Environment::getReturn().
+    finalStats += e.getState().getPoints(); // TODO Environment::getReturn().
 
     // FIXME Testing
     logResult(e.getState().getPoints());
 
-    if ((episode+1) % parameters.steps.front() == 0)
-      writeLogEntry(episode+1 + parameters.trainingEpisodes);
+    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
+      writeLogEntry(episode+1 + trainingEpisodes);
   }
 }
 
@@ -81,26 +69,17 @@ Evaluator::writeLogEntry(int i) const
          << fixed << setprecision(2) << std::left << ci   << " o "
          << fixed << setprecision(2) << std::left << so   << ",    ";
   };
-  for (auto it = stats.crbegin(); it != stats.crend(); ++it)
-    out(*it);
+  out(finalStats);
+  auto const& stats = runningStats.getStats();
+  std::for_each(std::crbegin(stats), std::crend(stats), out);
   cout << endl;
 }
 
 Evaluator::Evaluator(int training, int test)
-  : parameters{training, test}, // rest default
-    stats{},
-//    stats(parameters.steps.size() + 1), // One additional for full evaluation
-    // Use buffer one larger so we can treat the largest average in the same
-    // loop w/o index overflow.
-    buffer(parameters.steps.back() + 1) // Last step size must be largest
+  : trainingEpisodes{training},
+    evaluationEpisodes{test}
 {
   assert(training > 0 && test > 0);
-
-  // Create one Stats object for each stepsize
-  for (unsigned i = 0; i < parameters.steps.size() ; ++i)
-    stats.emplace_back(0);
-  // Create stats object for final eval
-  stats.emplace_back(0);
 }
 
 void

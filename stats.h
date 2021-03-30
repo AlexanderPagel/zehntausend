@@ -46,11 +46,15 @@
 #define STATS_H_INCLUDED 1
 
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <tuple>
 
 #include "ringbuffer.h"
+
+// FIXME testing only
+#include <iostream>
 
 
 namespace stats
@@ -133,20 +137,28 @@ class RunningStats : public Stats<T,M>
   public:
     using typename Base_type::Value_type;
     using Buffer_type = Ringbuffer<Value_type>;
+    // TODO Use int? Better since we sometimes get value and work with it
     using Drag_type = unsigned;
 
   private:
-    Drag_type drag;
+    Drag_type const drag;
 
   public:
     explicit RunningStats(Drag_type);
 
+    Drag_type getDrag() const;
+
     // Add ring buffer top and subtract value with offset = drag
     RunningStats& operator()(Buffer_type const&);
-    RunningStats& operator+=(Value_type v) = delete; // Hide Base_type version
-    RunningStats& operator-=(Value_type v) = delete; // Hide Base_type version
+
+    // Prevent accidental use of base class versions
+    RunningStats& operator+=(int) = delete;
+    RunningStats& operator-=(int) = delete;
+    RunningStats& replace()    = delete;
 };
 
+// TODO Maybe rename this to RunningStats and RunningStats to DragStats
+// Collection of draggin stats *without* zero-inertia
 template<typename T, typename M = double>
 class NStats
 {
@@ -154,13 +166,7 @@ class NStats
     using Value_type = typename Stats_type::Value_type;
     using Buffer_type = Ringbuffer<Value_type>;
 
-    std::vector<Stats_type> stats
-//    {
-      // These values are good for tenthousand trainign testing
-      // TODO needed here?
-//      100000, 1000000, 10000000
-//    }
-    ;
+    std::vector<Stats_type> stats;
     Buffer_type buffer;
 
     bool maxLast() const;
@@ -168,15 +174,20 @@ class NStats
 
   public:
     explicit NStats();
+    // TODO Didnt make it work
+    /*
     // Last Stats_type object must have the most drag
+    // TODO This allows to initialize stats with N != 0. We probably do not
+    //      want that. Just use an initializer list ctor.
     template<typename... Types,
-             typename = std::enable_if_t<
-               std::is_convertible_v<Types...,
-                                     std::vector<Stats_type>
-                                    >
-             >
-            >
+             typename = bool>
+//             typename = std::enable_if_t<
+//               std::is_convertible_v<Types...,
+//                                     std::vector<Stats_type> > > >
     explicit NStats(Types&&... args);
+    */
+
+    explicit NStats(std::vector<typename Stats_type::Drag_type> drags);
 
     std::vector<Stats_type> const& getStats() const;
     Buffer_type const& getBuffer() const;

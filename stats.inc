@@ -1,6 +1,10 @@
 namespace stats
 {
 
+namespace
+{
+} // namespace
+
 // -----------------------------------------------------------------------------
 // Stats
 // -----------------------------------------------------------------------------
@@ -162,11 +166,18 @@ RunningStats<T,M>::RunningStats(Drag_type d)
 {}
 
 template<typename T, typename M>
+auto RunningStats<T,M>::getDrag() const -> Drag_type
+{
+  return drag;
+}
+
+template<typename T, typename M>
 auto RunningStats<T,M>::operator()(Buffer_type const& buffer) -> RunningStats&
 {
-  assert(buffer.size() >= drag + 1);
+  assert(buffer.size() >= (int)drag + 1);
   assert(!(this->getN() > drag)); // Consistently low-passed stats
 
+  // If stats are "full", replace oldest value, else only add the new value
   if (this->getN() == drag)
     Base_type::replace(buffer.front(), buffer[drag]);
   else // N < drag
@@ -184,10 +195,10 @@ auto NStats<T,M>::maxLast() const -> bool
 {
   assert(stats.size() > 0);
 
-  auto max = stats.front().size();
+  auto max = stats.front().getDrag();
   for (auto const& s : stats)
-    if (s.size() > max) max = s.size();
-  return max == stats.back().size();
+    if (s.getDrag() > max) max = s.getDrag();
+  return max == stats.back().getDrag();
 }
 
 template<typename T, typename M>
@@ -198,14 +209,15 @@ auto NStats<T,M>::isOk() const -> bool
 
 template<typename T, typename M>
 NStats<T,M>::NStats()
-  : NStats(100000, 10000000, 10000000)
+  : NStats({100000, 10000000, 10000000})
 {}
 
+/*
 template<typename T, typename M>
 template
 <
   typename... Types, typename
-//  typename/* = std::enable_if_t
+//  typename = std::enable_if_t
 //  <
 //    std::is_convertible_v
 //    <
@@ -213,13 +225,42 @@ template
 //      std::vector<typename NStats<T,M>::Stats_type>
 //    >
 //  >
-//  */
 >
 NStats<T,M>::NStats(Types&&... args)
-  : stats(std::forward<Types...>(args...)),
-    // size+1 => insertion does not remove last element immediately
-    buffer(stats.back().size() + 1)
+    // FIXME Check how this is working exactly
+    // Hand-crafted "emplace_back-like" initializer-list ctor for stats vector
+  : stats{(Stats_type(std::forward<Types>(args)), ...)},
+    // drag+1 => insertion does not remove last element immediately
+    buffer(int(stats.back().getDrag() + 1))
 {
+  // Largest drag must be last, otherwise buffer is too small
+  assert(isOk());
+
+  // FIXME Making sure the pack things are working
+  std::cout << "Initializing NStats" << std::endl;
+  std::cout << "Number of stats created:" << stats.size() << std::endl;
+  std::cout << "buffer length: " << buffer.size() << std::endl;
+  std::cout << "individual stats drags:" << std::endl;
+  for (auto const& s : stats)
+    std::cout << "\t" << s.getDrag() << std::endl;
+}
+*/
+
+//template<typename T, typename M>
+//NStats<T,M>::NStats(int... a)
+//  : stats
+//{
+//}
+
+template<typename T, typename M>
+NStats<T,M>::NStats(std::vector<typename Stats_type::Drag_type> drags)
+  : stats{},
+    buffer(drags.back() + 1)
+{
+  assert(drags.size() > 0);
+  for (auto const& d : drags)
+    stats.emplace_back(d);
+  // Largest drag must be last, otherwise buffer is too small
   assert(isOk());
 }
 
@@ -238,13 +279,9 @@ auto NStats<T,M>::getBuffer() const -> Buffer_type const&
 template<typename T, typename M>
 auto NStats<T,M>::operator+=(Value_type v) -> NStats&
 {
-  buffer << v;
-  auto const updateStat = [&](auto s)
-  {
-    s(buffer);
-  };
-  for (auto const& s : stats)
-    updateStat(s);
+  buffer << v; // Buffer is 1 larger than needed, so we can ignore return value
+  auto const updateStat = [&](auto& s) { s(buffer); };
+  std::for_each(std::begin(stats), std::end(stats), updateStat);
   return *this;
 }
 

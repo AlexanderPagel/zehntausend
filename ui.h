@@ -114,8 +114,8 @@ class Ui
 #ifdef RELAY_NAME
 #error Redefinition of macro RELAY_NAME
 #else
-#define RELAY_NAME(f, orig) \
     // TODO use std::forward
+#define RELAY_NAME(f, orig) \
     template<typename... Types> \
     auto f(Types... args) { return game-> orig (args...); }
 #endif
