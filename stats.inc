@@ -67,6 +67,13 @@ auto Stats<T,M>::removeValue(Value_type v) -> void
 }
 
 template<typename T, typename M>
+auto Stats<T,M>::replaceValue(Value_type v, Value_type w) -> void
+{
+  addValue(v);
+  removeValue(w);
+}
+
+template<typename T, typename M>
 Stats<T,M>::Stats(Long_type initialCounter)
   : n{initialCounter}
 {}
@@ -138,36 +145,109 @@ auto Stats<T,M>::operator-=(Value_type v) -> Stats&
   return *this;
 }
 
+template<typename T, typename M>
+auto Stats<T,M>::replace(Value_type newVal, Value_type oldVal) -> Stats&
+{
+  replaceValue(newVal, oldVal);
+  return *this;
+}
+
 // -----------------------------------------------------------------------------
 // RunningStats
 // -----------------------------------------------------------------------------
 
-/*
 template<typename T, typename M>
-RunningStats<T,M>::RunningStats(Drag_type d, Value_type init)
-  : RunningStats(std::make_shared<Buffer_type>(d, Value_type{init}), d)
+RunningStats<T,M>::RunningStats(Drag_type d)
+  : drag{d}
 {}
 
 template<typename T, typename M>
-RunningStats<T,M>::RunningStats(std::shared_ptr<Buffer_type> b)
-  : RunningStats(b, b->size())
+auto RunningStats<T,M>::operator()(Buffer_type const& buffer) -> RunningStats&
+{
+  assert(buffer.size() >= drag + 1);
+  assert(!(this->getN() > drag)); // Consistently low-passed stats
+
+  if (this->getN() == drag)
+    Base_type::replace(buffer.front(), buffer[drag]);
+  else // N < drag
+    Base_type::operator+=(buffer.front());
+
+  return *this;
+}
+
+// -----------------------------------------------------------------------------
+// NStats
+// -----------------------------------------------------------------------------
+
+template<typename T, typename M>
+auto NStats<T,M>::maxLast() const -> bool
+{
+  assert(stats.size() > 0);
+
+  auto max = stats.front().size();
+  for (auto const& s : stats)
+    if (s.size() > max) max = s.size();
+  return max == stats.back().size();
+}
+
+template<typename T, typename M>
+auto NStats<T,M>::isOk() const -> bool
+{
+  return stats.size() > 0 && maxLast();
+}
+
+template<typename T, typename M>
+NStats<T,M>::NStats()
+  : NStats(100000, 10000000, 10000000)
 {}
 
 template<typename T, typename M>
-RunningStats<T,M>::RunningStats(std::shared_ptr<Buffer_type> b,
-                                     Drag_type d)
-  : ringBuffer{b}, drag{d}
+template
+<
+  typename... Types, typename
+//  typename/* = std::enable_if_t
+//  <
+//    std::is_convertible_v
+//    <
+//      Types...,
+//      std::vector<typename NStats<T,M>::Stats_type>
+//    >
+//  >
+//  */
+>
+NStats<T,M>::NStats(Types&&... args)
+  : stats(std::forward<Types...>(args...)),
+    // size+1 => insertion does not remove last element immediately
+    buffer(stats.back().size() + 1)
 {
-  // Rungbuffer must be large enough
-  assert(b->size() >= d);
+  assert(isOk());
 }
 
 template<typename T, typename M>
-auto RunningStats<T,M>::operator+=(Value_type v) -> RunningStats&
+auto NStats<T,M>::getStats() const -> std::vector<Stats_type> const&
 {
-  // I just noticed the other stats objects don't know about this
-  auto old = ringBuffer << v;
+  return stats;
 }
-*/
+
+template<typename T, typename M>
+auto NStats<T,M>::getBuffer() const -> Buffer_type const&
+{
+  return buffer;
+}
+
+template<typename T, typename M>
+auto NStats<T,M>::operator+=(Value_type v) -> NStats&
+{
+  buffer << v;
+  auto const updateStat = [&](auto s)
+  {
+    s(buffer);
+  };
+  for (auto const& s : stats)
+    updateStat(s);
+  return *this;
+}
+
+
 
 } // namespace stats

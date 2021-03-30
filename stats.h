@@ -89,6 +89,7 @@ class Stats
     // Update mean *and* variance parts
     void addValue(Value_type v);
     void removeValue(Value_type v);
+    void replaceValue(Value_type newVal, Value_type oldVal);
 
   public:
     // Initialize with nonzero counter. Used for initial inertia of runnign
@@ -115,11 +116,15 @@ class Stats
                    Variance_type, StdDeviation_type>;
     StatRecord operator()() const;
 
+    // Add or remove data points
     Stats& operator+=(Value_type v);
     Stats& operator-=(Value_type v);
+
+    // Replace old data point by new data point
+    Stats& replace(Value_type newVal, Value_type oldVal);
 };
 
-/*
+// Helper class for NStats. Not suitable for use on its own.
 template<typename T, typename M = double>
 class RunningStats : public Stats<T,M>
 {
@@ -131,19 +136,53 @@ class RunningStats : public Stats<T,M>
     using Drag_type = unsigned;
 
   private:
-    std::shared_ptr<Ringbuffer<Value_type>> ringBuffer;
     Drag_type drag;
 
   public:
-    // Passed buffer must be large enough
-    explicit RunningStats(Drag_type drag);
-    explicit RunningStats(std::shared_ptr<Buffer_type>);
-    explicit RunningStats(std::shared_ptr<Buffer_type>, Drag_type);
+    explicit RunningStats(Drag_type);
 
-    RunningStats& operator+=(Value_type v);
+    // Add ring buffer top and subtract value with offset = drag
+    RunningStats& operator()(Buffer_type const&);
+    RunningStats& operator+=(Value_type v) = delete; // Hide Base_type version
     RunningStats& operator-=(Value_type v) = delete; // Hide Base_type version
 };
-*/
+
+template<typename T, typename M = double>
+class NStats
+{
+    using Stats_type = RunningStats<T,M>;
+    using Value_type = typename Stats_type::Value_type;
+    using Buffer_type = Ringbuffer<Value_type>;
+
+    std::vector<Stats_type> stats
+//    {
+      // These values are good for tenthousand trainign testing
+      // TODO needed here?
+//      100000, 1000000, 10000000
+//    }
+    ;
+    Buffer_type buffer;
+
+    bool maxLast() const;
+    bool isOk() const; // Sanitize initialization
+
+  public:
+    explicit NStats();
+    // Last Stats_type object must have the most drag
+    template<typename... Types,
+             typename = std::enable_if_t<
+               std::is_convertible_v<Types...,
+                                     std::vector<Stats_type>
+                                    >
+             >
+            >
+    explicit NStats(Types&&... args);
+
+    std::vector<Stats_type> const& getStats() const;
+    Buffer_type const& getBuffer() const;
+
+    NStats& operator+=(Value_type v);
+};
 
 } // namespace stats
 
