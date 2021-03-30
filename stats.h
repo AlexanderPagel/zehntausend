@@ -174,7 +174,10 @@ class NStats
 
   public:
     explicit NStats();
-    // TODO Didnt make it work
+    // TODO Need ctor that takes arguments a1, a2, ... and constructs Objects
+    //      of type Stats_type into a vector
+    //      std::vector<Stats_type>{Stats_type(a1), Stats_type(a2), ...}
+    //      Don't know how to do this.
     /*
     // Last Stats_type object must have the most drag
     // TODO This allows to initialize stats with N != 0. We probably do not
