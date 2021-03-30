@@ -1,8 +1,23 @@
+namespace
+{
+
+// Return i + 1 mod M where i in [0, M)
+template<typename T,
+         std::enable_if_t<std::is_integral_v<T>>
+         >
+T incrementMod(T i, T m)
+{
+  ++i;
+  return i == m ? 0 : i;
+}
+
+} // namespace
+
 template<typename T>
 auto Ringbuffer<T>::ringIndex(int i) const -> int
 {
   // i must be in [-size, 2*size - 1]
-  if (i < 0) i += size();
+  if      (i <  0     ) i += size();
   else if (i >= size()) i -= size();
 
   // Result is in [0, size) = [0, size-1] U [0, size-1]
@@ -39,6 +54,12 @@ auto Ringbuffer<T>::size() const -> int
 }
 
 template<typename T>
+auto Ringbuffer<T>::front() const -> Value_type const&
+{
+  return buffer[pos];
+}
+
+template<typename T>
 auto Ringbuffer<T>::operator[](int i) const -> Value_type const&
 {
   return buffer[offsetBackwards(i)];
@@ -48,7 +69,7 @@ template<typename T>
 auto Ringbuffer<T>::operator<<(Value_type const& v) -> Value_type
 {
   auto const& tmp {buffer[pos]};
-  pos = ringIndex(pos + 1);
+  pos = ringIndex(pos + 1); //  pos = incrementMod<int>(pos, size());
   buffer[pos] = v;
   return tmp;
 

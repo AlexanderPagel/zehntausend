@@ -1,6 +1,9 @@
 // ringbuffer.h
 //
-// TODO Brief explanation.
+// Class Ringbuffer provides a linear, cyclic container. Once the last maximum
+// size is reached, the next store operation overwrites the first element again
+// (and so on). The buffer size (and allocated size) remains constant during
+// its lifetime.
 
 
 #ifndef RINGBUFFER_H_INCLUDED
@@ -31,10 +34,13 @@ class Ringbuffer
 
     int size() const;
 
+    Value_type const& front() const;
+
     // Queries n-th previously inserted value. 0 for last inserted value.
     // Parameter n must be in range [-size() , size()].
     Value_type const& operator[](int) const;
     // Insert new value, returning value that was replaced.
+    // TODO use operator+=, else everyone thinks the ring is shifted
     Value_type operator<<(Value_type const&);
 };
 
