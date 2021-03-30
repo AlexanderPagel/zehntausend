@@ -22,8 +22,6 @@ using namespace stats;
 
 class Evaluator
 {
-  private:
-
   public:
     using Bot_type = Sarsa; // TODO Eventually template param?
     using Value_type = Bot_type::Return_t;

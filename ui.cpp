@@ -213,19 +213,19 @@ UiFactory::createDefaultGame()
 BotActor*
 UiFactory::createDefaultBot()
 {
-#ifdef PG
-  auto s = new Sarsa(0.1, 0.1);
+//#ifdef PG
+//  auto s = new Sarsa(0.1, 0.1);
   // 1M training episodes for profiling
-  s->performLearningEpisodes(1000000);
-  delete s;
-  exit(1);
-#endif
+//  s->performLearningEpisodes(1000000);
+//  delete s;
+//  exit(1);
+//#endif
 
   // FIXME testing
 //  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
 //  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27 (50M)
-  auto bot = new Sarsa(0.001, 0.15);
-  rl::Evaluator eval(110000000, 5000000);
+  auto bot = new Sarsa(0.1, 0.2);
+  rl::Evaluator eval(10000000, 5000000);
   eval(*bot);
   exit(2);
   return new BotActor{ui, *bot};
@@ -263,7 +263,9 @@ UiFactory::createDefaultBot()
   std::cout << "Running " << count << " episodes with learning rate " << alpha
     << " and exploration " << epsilon << "..." << std::endl;
   Sarsa* b = new Sarsa(alpha, epsilon);
-  b->performLearningEpisodes(count);
+//  b->performLearningEpisodes(count);
+  rl::Evaluator eval2(count, 5000000);
+  eval2(*b);
   std::cout << "Training finished. [ENTER]" << std::endl;
   std::cin.ignore();
 
