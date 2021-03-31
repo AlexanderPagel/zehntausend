@@ -38,11 +38,11 @@ class Evaluator
   private:
     // TODO Eventually the stats drag should be adjustable by (ctor)
     // Stats with different amount of drag for training
+    int trainingEpisodes;
+    int evaluationEpisodes;
     NStats<StatsValue_type> runningStats {{10000, 300000, 10000000}};
     Stats<StatsValue_type> finalStats;
     // TODO Use as minimum, then train until largest running stats for the first time
-    int trainingEpisodes;
-    int evaluationEpisodes;
     mutable std::ofstream ofsTrain; // TODO have as input to eval functions?
     mutable std::ofstream ofsFinal;
 

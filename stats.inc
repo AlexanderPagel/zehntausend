@@ -207,10 +207,17 @@ auto NStats<T,M>::isOk() const -> bool
   return stats.size() > 0 && maxLast();
 }
 
+// TODO is this a good default? Do we need a default at all?
 template<typename T, typename M>
 NStats<T,M>::NStats()
   : NStats({100000, 10000000, 10000000})
 {}
+
+template<typename T, typename M>
+NStats<T,M>::NStats(Drag_type resMin, Drag_type resMin, int inBetween)
+  : NS
+  // Need to tke n-th root to cut into n gaps with n-1 values.
+  // => Take (inBetween+1)-th root of difference?
 
 /*
 template<typename T, typename M>
