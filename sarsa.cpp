@@ -205,7 +205,7 @@ void defaultEvaluation()
   std::cin.sync(); std::cin.clear();
 
   auto bot = new Sarsa(a, e);
-  rl::Evaluator eval(n, 100000);
+  rl::Evaluator eval(n, n/10);
   eval(*bot);
 }
 

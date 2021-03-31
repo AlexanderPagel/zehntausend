@@ -9,6 +9,10 @@ if [ "$1" == "training" ]; then
   make zehntausend -j4 &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
   echo "1000000 0.1 0.1" | "./zehntausend" "evaluate" &&
+    # TODO thwo scripts:
+    # 1) General eval script that takes the algorthm name + parameters and
+    #    calls ./zehntausend accordingly
+    # 2) Evaluation presets for testing that calls script 1 w/ fixed values
   gnuplot "training.gpi" &&
   _png "training.png"
 

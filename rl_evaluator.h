@@ -40,7 +40,8 @@ class Evaluator
     // Stats with different amount of drag for training
     int trainingEpisodes;
     int evaluationEpisodes;
-    NStats<StatsValue_type> runningStats {{10000, 300000, 10000000}};
+//    NStats<StatsValue_type> runningStats {{10000, 300000, 10000000}};
+    NStats<StatsValue_type> runningStats;
     Stats<StatsValue_type> finalStats;
     // TODO Use as minimum, then train until largest running stats for the first time
     mutable std::ofstream ofsTrain; // TODO have as input to eval functions?

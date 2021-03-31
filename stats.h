@@ -163,6 +163,7 @@ class NStats
     using Stats_type = RunningStats<T,M>;
     using Value_type = typename Stats_type::Value_type;
     using Buffer_type = Ringbuffer<Value_type>;
+    using Drag_type = typename Stats_type::Drag_type;
 
     std::vector<Stats_type> stats;
     Buffer_type buffer;
@@ -190,7 +191,7 @@ class NStats
 
     explicit NStats(std::vector<typename Stats_type::Drag_type> drags);
     // Automatically add drag coefficients for specified resolution
-    explicit NStats(Drag_type resMin, Drag_type resMax, ini inBetween = 0);
+    explicit NStats(Drag_type resMin, Drag_type resMax, int inBetween = 0);
 
     std::vector<Stats_type> const& getStats() const;
     Buffer_type const& getBuffer() const;

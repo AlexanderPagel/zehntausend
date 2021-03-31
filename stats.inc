@@ -214,10 +214,32 @@ NStats<T,M>::NStats()
 {}
 
 template<typename T, typename M>
-NStats<T,M>::NStats(Drag_type resMin, Drag_type resMin, int inBetween)
-  : NS
-  // Need to tke n-th root to cut into n gaps with n-1 values.
-  // => Take (inBetween+1)-th root of difference?
+NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
+  : stats{},
+    buffer(resMax + 1)
+{
+  assert(resMax > 0 && resMin > 0);
+  assert(resMax > resMin); // If == then just use normal stats
+
+  // FIXME testing
+  std::cout << "Building NStats with geometric paritioning" << std::endl;
+
+  // Compute in-between drags as multiplicatively equi-distant
+  // Value: x_i = (a^(n/i -1) * b)^(i/n) = a * (b/a)^(i/n)
+  // Ratio: x_i/a = (b/a) ^ (i/n)
+  // i = 1, ..., inBetween; n = inBetween+1
+  auto const ratio {static_cast<double>(resMax) / static_cast<double>(resMin)};
+  auto const n {static_cast<double>(inBetween + 1)};
+  stats.emplace_back(resMin);
+  for (int i = 1; i <= inBetween; ++i)
+    stats.emplace_back(static_cast<Drag_type>(resMin * std::pow(ratio, i / n)));
+  stats.emplace_back(resMax);
+
+  // FIXME testing
+  for (auto const& s : stats)
+    std::cout << "Constructed stats object: " << s << std::endl;
+  std::cout << *this << std::endl;
+}
 
 /*
 template<typename T, typename M>

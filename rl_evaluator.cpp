@@ -89,14 +89,17 @@ Evaluator::Evaluator(int training, int test)
     evaluationEpisodes{test},
     // FIXME test predetermined grads
     runningStats
-    {{
+    {
+      unsigned(0.001 * training),
+      unsigned(0.5 * training),
+      unsigned(1),
        // Create 1000 data points
-       static_cast<unsigned>(0.001 * training),
+//       static_cast<unsigned>(0.001 * training),
        // Geometric mean
-       static_cast<unsigned>(sqrt(0.001 * training * 0.2 * training)),
+//       static_cast<unsigned>(sqrt(0.001 * training * 0.2 * training)),
        // last fivth of training is used to determine stop condition (later)
-       static_cast<unsigned>(       training),
-    }},
+//       static_cast<unsigned>(       training),
+    },
     ofsTrain(outFileTrain, std::ios::out | std::ios::trunc),
     ofsFinal(outFileFinal, std::ios::out | std::ios::trunc)
 {
