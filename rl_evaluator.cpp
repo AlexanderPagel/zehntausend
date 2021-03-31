@@ -18,9 +18,15 @@ void logResult(T const& t)
 }
 
 std::string
-Evaluator::outFile
+Evaluator::outFileTrain
 {
-  "stats.dat"
+  "stats_train.dat"
+};
+
+std::string
+Evaluator::outFileFinal
+{
+  "stats_final.dat"
 };
 
 void
@@ -36,8 +42,10 @@ Evaluator::evaluateTraining(Bot_type& bot)
     logResult(finalReturn);
 
     if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
-      writeLogEntry(episode + 1);
+      writeTrainingLog(episode+1);
   }
+  // Always log last available data point irrespective of division rule above
+  writeTrainingLog(trainingEpisodes);
 }
 
 void
@@ -56,57 +64,40 @@ Evaluator::evaluateFull(Bot_type& bot)
     logResult(e.getState().getPoints());
 
     if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
-      writeLogEntry(episode+1 + trainingEpisodes);
+      writeEvaluationLog(episode + 1);
   }
-  writeLogEntry(trainingEpisodes);
-}
-
-void
-Evaluator::writeLogEntry(int i) const
-{
-  // TODO For now we just use stdout. Can re-asses the output method later. The
-  //      nubmer of logs should be small compared to the number of training
-  //      steps in between.
-  ofs << i << ":   ";
-//  auto const out = [](Stats_type const& s) -> void
-//  {
-//    auto [n, sum, mean, ci, var, o, svar, so] = s();
-//    cout << fixed << setprecision(2)              << mean << " +- "
-//         << fixed << setprecision(2) << std::left << ci   << " o "
-//         << fixed << setprecision(2) << std::left << so   << ",    ";
-//  };
-//  out(finalStats);
-  ofs << finalStats << "\t\t";
-  auto const& stats = runningStats.getStats();
-  std::for_each(std::crbegin(stats), std::crend(stats),
-      [&](auto const& s){ ofs << s << "\t\t"; });
-  ofs << std::endl;
+  // Always log last available data point irrespective of division rule above
+  writeEvaluationLog(evaluationEpisodes);
+  // Dirty hack so that evaluation graph is at least as long as training graph
+  writeEvaluationLog(trainingEpisodes);
 }
 
 void
 Evaluator::writeTrainingLog(int i) const
 {
-  std::cout << std::setw(10) << std::left << i << ":\t" << runningStats <<
-    std::endl;
+  ofsTrain << i << ":\t" << runningStats << std::endl;
 }
 
 void
 Evaluator::writeEvaluationLog(int i) const
 {
-  std::cout << std::setw(10) << std::left << i << ":\t" << finalStats <<
-    std::endl;
+  ofsFinal << i << ":\t" << finalStats << std::endl;
 }
 
 Evaluator::Evaluator(int training, int test)
   : trainingEpisodes{training},
     evaluationEpisodes{test},
-    ofs(outFile, std::ios::out | std::ios::trunc)
+    ofsTrain(outFileTrain, std::ios::out | std::ios::trunc),
+    ofsFinal(outFileFinal, std::ios::out | std::ios::trunc)
 {
   assert(training > 0 && test > 0);
 
-  if (!ofs.is_open())
-    throw std::runtime_error("Could not open outfile in Evaluator()");
-  std::cerr << "Opened file \"" << outFile << "\" for output." << std::endl;
+  if (!ofsTrain.is_open())
+    throw std::runtime_error("Could not open training outfile in Evaluator()");
+  if (!ofsFinal.is_open())
+    throw std::runtime_error("Could not open final outfile in Evaluator()");
+  std::cerr << "Opened file \"" << outFileTrain << "\" for output." << std::endl;
+  std::cerr << "Opened file \"" << outFileFinal << "\" for output." << std::endl;
 }
 
 void

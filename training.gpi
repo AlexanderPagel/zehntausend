@@ -9,5 +9,6 @@ set style data lines
 
 # Plot training run
 print "Plotting data..."
-plot for [col = 2:19:6] "stats.dat" using 1:col w lp
+plot for [col = 3:15:6] "stats_train.dat" using 1:col w l, \
+     for [col = 2:2:1] "stats_final.dat" using 1:col w l
 print "Plotting done"

@@ -314,10 +314,11 @@ auto operator<<(std::ostream& os, NStats<T,M> const& runningStats)
   os << "[" << stats.front().getDrag();
   for (auto it = std::next(stats.begin()); it != stats.end(); ++it)
     os << "," << it->getDrag();
+  os << "]";
 
   // Individually append each stats object
   for (auto const& s : stats)
-    os << s;
+    os << " " << s;
 
   return os;
 }

@@ -183,6 +183,14 @@ Sarsa::Sarsa(double alph, double epsil, double gam)
 
 }
 
+std::ostream&
+operator<<(std::ostream& os, Sarsa const& alg)
+{
+  os << "SarsaMax e-greedy afterstates"
+     << " a=" << alg.alpha << " e=" << alg.epsilon << " y=" << alg.gamma;
+  return os;
+}
+
 
 namespace rl
 {

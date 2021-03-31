@@ -478,6 +478,11 @@ CommandFunc_type commandMapper(Args_type const& args)
 
   if (args.size() < 2) // First arg is self
     return printUsage;
+
+  if (auto search = commandMap.find(args[1]); search == commandMap.end())
+    return printUsage;
   else
-    return commandMap.at(args[1]);
+    return std::get<CommandFunc_type>(*search);
+
+  return commandMap.at(args[1]);
 }

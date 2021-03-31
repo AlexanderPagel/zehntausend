@@ -90,6 +90,8 @@ public:
     // Ctor
     Sarsa(double alpha = 0.1, double epsilon = 0.2, double gamma = 1);
 
+    // Print algorithm info + parameters
+    friend std::ostream& operator<<(std::ostream&, Sarsa const&);
 //    void printLowQ() const & noexcept;
 };
 

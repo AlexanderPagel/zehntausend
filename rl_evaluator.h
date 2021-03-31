@@ -43,10 +43,12 @@ class Evaluator
     // TODO Use as minimum, then train until largest running stats for the first time
     int trainingEpisodes;
     int evaluationEpisodes;
-    mutable std::ofstream ofs; // TODO have as input to eval functions?
+    mutable std::ofstream ofsTrain; // TODO have as input to eval functions?
+    mutable std::ofstream ofsFinal;
 
   public:
-    static std::string outFile;
+    static std::string outFileTrain;
+    static std::string outFileFinal;
 
     // Generate training statistics
     void evaluateTraining(Bot_type&);
