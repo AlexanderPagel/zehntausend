@@ -13,9 +13,9 @@ analysis.txt
 gmon.out
 
 # Evaluate
-*.dat # evaluation data
-*.gpi # gnuplot script
-*.png # gnuplot output, maybe later use ts or svg
+*.dat
+*.gpi
+*.png
 
 # Edit
 *.swp
