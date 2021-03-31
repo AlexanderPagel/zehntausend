@@ -2,12 +2,14 @@
 #include <cstdlib>
 
 
+// TODO Need to clean up the includes
 //#include "tenK.h"
 #include "sarsa.h"
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <map>
 
 #include "ui.h"
 
@@ -51,22 +53,41 @@ std::string dToS(double d)
     return oss.str();
 }
 
-/// \tbc make an unbiased randomness generation for the dice rolls
+using Args_type = std::vector<std::string_view>;
+using CommandFunc_type = void (*)(Args_type const&);
 
+Args_type getArgs(int argc, char** argv);
 
-/// \tbc define #TEST and #NOTEST to execute depending on global constexpr?
+// The function starting an interactive match with the bot and other player.
+void simulateGame(Args_type const&);
 
-//template<unsigned int n>
-//static void reprint(Tenthousand<n> const& game, std::string msg = "")
-//{
-//    std::cout << std::endl << std::endl;
-//    std::cout << std::setprecision(5) << std::fixed << msg << std::endl;
-//    std::cout << std::string(80,'-') << std::endl;
-//    game.print();
-//}
+// Evaluation function that constructs graphable training stats to the
+// implemented algorithms.
+// TODO Later we may want to be able to choose the algorithm to evaluate from
+//      stdin.
+void evaluateTraining(Args_type const&);
 
-int main()
+// Profiling function started immediately if PG is defined
+void profileTraining(Args_type const&);
+
+// Testing function that can be filled ad-hoc to run arbitrary tests
+void runAdHocTest(Args_type const&);
+
+void printUsage();
+void printHelp(Args_type const&);
+
+CommandFunc_type commandMapper(Args_type const&);
+
+int main(int argc, char** argv)
 {
+  // TODO Potentially logging happening here.
+
+  auto args {getArgs(argc, argv)};
+  commandMapper(args)(args);
+
+  // TODO Potentially logging happening here.
+
+  return 0;
 
   // Smacking test at front in main again
 //  auto bot = Sarsa(0.003, 0.8);
@@ -394,3 +415,49 @@ std::cout << "[Preparation]" << std::endl;
     return 0;
 }
 
+std::vector<std::string_view> getArgs(int argc, char** argv)
+{
+  std::vector<std::string_view> res;
+  // TODO lmao this is low-key obfuscation
+  while (argc--) res.emplace_back(*(argv++));
+  return res;
+}
+
+void evaluateTraining(Args_type const& args)
+{
+  // TODO Later we may want to distinguish different algorithms.
+  //      For now just start a default training.
+  rl::defaultEvaluation();
+}
+
+void printUsage(Args_type const& args)
+{
+  auto const& name {args[0]};
+  std::string const wite(name.length(), ' ');
+
+  std::cout << "Usage: " << name << " <command> [params]\n"
+            << "       " << wite << " play [n]\n"
+            << "       " << wite << " evaluate [algorithm] [params]\n"
+            << "       " << wite << " profile [params]\n"
+            << "       " << wite << " test [params]\n"
+            << "       " << wite << " help [command_name]\n"
+            << std::endl;
+}
+
+CommandFunc_type commandMapper(Args_type const& args)
+{
+  static std::map<std::string_view, CommandFunc_type> const
+  commandMap
+  {
+    {"play", simulateGame},
+    {"evaluate", evaluateTraining},
+    {"profile", profileTraining},
+    {"test", runAdHocTest},
+    {"help", printHelp}
+  };
+
+  if (args.size() < 2) // First arg is self
+    return printUsage;
+  else
+    return commandMap.at(args[1]);
+}

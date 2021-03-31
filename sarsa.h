@@ -94,4 +94,13 @@ public:
 };
 
 
+namespace rl
+{
+
+// Default evaluation used for testing while preparing more general testing.
+void defaultEvaluation();
+
+} // namespace rl
+
+
 #endif // SARSA_HPP_INCLUDED

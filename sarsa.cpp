@@ -181,3 +181,23 @@ Sarsa::Sarsa(double alph, double epsil, double gam)
         exit(36762);
 
 }
+
+
+namespace rl
+{
+
+void defaultEvaluation()
+{
+  // Read parameters from stdin
+  std::cin.sync(); std::cin.clear();
+  double a, e;
+  unsigned long n;
+  std::cin >> n >> a >> e;
+  std::cin.sync(); std::cin.clear();
+
+  auto bot = new Sarsa(a, e);
+  rl::Evaluator eval(n, 100000);
+  eval(*bot);
+}
+
+} // namespace rl
