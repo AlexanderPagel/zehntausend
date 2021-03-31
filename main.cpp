@@ -101,10 +101,6 @@ int main(int argc, char** argv)
 
 
 
-  // Ui-bound game loop.
-  ui::Ui* ui = ui::UiFactory{};
-  ui->startGame();
-
 
   return 2;
 
@@ -423,11 +419,29 @@ std::vector<std::string_view> getArgs(int argc, char** argv)
   return res;
 }
 
-void evaluateTraining(Args_type const& args)
+void simulateGame(Args_type const&)
+{
+  ui::Ui* ui = ui::UiFactory{};
+  ui->startGame();
+}
+
+void evaluateTraining(Args_type const&)
 {
   // TODO Later we may want to distinguish different algorithms.
   //      For now just start a default training.
   rl::defaultEvaluation();
+}
+
+void profileTraining(Args_type const&)
+{
+  // TODO Implement short and simple training run to produce representative
+  //      execution times.
+  std::cout << "No profiling run available." << std::endl;
+}
+
+void runAdHocTest(Args_type const&)
+{
+  std::cout << "No ad-hoc test available" << std::endl;
 }
 
 void printUsage(Args_type const& args)
@@ -442,6 +456,12 @@ void printUsage(Args_type const& args)
             << "       " << wite << " test [params]\n"
             << "       " << wite << " help [command_name]\n"
             << std::endl;
+}
+
+void printHelp(Args_type const&)
+{
+  // TODO print general help, or help to specific command (if provided)
+  std::cout << "No help available" << std::endl;
 }
 
 CommandFunc_type commandMapper(Args_type const& args)

@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "randomness.h"
+#include "rl_evaluator.h"
 
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const

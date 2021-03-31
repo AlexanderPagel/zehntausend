@@ -1,8 +1,22 @@
 #!/bin/bash
 
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 {training|clean}"
+  exit 1;
+fi
+
 if [ "$1" == "training" ]; then
   make zehntausend -j4 &&
-  echo "1000000 0.1 0.1" | ./zehntausend | tee stats.dat &&
+  echo "1000000 0.1 0.1" | ./zehntausend &&
   gnuplot "training.gpi" &&
   _png "training.png"
+
+elif [ "$1" == "clean" ]; then
+  make clean
+fi
+
+if [ $? -eq 0 ]; then
+  exit 0
+else
+  exit 1
 fi
