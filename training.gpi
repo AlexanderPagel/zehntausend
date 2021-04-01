@@ -5,16 +5,20 @@ set output 'training.png'
 # Window appearance
 set title 'Training' # PGN title
 set grid # plot a grid below data
+set xrange [0:] # ignroe drag stats warmup before x=0
+set key right bottom
 
 # Graph appearance
 set style data lines
 
 # Plot training run
 print "Plotting data..."
+#plot "stats_train.dat" using 2:3 lt 3 lc rgb "grey40",
 plot "stats_train.dat" using 1:3 w p pt 7 ps 1.4 lc rgb "grey40", \
      "stats_final.dat" using 1:2 w lp lt -1 lw 3, \
-     "stats_train.dat" using 1:9 lt 1 lw 5 lc rgb "slategrey", \
-     "stats_train.dat" using 1:15 lt 2 lw 5 lc rgb "skyblue"
+     "stats_train.dat" using 10:11 lt 1 lw 5 lc rgb "slategrey", \
+     "stats_train.dat" using 18:19 lt 2 lw 5 lc rgb "skyblue", \
+     "stats_train.dat" using 26:27 lt 2 lw 5 lc rgb "cyan"
 print "Plotting done"
 
 # medium-blue, navy, light-blue, skybluem cyan, light-coral, steelblue,

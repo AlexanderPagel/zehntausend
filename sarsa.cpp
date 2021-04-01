@@ -205,7 +205,7 @@ void defaultEvaluation()
   std::cin.sync(); std::cin.clear();
 
   auto bot = new Sarsa(a, e);
-  rl::Evaluator eval(n, n/10);
+  rl::Evaluator eval(n, n/10); // TODO eventually use n instead of n/10, but is too slow for testing
   eval(*bot);
 }
 

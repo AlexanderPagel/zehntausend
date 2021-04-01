@@ -178,7 +178,7 @@ auto RunningStats<T,M>::operator()(Buffer_type const& buffer) -> RunningStats&
   assert(!(this->getN() > drag)); // Consistently low-passed stats
 
   // If stats are "full", replace oldest value, else only add the new value
-  if (this->getN() == drag)
+  if ((int)this->getN() == drag)
     Base_type::replace(buffer.front(), buffer[drag]);
   else // N < drag
     Base_type::operator+=(buffer.front());
@@ -221,9 +221,6 @@ NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
   assert(resMax > 0 && resMin > 0);
   assert(resMax > resMin); // If == then just use normal stats
 
-  // FIXME testing
-  std::cout << "Building NStats with geometric paritioning" << std::endl;
-
   // Compute in-between drags as multiplicatively equi-distant
   // Value: x_i = (a^(n/i -1) * b)^(i/n) = a * (b/a)^(i/n)
   // Ratio: x_i/a = (b/a) ^ (i/n)
@@ -236,8 +233,6 @@ NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
   stats.emplace_back(resMax);
 
   // FIXME testing
-  for (auto const& s : stats)
-    std::cout << "Constructed stats object: " << s << std::endl;
   std::cout << *this << std::endl;
 }
 
@@ -330,6 +325,20 @@ auto operator<<(std::ostream& os, Stats<TT,MM> const& stats) -> std::ostream&
   return os;
 }
 
+template<typename TT, typename MM>
+auto operator<<(std::ostream& os, RunningStats<TT,MM> const& stats)
+  -> std::ostream&
+{
+  using namespace std;
+  auto const& [n, sum, mean, ci, var, o, svar, so] = stats();
+  // Format such that the raw numbers have their own columns
+  os <<            fixed << setprecision(2) << mean
+     << " {"                                << stats.getDrag() << "}"
+     << " (+- " << fixed << setprecision(2) << ci << " )"
+     << " o "   << fixed << setprecision(2) << so;
+  return os;
+}
+
 template<typename T, typename M>
 auto operator<<(std::ostream& os, NStats<T,M> const& runningStats)
   -> std::ostream&
@@ -337,17 +346,8 @@ auto operator<<(std::ostream& os, NStats<T,M> const& runningStats)
   assert(runningStats.stats.size() > 0);
 
   auto const& stats {runningStats.getStats()};
-
-  // Output drag values collectively at beginning of line
-  using namespace std;
-  os << "[" << stats.front().getDrag();
-  for (auto it = std::next(stats.begin()); it != stats.end(); ++it)
-    os << "," << it->getDrag();
-  os << "]";
-
-  // Individually append each stats object
-  for (auto const& s : stats)
-    os << " " << s;
+  std::for_each(std::begin(stats), std::end(stats),
+                [&os](auto const & s){os << " " << s;});
 
   return os;
 }

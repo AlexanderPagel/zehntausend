@@ -29,23 +29,48 @@ Evaluator::outFileFinal
   "stats_final.dat"
 };
 
+// Must make sure to call for updates after each relevant change to training
+// stats.
+// TODO Fix the above: Create proxy member that is called to update both the
+//      stats and the stop condition. Use meanBuffer that is 1 larger than
+//      needed to allow separate tto allow separate test and update.
+bool
+Evaluator::stopCondition()
+{
+  auto const newMean {runningStats.getStats().back().getMean()};
+  auto const oldMean {meansBuffer << newMean};
+  return oldMean > newMean;
+}
+
 void
 Evaluator::evaluateTraining(Bot_type& bot)
 {
-  for (int episode = 0; episode < trainingEpisodes; ++episode)
+  int episode {0};
+  auto const runEpisode = [&]()
   {
-    // Get new data point
-    auto const finalReturn { bot.performLearningEpisode() };
-    runningStats += finalReturn;
+      // Get new data point
+      auto const finalReturn { bot.performLearningEpisode() };
+      runningStats += finalReturn; // TODO rename to "trainingStats"
 
-    // FIXME testing
-    logResult(finalReturn);
+      // TODO Implement such that the lowest drag is always a point cloud of
+      // 1000 points per 'trainingEpisodes' episodes
+      if (episode % (trainingEpisodes/1000) == 0)
+  //    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
+        writeTrainingLog(episode+1);
 
-    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
-      writeTrainingLog(episode+1);
-  }
+      ++episode;
+  };
+
+  // TODO Test this idea: Use draggin stats and then compare after the first
+  //      'trainingEpisodes' learning episodes already. In the current way, we
+  //      need to train at least 2x the amount requested by the user as stop
+  //      condition.
+  for (; episode < 2*trainingEpisodes; stopCondition())
+    runEpisode(); // Keep updating stop condition
+  do runEpisode(); while (!stopCondition());
+
   // Always log last available data point irrespective of division rule above
-  writeTrainingLog(trainingEpisodes);
+  writeTrainingLog(episode);
 }
 
 void
@@ -68,20 +93,35 @@ Evaluator::evaluateFull(Bot_type& bot)
   }
   // Always log last available data point irrespective of division rule above
   writeEvaluationLog(evaluationEpisodes);
+  // TODO Dirty hack does not work since using dynamic abort
   // Dirty hack so that evaluation graph is at least as long as training graph
-  writeEvaluationLog(trainingEpisodes);
+  writeEvaluationLog(2*trainingEpisodes);
 }
 
 void
 Evaluator::writeTrainingLog(int i) const
 {
-  ofsTrain << i << ":\t" << runningStats << std::endl;
+  // TODO old version without centering drag intervals:
+//  ofsTrain << i << ":\t" << runningStats << std::endl;
+
+  // True counter
+  ofsTrain << i << "|\t";
+
+  // Print each internal drag-stats object with an individual offset, centering
+  // the stats around the datapoint in the middle of the drag interval.
+  auto const& stats {runningStats.getStats()};
+  for (auto it {std::cbegin(stats)}; it != std::cend(stats); ++it)
+  {
+    auto const& s {*it};
+    ofsTrain << " " << i - s.getDrag()/2 << ": " << s;
+  }
+  ofsTrain << std::endl;
 }
 
 void
 Evaluator::writeEvaluationLog(int i) const
 {
-  ofsFinal << i << ":\t" << finalStats << std::endl;
+  ofsFinal << i << "|\t" << finalStats << std::endl;
 }
 
 Evaluator::Evaluator(int training, int test)
@@ -90,9 +130,9 @@ Evaluator::Evaluator(int training, int test)
     // FIXME test predetermined grads
     runningStats
     {
-      unsigned(0.001 * training),
-      unsigned(0.5 * training),
-      unsigned(1),
+      int(0.001 * training),
+      int(training),
+      2, // two in-betweeners
        // Create 1000 data points
 //       static_cast<unsigned>(0.001 * training),
        // Geometric mean
@@ -100,6 +140,7 @@ Evaluator::Evaluator(int training, int test)
        // last fivth of training is used to determine stop condition (later)
 //       static_cast<unsigned>(       training),
     },
+    meansBuffer(training),
     ofsTrain(outFileTrain, std::ios::out | std::ios::trunc),
     ofsFinal(outFileFinal, std::ios::out | std::ios::trunc)
 {

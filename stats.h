@@ -135,8 +135,7 @@ class RunningStats : public Stats<T,M>
   public:
     using typename Base_type::Value_type;
     using Buffer_type = Ringbuffer<Value_type>;
-    // TODO Use int? Better since we sometimes get value and work with it
-    using Drag_type = unsigned;
+    using Drag_type = int;
 
   private:
     Drag_type const drag;
@@ -145,6 +144,7 @@ class RunningStats : public Stats<T,M>
     explicit RunningStats(Drag_type);
 
     Drag_type getDrag() const;
+    using Base_type::operator();
 
     // Add ring buffer top and subtract value with offset = drag
     RunningStats& operator()(Buffer_type const&);
@@ -153,6 +153,10 @@ class RunningStats : public Stats<T,M>
     RunningStats& operator+=(int) = delete;
     RunningStats& operator-=(int) = delete;
     RunningStats& replace()    = delete;
+
+    template<typename TT, typename MM>
+    friend auto operator<<(std::ostream&, RunningStats<TT,MM> const&)
+      -> std::ostream&;
 };
 
 // TODO Maybe rename this to RunningStats and RunningStats to DragStats
@@ -161,10 +165,13 @@ template<typename T, typename M = double>
 class NStats
 {
     using Stats_type = RunningStats<T,M>;
+  public:
     using Value_type = typename Stats_type::Value_type;
+  private:
     using Buffer_type = Ringbuffer<Value_type>;
     using Drag_type = typename Stats_type::Drag_type;
 
+  private:
     std::vector<Stats_type> stats;
     Buffer_type buffer;
 
@@ -193,6 +200,7 @@ class NStats
     // Automatically add drag coefficients for specified resolution
     explicit NStats(Drag_type resMin, Drag_type resMax, int inBetween = 0);
 
+    // TODO Implement operator[], begin(), end() to const-access underlying stats
     std::vector<Stats_type> const& getStats() const;
     Buffer_type const& getBuffer() const;
 

@@ -8,11 +8,7 @@ fi
 if [ "$1" == "training" ]; then
   make zehntausend -j4 &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
-  echo "1000000 0.1 0.1" | "./zehntausend" "evaluate" &&
-    # TODO thwo scripts:
-    # 1) General eval script that takes the algorthm name + parameters and
-    #    calls ./zehntausend accordingly
-    # 2) Evaluation presets for testing that calls script 1 w/ fixed values
+  echo "100000 0.01 0.2" | "./zehntausend" "evaluate" &&
   gnuplot "training.gpi" &&
   _png "training.png"
 
@@ -25,3 +21,11 @@ if [ $? -eq 0 ]; then
 else
   exit 1
 fi
+
+# TODO write scripts:
+# 1) General eval script that takes the algorthm name + parameters and
+#    calls ./zehntausend accordingly
+# 2) Evaluation presets for testing that calls script 1 w/ fixed values
+# 3) Dedicated pplotting scripts: one default (current), one that takes
+#    a stats file (or ID) as input and re-prints the graph. Output is
+#    always a default file that can then be moved to the right location.

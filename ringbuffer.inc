@@ -68,8 +68,8 @@ auto Ringbuffer<T>::operator[](int i) const -> Value_type const&
 template<typename T>
 auto Ringbuffer<T>::operator<<(Value_type const& v) -> Value_type
 {
-  auto const& tmp {buffer[pos]};
   pos = ringIndex(pos + 1); //  pos = incrementMod<int>(pos, size());
+  auto const tmp {buffer[pos]};
   buffer[pos] = v;
   return tmp;
 

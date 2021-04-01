@@ -42,6 +42,7 @@ class Ringbuffer
     // Insert new value, returning value that was replaced.
     // TODO use operator+=, else everyone thinks the ring is shifted
     Value_type operator<<(Value_type const&);
+    Value_type insert(Value_type const&);
 };
 
 

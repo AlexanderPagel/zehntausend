@@ -36,20 +36,26 @@ class Evaluator
         "Returns are processed by stats");
 
   private:
+    static std::string outFileTrain;
+    static std::string outFileFinal;
+
     // TODO Eventually the stats drag should be adjustable by (ctor)
     // Stats with different amount of drag for training
     int trainingEpisodes;
     int evaluationEpisodes;
-//    NStats<StatsValue_type> runningStats {{10000, 300000, 10000000}};
-    NStats<StatsValue_type> runningStats;
-    Stats<StatsValue_type> finalStats;
+    RunningStats_type runningStats;
+    Stats_type finalStats;
+    Ringbuffer<decltype(runningStats.getStats().back().getMean())> meansBuffer;
     // TODO Use as minimum, then train until largest running stats for the first time
     mutable std::ofstream ofsTrain; // TODO have as input to eval functions?
     mutable std::ofstream ofsFinal;
 
+    // Adds the current training mean (largest drag) to meanBuffer, returning
+    // true if the new mean is smaller than the mean 'trainingEpisodes'
+    // episodes ago.
+    bool stopCondition();
+
   public:
-    static std::string outFileTrain;
-    static std::string outFileFinal;
 
     // Generate training statistics
     void evaluateTraining(Bot_type&);
