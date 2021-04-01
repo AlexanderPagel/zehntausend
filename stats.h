@@ -175,14 +175,17 @@ class NStats
     using Drag_type = typename Stats_type::Drag_type;
 
   private:
-    std::vector<Stats_type> stats;
+    std::vector<Stats_type> stats{};
     Buffer_type buffer;
+
+    // Add object with or without zero-inertia to stats
+    void addStats(Drag_type, bool inert);
 
     bool maxLast() const;
     bool isOk() const; // Sanitize initialization
 
   public:
-    explicit NStats();
+    explicit NStats(bool iner = false);
     // TODO Need ctor that takes arguments a1, a2, ... and constructs Objects
     //      of type Stats_type into a vector
     //      std::vector<Stats_type>{Stats_type(a1), Stats_type(a2), ...}
@@ -199,9 +202,11 @@ class NStats
     explicit NStats(Types&&... args);
     */
 
-    explicit NStats(std::vector<typename Stats_type::Drag_type> drags);
+    explicit NStats(std::vector<typename Stats_type::Drag_type> drags,
+                    bool inert = false);
     // Automatically add drag coefficients for specified resolution
-    explicit NStats(Drag_type resMin, Drag_type resMax, int inBetween = 0);
+    explicit NStats(Drag_type resMin, Drag_type resMax,
+                    int inBetween = 0, bool inert = false);
 
     // TODO Implement operator[], begin(), end() to const-access underlying stats
     std::vector<Stats_type> const& getStats() const;

@@ -202,6 +202,15 @@ auto RunningStats<T,M>::operator()(Buffer_type const& buffer) -> RunningStats&
 // -----------------------------------------------------------------------------
 
 template<typename T, typename M>
+auto NStats<T,M>::addStats(Drag_type d, bool inert) -> void
+{
+  if (inert)
+    stats.emplace_back(d, Value_type{0});
+  else
+    stats.emplace_back(d);
+}
+
+template<typename T, typename M>
 auto NStats<T,M>::maxLast() const -> bool
 {
   assert(stats.size() > 0);
@@ -220,14 +229,28 @@ auto NStats<T,M>::isOk() const -> bool
 
 // TODO is this a good default? Do we need a default at all?
 template<typename T, typename M>
-NStats<T,M>::NStats()
-  : NStats({100000, 10000000, 10000000})
+NStats<T,M>::NStats(bool inert)
+  : NStats({100000, 10000000, 10000000}, inert)
 {}
 
 template<typename T, typename M>
-NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
-  : stats{},
-    buffer(resMax + 1, Value_type{0}) // Init with zero-inertia
+NStats<T,M>::NStats(std::vector<typename Stats_type::Drag_type> drags,
+                    bool inert)
+    // When inert=false, initial buffer values can just be ignored later
+  : buffer(drags.back() + 1, Value_type{0})
+{
+  assert(drags.size() > 0);
+  for (auto const& d : drags)
+    addStats(d, inert);
+  // Largest drag must be last, otherwise buffer is too small
+  assert(isOk());
+}
+
+template<typename T, typename M>
+NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax,
+                    int inBetween, bool inert)
+    // When inert=false, initial buffer values can just be ignored later
+  : buffer(resMax + 1, Value_type{0})
 {
   assert(resMax > 0 && resMin > 0);
   assert(resMax > resMin); // If == then just use normal stats
@@ -238,17 +261,14 @@ NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
   // i = 1, ..., inBetween; n = inBetween+1
   auto const ratio {static_cast<double>(resMax) / static_cast<double>(resMin)};
   auto const n {static_cast<double>(inBetween + 1)};
-  auto const addInertStats = [this](Drag_type d)
+  auto const addInertStats = [&](Drag_type d)
   {
-    // Add RunningStats object with zero-inertia
-    stats.emplace_back(d, Value_type{0});
+    // Add RunningStats object with or without zero-inertia
+    addStats(d, inert);
   };
   addInertStats(resMin);
   for (int i = 1; i <= inBetween; ++i)
-  {
-    auto const drag {static_cast<Drag_type>(resMin * std::pow(ratio, i / n))};
-    addInertStats(drag);
-  }
+    addInertStats(static_cast<Drag_type>(resMin * std::pow(ratio, i / n)));
   addInertStats(resMax);
 
   // FIXME testing
@@ -294,18 +314,6 @@ NStats<T,M>::NStats(Types&&... args)
 //  : stats
 //{
 //}
-
-template<typename T, typename M>
-NStats<T,M>::NStats(std::vector<typename Stats_type::Drag_type> drags)
-  : stats{},
-    buffer(drags.back() + 1)
-{
-  assert(drags.size() > 0);
-  for (auto const& d : drags)
-    stats.emplace_back(d);
-  // Largest drag must be last, otherwise buffer is too small
-  assert(isOk());
-}
 
 template<typename T, typename M>
 auto NStats<T,M>::getStats() const -> std::vector<Stats_type> const&
