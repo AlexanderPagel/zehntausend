@@ -37,7 +37,15 @@ Evaluator::outFileFinal
 bool
 Evaluator::stopCondition()
 {
-  auto const newMean {runningStats.getStats().back().getMean()};
+  auto const& slowStats {runningStats.getStats().back()};
+  // If our trainign resolution is not reached we ignore the mean. This stops
+  // immediate abortion after $trainingEpisodes episodes if the first episode
+  // was a high outlier (making the average after just the first episode very
+  // large). Alternatively, slats could use zero-inertia but that look ugly on
+  // graph.
+  auto const newMean
+  { slowStats.isFull() ?          slowStats.getMean()
+                       : decltype(slowStats.getMean()) {0}};
   auto const oldMean {meansBuffer << newMean};
   return oldMean > newMean;
 }
@@ -52,10 +60,8 @@ Evaluator::evaluateTraining(Bot_type& bot)
       auto const finalReturn { bot.performLearningEpisode() };
       runningStats += finalReturn; // TODO rename to "trainingStats"
 
-      // TODO Implement such that the lowest drag is always a point cloud of
-      // 1000 points per 'trainingEpisodes' episodes
-      if ((episode+1) % (trainingEpisodes/1000) == 0)
-  //    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
+      // 1000 points per $trainingEpisodes episodes
+      if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
         writeTrainingLog(episode+1);
 
       ++episode;
@@ -65,7 +71,7 @@ Evaluator::evaluateTraining(Bot_type& bot)
   //      'trainingEpisodes' learning episodes already. In the current way, we
   //      need to train at least 2x the amount requested by the user as stop
   //      condition.
-  for (; episode < 2*trainingEpisodes; stopCondition())
+  for (; episode < trainingEpisodes; stopCondition())
     runEpisode(); // Keep updating stop condition
   do runEpisode(); while (!stopCondition());
 
@@ -93,9 +99,14 @@ Evaluator::evaluateFull(Bot_type& bot)
   }
   // Always log last available data point irrespective of division rule above
   writeEvaluationLog(evaluationEpisodes);
+
   // TODO Dirty hack does not work since using dynamic abort
   // Dirty hack so that evaluation graph is at least as long as training graph
-  writeEvaluationLog(2*trainingEpisodes);
+  // TODO Eventually maybe simplify away 'evaluationEpisodes' and just use the
+  //      training episode count. Is natural since that is about our accuray
+  //      anyway. Train like that will be (estimated) 5x longer than
+  //      evaluation, which is also reasonable.
+  writeEvaluationLog(trainingEpisodes);
 }
 
 void
@@ -110,7 +121,7 @@ Evaluator::writeTrainingLog(int i) const
   // Print each internal drag-stats object with an individual offset, centering
   // the stats around the datapoint in the middle of the drag interval.
   auto const& stats {runningStats.getStats()};
-  for (auto it {std::cbegin(stats)}; it != std::cend(stats); ++it)
+  for (auto it {std::crbegin(stats)}; it != std::crend(stats); ++it)
   {
     auto const& s {*it};
 //    ofsTrain << " " << i - s.getDrag()/2 << ": " << s;
@@ -134,15 +145,9 @@ Evaluator::Evaluator(int training, int test)
       int(0.001 * training),
       int(training),
       2, // two in-betweeners
-       // Create 1000 data points
-//       static_cast<unsigned>(0.001 * training),
-       // Geometric mean
-//       static_cast<unsigned>(sqrt(0.001 * training * 0.2 * training)),
-       // last fivth of training is used to determine stop condition (later)
-//       static_cast<unsigned>(       training),
       false, // No inertia
     },
-    meansBuffer(training),
+    meansBuffer(training), // No initial content
     ofsTrain(outFileTrain, std::ios::out | std::ios::trunc),
     ofsFinal(outFileFinal, std::ios::out | std::ios::trunc)
 {

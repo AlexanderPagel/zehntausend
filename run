@@ -8,7 +8,7 @@ fi
 if [ "$1" == "training" ]; then
   make zehntausend -j4 &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
-  echo "100000 0.005 0.15" | "./zehntausend" "evaluate" &&
+  echo "1000000 0.01 0.2" | "./zehntausend" "evaluate" &&
   gnuplot "training.gpi" &&
   _png "training.png"
 

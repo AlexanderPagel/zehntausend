@@ -179,7 +179,8 @@ RunningStats<T,M>::RunningStats(Drag_type d, Value_type inertia)
 template<typename T, typename M>
 auto RunningStats<T,M>::isFull() const -> bool
 {
-  return this->getN() > this->getDrag();
+  assert(!(this->getN() > this->getDrag()));
+  return this->getN() >= this->getDrag();
 }
 
 template<typename T, typename M>
