@@ -227,7 +227,7 @@ NStats<T,M>::NStats()
 template<typename T, typename M>
 NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
   : stats{},
-    buffer(resMax + 1)
+    buffer(resMax + 1, Value_type{0}) // Init with zero-inertia
 {
   assert(resMax > 0 && resMin > 0);
   assert(resMax > resMin); // If == then just use normal stats
@@ -238,10 +238,18 @@ NStats<T,M>::NStats(Drag_type resMin, Drag_type resMax, int inBetween)
   // i = 1, ..., inBetween; n = inBetween+1
   auto const ratio {static_cast<double>(resMax) / static_cast<double>(resMin)};
   auto const n {static_cast<double>(inBetween + 1)};
-  stats.emplace_back(resMin);
+  auto const addInertStats = [this](Drag_type d)
+  {
+    // Add RunningStats object with zero-inertia
+    stats.emplace_back(d, Value_type{0});
+  };
+  addInertStats(resMin);
   for (int i = 1; i <= inBetween; ++i)
-    stats.emplace_back(static_cast<Drag_type>(resMin * std::pow(ratio, i / n)));
-  stats.emplace_back(resMax);
+  {
+    auto const drag {static_cast<Drag_type>(resMin * std::pow(ratio, i / n))};
+    addInertStats(drag);
+  }
+  addInertStats(resMax);
 
   // FIXME testing
   std::cout << *this << std::endl;
