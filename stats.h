@@ -66,7 +66,7 @@ class Stats
     static_assert(std::is_floating_point_v<M>);
 
   public:
-    using Long_type = uint64_t;
+    using Long_type = int64_t;
     using Count_type = Long_type; // TODO Replace Long_type with this
     using Value_type = T; // T: Type we want to aggregate and compute the mean over
     using Mean_type = M; // M: Floating point type used for computations
@@ -146,7 +146,9 @@ class RunningStats : public Stats<T,M>
     explicit RunningStats(Drag_type);
     explicit RunningStats(Drag_type, Value_type inertia);
 
+    bool isFull() const;
     Drag_type getDrag() const;
+    Count_type getOffset() const; // Return offset from drag interval center
     using Base_type::operator();
 
     // Add ring buffer top and subtract value with offset = drag

@@ -54,7 +54,7 @@ Evaluator::evaluateTraining(Bot_type& bot)
 
       // TODO Implement such that the lowest drag is always a point cloud of
       // 1000 points per 'trainingEpisodes' episodes
-      if (episode % (trainingEpisodes/1000) == 0)
+      if ((episode+1) % (trainingEpisodes/1000) == 0)
   //    if ((episode + 1) % runningStats.getStats().front().getDrag() == 0)
         writeTrainingLog(episode+1);
 
@@ -113,7 +113,8 @@ Evaluator::writeTrainingLog(int i) const
   for (auto it {std::cbegin(stats)}; it != std::cend(stats); ++it)
   {
     auto const& s {*it};
-    ofsTrain << " " << i - s.getDrag()/2 << ": " << s;
+//    ofsTrain << " " << i - s.getDrag()/2 << ": " << s;
+    ofsTrain << " " << i - s.getOffset() << ": " << s;
   }
   ofsTrain << std::endl;
 }
@@ -139,6 +140,7 @@ Evaluator::Evaluator(int training, int test)
 //       static_cast<unsigned>(sqrt(0.001 * training * 0.2 * training)),
        // last fivth of training is used to determine stop condition (later)
 //       static_cast<unsigned>(       training),
+      false, // No inertia
     },
     meansBuffer(training),
     ofsTrain(outFileTrain, std::ios::out | std::ios::trunc),

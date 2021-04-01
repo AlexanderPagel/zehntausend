@@ -177,15 +177,32 @@ RunningStats<T,M>::RunningStats(Drag_type d, Value_type inertia)
 {}
 
 template<typename T, typename M>
+auto RunningStats<T,M>::isFull() const -> bool
+{
+  return this->getN() > this->getDrag();
+}
+
+template<typename T, typename M>
 auto RunningStats<T,M>::getDrag() const -> Drag_type
 {
   return drag;
 }
 
 template<typename T, typename M>
+auto RunningStats<T,M>::getOffset() const -> Count_type
+{
+  if (isFull())
+    // Center of interval is half the drag value before N
+    return this->getN() - static_cast<Count_type>(getDrag()) / 2;
+  else
+    // Center is just center entire of interval
+    return this->getN() / 2;
+}
+
+template<typename T, typename M>
 auto RunningStats<T,M>::operator()(Buffer_type const& buffer) -> RunningStats&
 {
-  assert(buffer.size() >= (int)drag + 1);
+  assert(buffer.size() >= drag + 1);
   assert(!(this->getN() > drag)); // Consistently low-passed stats
 
   // If stats are "full", replace oldest value, else only add the new value

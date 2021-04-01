@@ -224,6 +224,7 @@ UiFactory::createDefaultBot()
   // FIXME testing
 //  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
 //  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27 (50M)
+//  echo "10000000 0.005 0.15" | "./zehntausend" "evaluate" && // 1000000|	441.06 (+- 0.71 ) o 361.46 (70)
   // FIXME Sarsa bot creation is currently a memory leak: Bot actor will not
   //       free bot.
   // TODO Within the ui namespace it would be simplest to use smart pointers
