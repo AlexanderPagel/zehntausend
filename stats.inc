@@ -78,9 +78,12 @@ auto Stats<T,M>::replaceValue(Value_type v, Value_type w) -> void
 }
 
 template<typename T, typename M>
-Stats<T,M>::Stats(Long_type initialCounter)
-  : n{initialCounter}
-{}
+Stats<T,M>::Stats(Count_type initialCounter, Value_type inertia)
+  : n{initialCounter},
+    sum{static_cast<Value_type>(initialCounter) * inertia}
+{
+  assert(!(initialCounter == 0) || sum == 0);
+}
 
 template<typename T, typename M>
 auto Stats<T,M>::getMean() const -> Mean_type
@@ -163,6 +166,14 @@ auto Stats<T,M>::replace(Value_type newVal, Value_type oldVal) -> Stats&
 template<typename T, typename M>
 RunningStats<T,M>::RunningStats(Drag_type d)
   : drag{d}
+{}
+
+// When using this ctor make sure that the data ringbuffer is initialized
+// accordingly.
+template<typename T, typename M>
+RunningStats<T,M>::RunningStats(Drag_type d, Value_type inertia)
+  : Base_type(static_cast<Count_type>(d), inertia), // Set initial counter
+    drag{d}
 {}
 
 template<typename T, typename M>

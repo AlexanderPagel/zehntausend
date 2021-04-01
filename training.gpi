@@ -5,7 +5,7 @@ set output 'training.png'
 # Window appearance
 set title 'Training' # PGN title
 set grid # plot a grid below data
-set xrange [0:] # ignroe drag stats warmup before x=0
+#set xrange [0:] # ignroe drag stats warmup before x=0
 set key right bottom
 
 # Graph appearance

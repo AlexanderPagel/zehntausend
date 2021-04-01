@@ -67,6 +67,7 @@ class Stats
 
   public:
     using Long_type = uint64_t;
+    using Count_type = Long_type; // TODO Replace Long_type with this
     using Value_type = T; // T: Type we want to aggregate and compute the mean over
     using Mean_type = M; // M: Floating point type used for computations
     using Variance_type = Mean_type;
@@ -79,7 +80,7 @@ class Stats
   private:
     Long_type n{0};
     Value_type sum{0};
-    Variance_type squareSum {0};
+    Variance_type squareSum {0}; // ~ Sum of squared differences from mean
 
     Mean_type offsetFromMean(Value_type v) const;
     Variance_type varFinalize(bool sample) const;
@@ -96,7 +97,7 @@ class Stats
   public:
     // Initialize with nonzero counter. Used for initial inertia of runnign
     // averages.
-    explicit Stats(Long_type initialCounter = 0);
+    explicit Stats(Count_type initialCounter = 0, Value_type inerta = 0);
 
     bool hasMean() const { return getN() > 0; }
     bool hasVariance() const { return getN() > 1; }
@@ -133,6 +134,7 @@ class RunningStats : public Stats<T,M>
     using Base_type = Stats<T,M>;
 
   public:
+    using typename Base_type::Count_type;
     using typename Base_type::Value_type;
     using Buffer_type = Ringbuffer<Value_type>;
     using Drag_type = int;
@@ -142,6 +144,7 @@ class RunningStats : public Stats<T,M>
 
   public:
     explicit RunningStats(Drag_type);
+    explicit RunningStats(Drag_type, Value_type inertia);
 
     Drag_type getDrag() const;
     using Base_type::operator();
@@ -150,9 +153,9 @@ class RunningStats : public Stats<T,M>
     RunningStats& operator()(Buffer_type const&);
 
     // Prevent accidental use of base class versions
-    RunningStats& operator+=(int) = delete;
-    RunningStats& operator-=(int) = delete;
-    RunningStats& replace()    = delete;
+    RunningStats& operator+=(Value_type) = delete;
+    RunningStats& operator-=(Value_type) = delete;
+    RunningStats& replace()              = delete;
 
     template<typename TT, typename MM>
     friend auto operator<<(std::ostream&, RunningStats<TT,MM> const&)
