@@ -76,14 +76,5 @@ class Evaluator
 #endif // RL_EVALUATOR_H_INCLUDED
 
 
-// Questions:
-//  1 Evaluate bot during training or after training? Both? Running training?
-//    - Must at least reset some time to evaluate full strength of bot + no exploration
-//  2 What to evaluate?
-//    - Mean return + Std deviation
-//    - 20k episode average, 100k episodes average, 400k episodes average, running average of training?
-//      -> Includes exploration(!)
-//      -> log to file for plotting later
-
 // TODO
 //  - loading bar for evaluator
