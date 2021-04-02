@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script offers some off-the-shelf configurations/calls to the zehntausend
+# scripts. If you had a specific project/idea you want to try you would add it
+# as a command to this script.
+
 # Boilerplate safe mode
 set -euo pipefail # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 IFS=$'\n\t'
@@ -17,23 +21,25 @@ fi
 # Execution
 ################################################################################
 
-if [ "$1" == "training" ]; then
+eval_script="scripts/evaluate.sh";
+
+if [ "$1" = "training" ]; then
   make zehntausend -j4 &&
-  scripts
+  bash $eval_script "sarsa" "10000" "0.01" "0.2" &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
-  echo "1000000 0.01 0.2" | "./zehntausend" "evaluate" &&
   gnuplot "training.gpi" &&
-  _png "training.png"
+  _png "training.png" &&
+  exit 0;
 
-elif [ "$1" == "clean" ]; then
-  make clean
-fi
-
-if [ $? -eq 0 ]; then
-  exit 0
+elif [ "$1" = "clean" ]; then
+  make clean &&
+  exit 0;
 else
-  exit 1
+  echo "[ERROR] $0: Unknown command \"$1\"";
+  exit 1;
 fi
+
+exit 0;
 
 # TODO write scripts:
 # 1) General eval script that takes the algorthm name + parameters and
