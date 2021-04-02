@@ -11,7 +11,8 @@
 # than program arguments.
 
 # Boilerplate safe mode
-set -euo pipefail # http://redsymbol.net/articles/unofficial-bash-strict-mode/
+# From: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
 IFS=$'\n\t'
 
 # Move to parent directory for behaviour independant of script location

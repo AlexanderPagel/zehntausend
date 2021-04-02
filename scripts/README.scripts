@@ -1,0 +1,43 @@
+README.scripts
+This file explains conventions and data formats of the Tenthousand scripts.
+
+--------------------------------------------------------------------------------
+index0.txt
+--------------------------------------------------------------------------------
+
+  Like index.txt (see below), except only for the very last evaluation/training
+  run, identified by ID 0. This is a temporary entry that will be overwritte
+  when a new run is generated.
+
+--------------------------------------------------------------------------------
+index.txt
+--------------------------------------------------------------------------------
+
+  Index file mapping IDs to training run descriptions. ID 0 is a special ID for
+  the last training run.
+  This file should be appended when temporary statistics or graphs are moved to
+  be kept permanently.
+
+  Format:
+
+    ID1 Description1...
+    ID2 Description2...
+    ID3 Description3...
+
+  ID
+    Integral value >= 1 that identifies the evaluation/training run for later
+    reference. Corresponding stats data and/or graphs may be stored in a format
+    using the ID as (parts of) the filename.
+  Description
+    String  describing the technical details of the evaluation/training run.
+    For example, the algorithm name and used parameters. Ideally, the
+    information should suffice to re-create the training run (modulo
+    probabilistic aspects).
+
+  Lines are written in order of ascending IDs.
+
+  Example:
+
+    1 Sarsa n=10000 a=0.01 e=0.2
+    2 SarsaMax n=100000 a=0.1 e=0.1
+    0 SarsaExperimental n=10000 c=2.0
