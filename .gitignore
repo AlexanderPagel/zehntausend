@@ -18,6 +18,7 @@ gmon.out
 *.png
 
 # Edit
+scripts/test.sh
 *.swp
 Session.vim
 SessionSplit.vim
