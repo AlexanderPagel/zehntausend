@@ -28,8 +28,10 @@ if [ "$1" = "training" ]; then
   make zehntausend -j4 &&
   bash $eval_script "sarsa" "10000" "0.01" "0.2" &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
-  gnuplot "training.gpi" &&
-  _png "training.png" &&
+  cd "eval";
+  gnuplot "../scripts/training.gpi" &&
+    # TODO The all cd and stuff in plotting is too shitty in gnuplot-script. write bash scripts for it
+  _png "0_plot.png" &&
   exit 0;
 
 elif [ "$1" = "clean" ]; then
@@ -40,7 +42,8 @@ else
   exit 1;
 fi
 
-exit 0;
+echo "[ERROR] Command \"$1\" aborted.";
+exit 1;
 
 # TODO write scripts:
 # 1) General eval script that takes the algorthm name + parameters and

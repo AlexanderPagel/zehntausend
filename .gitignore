@@ -13,9 +13,7 @@ analysis.txt
 gmon.out
 
 # Evaluate
-*.dat
-*.gpi
-*.png
+eval/
 
 # Edit
 scripts/test.sh

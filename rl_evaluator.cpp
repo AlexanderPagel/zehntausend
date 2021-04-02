@@ -20,13 +20,13 @@ void logResult(T const& t)
 std::string
 Evaluator::outFileTrain
 {
-  "stats_train.dat"
+  "eval/0_training.dat"
 };
 
 std::string
 Evaluator::outFileFinal
 {
-  "stats_final.dat"
+  "eval/0_final.dat"
 };
 
 // Must make sure to call for updates after each relevant change to training
@@ -154,9 +154,11 @@ Evaluator::Evaluator(int training, int test)
   assert(training > 0 && test > 0);
 
   if (!ofsTrain.is_open())
-    throw std::runtime_error("Could not open training outfile in Evaluator()");
+    throw std::runtime_error(
+        std::string() + "Could not open outfile \"" + outFileTrain + "\"");
   if (!ofsFinal.is_open())
-    throw std::runtime_error("Could not open final outfile in Evaluator()");
+    throw std::runtime_error(
+        std::string() + "Could not open outfile \"" + outFileFinal + "\"");
   std::cerr << "Opened file \"" << outFileTrain << "\" for output." << std::endl;
   std::cerr << "Opened file \"" << outFileFinal << "\" for output." << std::endl;
 }

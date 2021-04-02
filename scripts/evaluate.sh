@@ -26,8 +26,6 @@ if [ $# -lt 2 ]; then
   exit 1; # failed usage
 fi
 
-echo "NUMBER OF ARGS:" $#;
-
 # Detailed help
 if [ $1 == "help" ] || [ $1 == "--help" ] || [ $1 == "-h" ]; then
   if [ $# == 2 ]; then
@@ -68,19 +66,28 @@ else
 fi
 
 # Invoke binary
-BINARY="zehntausend";
+binary="zehntausend";
+project_root="..";
 if [[ "$algorithm" == "sarsa" ]]; then
-  # ommand=evaluate algorithm=sarsa stdin="n alpha epsilon"
-  echo "$parameters" | "../$BINARY" "evaluate" "$algorithm";
-  RET="$?";
-  if [ "$RET" -ne 0 ]; then
-    echo "Evaluation failed: Binary returned \"$RET\"";
+  # Execute in sub to come back after cd
+  exec
+  (
+    cd "$project_root";
+    echo "$parameters" | "./$binary" "evaluate" "$algorithm";
+    ret="$?";
+    if [ "$ret" -ne 0 ]; then
+      echo "[ERROR] $0: Evaluation failed: Binary returned \"$ret\"";
+      exit 1;
+    fi
+  );
+  if [ "$?" -ne 0 ]; then
+    echo "[ERROR] $0: Evaluation failed: Binary returned \"$ret\"";
     exit 1;
   fi
 else
-  echo "Unknown Algorithm: \"$algorithm\"";
+  echo "[ERROR] $0: Unknown Algorithm: \"$algorithm\"";
   exit 1;
 fi
 
-echo "[SUCCESS] $0:Evaluation completed."
+echo "[SUCCESS] $0: Evaluation completed."
 exit 0;
