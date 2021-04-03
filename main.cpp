@@ -430,6 +430,7 @@ void evaluateTraining(Args_type const&)
   // TODO Later we may want to distinguish different algorithms.
   //      For now just start a default training.
   rl::defaultEvaluation();
+  // TODO Make sure an information string is written to eval/index0.txt
 }
 
 void profileTraining(Args_type const&)

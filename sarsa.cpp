@@ -1,9 +1,11 @@
 #include "sarsa.h"
 
 #include <cmath>
+#include <stdexcept>
 
 #include "randomness.h"
 #include "rl_evaluator.h"
+#include "utils.h"
 
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
@@ -183,12 +185,26 @@ Sarsa::Sarsa(double alph, double epsil, double gam)
 
 }
 
-std::ostream&
-operator<<(std::ostream& os, Sarsa const& alg)
+std::string
+Sarsa::info() const
 {
-  os << "SarsaMax e-greedy afterstates"
-     << " a=" << alg.alpha << " e=" << alg.epsilon << " y=" << alg.gamma;
-  return os;
+  // Algorithm specification
+  std::string_view algo {"Sarsa-Max"};
+  std::string_view repr {"Afterstates"};
+  std::string_view expl {"e-greeedy"};
+  std::string_view rate {"constant"};
+  std::string_view init {"fixed"};
+  std::string s {};
+  utils::append_more(s, algo, " using ", repr, ", exploration=", expl,
+      ", learning_rate=", rate, " initialization=", init, "; ");
+
+  // Parameters
+  utils::append_more(s,
+      "alpha=", std::to_string(alpha),
+      ", epsilon=", std::to_string(epsilon),
+      " gamma=", std::to_string(gamma));
+
+  return s;
 }
 
 
@@ -207,6 +223,39 @@ void defaultEvaluation()
   auto bot = new Sarsa(a, e);
   rl::Evaluator eval(n, n/10); // TODO eventually use n instead of n/10, but is too slow for testing
   eval(*bot);
+
+  std::string const indexFileName {"eval/index0.txt"};
+  std::ofstream tmpIndex(indexFileName);
+
+  // TODO This file operation should probably be its own function
+  if (!tmpIndex.is_open())
+  {
+    throw std::runtime_error(std::string() +
+        "[ERROR] zehntausend: Could not open \"" + indexFileName +
+        "to write info string");
+  }
+  else
+  {
+    std::cout << "Opened file " << indexFileName << " to write eval info." << std::endl;
+  }
+  if (!(tmpIndex << eval.info()))
+  {
+    if (tmpIndex.fail())
+    {
+      // File stream died
+      if (tmpIndex.bad()) throw std::runtime_error(std::string() +
+          "[ERROR] zehntausend: Index file fstream corrupt.");
+      // Operation failed but stream lives
+      else throw std::runtime_error(std::string() +
+          "[ERROR] zehntausend: Index file writing failed.");
+    }
+    else
+    {
+      // TODO Can happen?
+      std::cerr << "[WARNING] zehntausend: Unknown write operation fail."
+                << std::endl;
+    }
+  }
 }
 
 } // namespace rl

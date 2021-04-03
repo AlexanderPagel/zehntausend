@@ -5,6 +5,8 @@
 #include <iostream>
 #include <memory>
 
+#include "utils.h"
+
 
 namespace rl
 {
@@ -168,6 +170,30 @@ Evaluator::operator()(Bot_type& bot)
 {
   evaluateTraining(bot);
   evaluateFull(bot);
+}
+
+std::string
+Evaluator::info() const
+{
+  // Training specification
+  std::string_view trainingSchedule {"First drag drop"};
+  std::string_view finalSchedule {"N episodes"}; // TODO not yet true
+  std::string_view statsCollection {"Dragging N/1000 ... N"};
+  std::string s {};
+  utils::append_more(s, trainingSchedule, " training with ", finalSchedule,
+      " evaluation, stats=", statsCollection, "; ");
+
+  // Parameters and results
+  // TODO provide total performed training episodes
+  utils::append_more(s,
+      "N=", std::to_string(trainingEpisodes),
+      " eval_mean=", std::to_string(finalStats.getMean()),
+      " confidence=", std::to_string(finalStats.getRoundaboutConfidence()),
+      " last_training_mean=", std::to_string(runningStats.getStats().back().getMean()),
+      " confidence=", std::to_string(runningStats.getStats().back().getRoundaboutConfidence())
+      );
+
+  return s;
 }
 
 } // namespace rl

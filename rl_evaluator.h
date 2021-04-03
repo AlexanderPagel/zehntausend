@@ -69,8 +69,8 @@ class Evaluator
   public:
     Evaluator(int training, int test);
 
-    // Evaluate bot with the configurated parameters
-    void operator()(Bot_type&);
+    void operator()(Bot_type&); // Evaluate bot with configurated parameters
+    std::string info() const;
 };
 
 } // namespace rl
