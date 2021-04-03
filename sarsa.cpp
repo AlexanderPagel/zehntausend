@@ -225,7 +225,7 @@ void defaultEvaluation()
   eval(*bot);
 
   std::string const indexFileName {"eval/index0.txt"};
-  std::ofstream tmpIndex(indexFileName);
+  std::ofstream tmpIndex(indexFileName, std::ios::trunc | std::ios::out);
 
   // TODO This file operation should probably be its own function
   if (!tmpIndex.is_open())
@@ -238,7 +238,9 @@ void defaultEvaluation()
   {
     std::cout << "Opened file " << indexFileName << " to write eval info." << std::endl;
   }
-  if (!(tmpIndex << eval.info()))
+  std::string infoStr {"0 "}; // ID of temporary eval run
+  utils::append_more(infoStr, "[Algo] ", bot->info(), " [Eval] ", eval.info());
+  if (!(tmpIndex << infoStr))
   {
     if (tmpIndex.fail())
     {
@@ -255,6 +257,10 @@ void defaultEvaluation()
       std::cerr << "[WARNING] zehntausend: Unknown write operation fail."
                 << std::endl;
     }
+  }
+  else
+  {
+    std::cout << "Index file written successfully" << std::endl;
   }
 }
 

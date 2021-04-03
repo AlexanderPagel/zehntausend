@@ -72,7 +72,7 @@ elif [[ "$idx_command" == "--newest" ]]; then
 elif [[ "$idx_command" == "--save" ]]; then
 
   # Ensure correct arg count
-  if [ $# -gt 3 ]; then
+  if [ $# -gt 3 ] || [ $# -lt 2 ]; then
     echo "Expected 1 or 2 parameters for --save, got $(( $# -1 ))";
     exit 1;
   fi
@@ -81,11 +81,15 @@ elif [[ "$idx_command" == "--save" ]]; then
   id_next_by_increment="$(bash index.sh --next)";
   if [ $# -ge 3 ]; then
     save_id="$3";
+    if [ "$save_id" -ne "$save_id" ]; then # TODO not sure if this works
+      echo "[ERROR]: $0: save ID must be integer, got \"$save_id\"";
+      exit 1;
+    fi
     if [ "$save_id" -gt "$id_next_by_increment" ] ||
        [ "$save_id" -lt "$(($id_next_by_increment - 1))" ]; then
       # Unreachable. Only called by "--save all".
-      echo "[ERROR] $0: --save ID \"$save_id\" invalid.";
-      echo "Do not use the ID parameter from outside of this script.";
+      echo "[ERROR] $0: save ID \"$save_id\" invalid.";
+      echo "not use the ID parameter from outside of this script.";
       exit 1;
     fi
   else

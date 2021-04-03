@@ -24,6 +24,7 @@ fi
 
 eval_script="scripts/evaluate.sh";
 
+# Perform project training run. Currently just testing.
 if [ "$1" = "training" ]; then
   make zehntausend -j4 &&
   bash $eval_script "sarsa" "10000" "0.01" "0.2" &&

@@ -13,8 +13,9 @@
 namespace utils
 {
 
+// I just like the syntax of comma separated appending convenient
 template<typename T, typename U>
-auto append_more(T&& t, U&& u)// -> decltpe(std::forward<T>(t))
+auto append_more(T&& t, U&& u) -> decltype(std::forward<T>(t))
 {
   // TODO forward what
   return std::forward<T>(t).append(std::forward<U>(u));
