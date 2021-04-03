@@ -130,9 +130,16 @@ elif [[ "$idx_command" == "--save" ]]; then
       exit 1;
     fi
 
+    # Move file
+    set +e
+    mv -v "$file_from" "$file_to";
+    if [ $? -ne 0 ]; then echo "[ERROR] $0 --save: Move failed."; exit 1;
+    fi
+    set -e
+
     # Determine necessity of adding info to the index file
     set +e;
-    ignore="$(./index.sh --info "$save_id")";
+    ignore="$(bash ./index.sh --info "$save_id")";
     index_entry_search="$?";
     set -e;
 
@@ -141,10 +148,6 @@ elif [[ "$idx_command" == "--save" ]]; then
       info_str="$(./index.sh --info 0)";
       echo "$save_id $info_str" >> "$eval_dir/index.txt";
       echo "[SUCCESS] $0: Information string for ID $save_id appendded to index.txt.";
-    fi
-    # Move file
-    mv -v "$file_from" "$file_to";
-    if [ $? -ne 0 ]; then echo "[ERROR] $0 --save: Move failed."; exit 1;
     fi
   fi # delegate y/n
   echo "[SUCCESS] $0: Evaluation data saved as ID=$save_id.";
