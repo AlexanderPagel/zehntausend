@@ -73,6 +73,8 @@ class Evaluator
     std::string info() const;
 };
 
+void defaultEvaluation();
+
 } // namespace rl
 
 
