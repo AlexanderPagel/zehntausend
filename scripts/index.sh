@@ -110,9 +110,11 @@ elif [[ "$idx_command" == "--save" ]]; then
   # Delegate the "all" parameter
   if [[ "$param_which" == "all" ]]; then
     # Pass save_id such that the delegated parts don't all increment ID
-    bash index.sh "$idx_command" "tstats" "$save_id" > /dev/null;
-    bash index.sh "$idx_command" "fstats" "$save_id" > /dev/null;
-    bash index.sh "$idx_command" "plot" "$save_id" > /dev/null;
+    set +e # Just try and ignor eif fails
+    bash index.sh "$idx_command" "tstats" "$save_id";
+    bash index.sh "$idx_command" "fstats" "$save_id";
+    bash index.sh "$idx_command" "plot" "$save_id";
+    set -e
   else
     # Determine source and target file names
     eval_dir="../eval";
