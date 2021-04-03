@@ -29,16 +29,21 @@ elif [[ "$1" == "help" ]]; then
     echo "\t--save <which>: Save temporary file(s) and create index entry.";
     echo "\t--help [<command>]: Show help to one of the commands above.";
   elif [[ "$2" == "--save" ]]; then
-    echo "--save {all|tstats|fstats|plot} [id]"
+    echo "--save {all|tstats|fstats|plot} [<id>]"
     echo "This command moves a temporary evaluation file into the permanent storage directory.";
     echo "One can choose to move any of the testing/evaluation statistics and final plot.";
     echo "Value \"all\" will perform the move for each of them.";
     echo "id determines the used index ID when creating new files. Do not use from outside of this script";
   elif [[ "$2" == "--info" ]]; then
-    echo "--info [id]";
+    echo "--info [<id>]";
     echo "This command prints the \"info\" line of the traning/evaluation run corresponding to the given ID";
     echo "The default is id=0, printing the information of the temporary data";
     echo "If no entry exists for the given ID, the script exits non-zero.";
+  elif [[ "$2" == "--delete" ]]; then
+    echo "--delete <id>";
+    echo "This command deletes previously saved evaluation data with the specified evaluation ID.";
+    echo "Parameter id is the evaluatino ID of the data to be removed.";
+    echo "All corresponding data is removed, including the index entry";
   else
     echo "No help for unrecognized parameter \"$2\"";
   fi
@@ -54,11 +59,13 @@ idx_command="$1";
 project_dir="..";
 index_file="$project_dir/eval/index.txt";
 
+################################################################################
 # Command --next to retrieve the next available index value
 if [[ "$idx_command" == "--next" ]]; then
   next_val="$(bash "index.sh" "--newest")";
   echo "$((next_val + 1))";
 
+################################################################################
 # Command --newest to retrieve the last used index value
 elif [[ "$idx_command" == "--newest" ]]; then
   # Output first column of last line of index_file
@@ -68,6 +75,7 @@ elif [[ "$idx_command" == "--newest" ]]; then
     echo "0";
   fi
 
+################################################################################
 # Command --save to store temporary files in index
 elif [[ "$idx_command" == "--save" ]]; then
 
@@ -142,6 +150,7 @@ elif [[ "$idx_command" == "--save" ]]; then
   echo "[SUCCESS] $0: Evaluation data saved as ID=$save_id.";
 
 # Command --info to retrieve the info part of the index line
+################################################################################
 elif [[ "$idx_command" == "--info" ]]; then
 
   # Determine index of interest
@@ -161,7 +170,7 @@ elif [[ "$idx_command" == "--info" ]]; then
     # Only keep anything after the ID (the first space).
     # The option "set -e" means this exits immediately if grep does not find
     # a match, which is intended.
-    index_line="$(grep "../eval/index.txt" -ie "^$index_of_interest\\s")";
+    index_line="$(grep "../eval/index.txt" -e "^$index_of_interest\\s")";
   fi
 
   # Extract information string from the index line
@@ -170,6 +179,43 @@ elif [[ "$idx_command" == "--info" ]]; then
   # Put information string on stdout
   echo "$info_string";
 
+################################################################################
+# Command --delete to delete evaluation data
+elif [[ "$idx_command" == "--delete" ]]; then
+
+  # Filter most common invalid arguments
+  if [ $# -ne 2 ]; then
+    echo "[ERROR] $0: --delete expects 1 argument, got $(($# - 1))."; exit 1;
+  elif [ "$2" -ne "$2" ]; then
+      echo "[ERROR] $0: Expected integer argument, got \"$2\"."; exit 1;
+  elif [ "$2" -gt "$(./index.sh --newest)" ]; then
+      echo "[ERROR] $0: Can't delete out-of-range ID $2."; exit 1;
+  fi
+  remove_id="$2";
+  if echo "$remove_id" | grep -E '^[0-9]+$'; then
+    :; # everything ok
+  else
+    echo "[ERROR] Passed eval ID is not an integer (got \"$remove_id\").";
+  fi
+
+  # Remove eval ID in index file
+  sed --in-place=.sav '/^'"$remove_id"' /d' "../eval/index.txt";
+  if [ $? -ne 0 ]; then
+    echo "[ERROR] $0: --delete could not find ID \"$remove_id\" in index.";
+    exit 1;
+  fi
+  # Remove data from eval/ directory.
+  set +e # Remove even if some fail (means they were not saved previously)
+  rm -vf "../eval/training_stats/${remove_id}_training.dat";
+  rm -vf "../eval/final_stats/${remove_id}_final.dat";
+  rm -vf "../eval/plots/${remove_id}_plot.png";
+  set -e
+
+  echo "[SUCCESS] $0: Removed evaluation data with ID $remove_id.";
+
+else
+  echo "[ERROR] $0: Unrecognized command \"$idx_command\".";
+  exit 1;
 fi # Commands if-else
 
 exit 0;
