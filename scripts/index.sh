@@ -17,7 +17,7 @@ cd "$parent_path"
 
 # Usage prompt
 if [ $# -eq 0 ]; then
-  echo "Usage: ./$0 {--next|--newest|--save|--info|--help} [params...]"
+  echo "Usage: ./$0 {--next|--newest|--save|--info|--delete|--test|--data|--help} [params...]"
   exit 1;
 
 # Help promt
@@ -27,6 +27,10 @@ elif [[ "$1" == "help" ]]; then
     echo "\t--next: Print next available ID";
     echo "\t--newest: Print last used ID";
     echo "\t--save <which>: Save temporary file(s) and create index entry.";
+    echo "\t--info <id>: Print evaluation info-string to stdout";
+    echo "\t--delete <id>: Delete evaluation data associated with ID";
+    echo "\t--test <id>: Test for existence of evaluation data for ID";
+    echo "\t--data <id> <which>: Output path to data relative to project root";
     echo "\t--help [<command>]: Show help to one of the commands above.";
   elif [[ "$2" == "--save" ]]; then
     echo "--save {all|tstats|fstats|plot} [<id>]"
@@ -44,8 +48,18 @@ elif [[ "$1" == "help" ]]; then
     echo "This command deletes previously saved evaluation data with the specified evaluation ID.";
     echo "Parameter id is the evaluatino ID of the data to be removed.";
     echo "All corresponding data is removed, including the index entry";
+  elif [[ "$2" == "--test" ]]; then
+    echo "--test <id>";
+    echo "This command tests the given evaluation ID for existence";
+    echo "Returns \"1\" if ID is found in index, \"0\" otherwise.";
+    echo "Exit is 0 if passed argument could be a valid ID >= 1, non-zero otherwise";
+    echo "If the command exits non-zero, it's output must be ignore.";
+  elif [[ "$2" == "--data" ]]; then
+    echo "--data <id> {tstats|fstats|plot}";
+    echo "This command returns the path to the data file containing the traingin stats (relative to project roo), final stats, or plot of the evaluation run identified by an ID.";
+    echo "If the requested data does not exist (the ID is invalid or the file was not saved or deleted), the command exits non-zero";
   else
-    echo "No help for unrecognized parameter \"$2\"";
+    echo "No help for unrecognized command \"$2\"";
   fi
 
   exit 1; # Any help promt exists w/ failure
@@ -55,9 +69,13 @@ fi
 # Commands
 ################################################################################
 
+# Couple paths
+readonly project_dir="..";
+readonly eval_dir="$project_dir/eval";
+readonly index_file="$eval_dir/index.txt"
+
+# The command to be executed
 idx_command="$1";
-project_dir="..";
-index_file="$project_dir/eval/index.txt";
 
 ################################################################################
 # Command --next to retrieve the next available index value
@@ -117,7 +135,6 @@ elif [[ "$idx_command" == "--save" ]]; then
     set -e
   else
     # Determine source and target file names
-    eval_dir="../eval";
     if [[ "$param_which" == "tstats" ]]; then
       file_from="$eval_dir/0_training.dat";
       file_to="$eval_dir/training_stats/${save_id}_training.dat";
@@ -197,16 +214,19 @@ elif [[ "$idx_command" == "--delete" ]]; then
       echo "[ERROR] $0: Can't delete out-of-range ID $2."; exit 1;
   fi
   remove_id="$2";
-  if echo "$remove_id" | grep -E '^[0-9]+$'; then
+  if [[ "$(is_uint.sh "$remove_id")" == "1" ]]; then
     :; # everything ok
   else
-    echo "[ERROR] Passed eval ID is not an integer (got \"$remove_id\").";
+    echo "[ERROR] Passed eval ID is not an unsigned integer (got \"$remove_id\").";
   fi
 
   # Remove eval ID in index file
+  set +e;
   sed --in-place=.sav '/^'"$remove_id"' /d' "../eval/index.txt";
-  if [ $? -ne 0 ]; then
-    echo "[ERROR] $0: --delete could not find ID \"$remove_id\" in index.";
+  ret="$?";
+  set -e;
+  if [ "$?" -ne 0 ]; then
+    echo "[ERROR] $0 --delete: could not find ID \"$remove_id\" in index.";
     exit 1;
   fi
   # Remove data from eval/ directory.
@@ -218,9 +238,91 @@ elif [[ "$idx_command" == "--delete" ]]; then
 
   echo "[SUCCESS] $0: Removed evaluation data with ID $remove_id.";
 
+################################################################################
+# Command --test to check for evaluation ID existence
+elif [[ "$idx_command" == "--test" ]]; then
+
+  if [ $# -ne 2 ]; then
+    >&2 echo "[ERROR] $0 --test: Expected 1 parameter, got $(($# -1)).";
+    exit 1;
+  fi
+
+  # Validate input format
+  if [ "$(./is_uint.sh "$2")" = "1" ] && [ "$2" -gt 0 ]; then
+    test_id="$2";
+    set +e
+    # In index file, Look for line beginnign with ID tolowed by whitespace
+    grep -q -e '^'"$test_id"'\s' "$index_file";
+    ret="$?";
+    set -e
+    if [ "$ret" -eq 0 ]; then
+      echo "1"; # ID found in index file
+    else
+      echo "0";
+    fi
+    exit 0;
+  fi
+  # Input had invalid format
+  >&2 echo "[ERROR] $0 --test: Invalid input format \"$2\" (expected uint >= 1)";
+  exit 1;
+
+
+################################################################################
+# Command --data to print paths to data relative to project root
+elif [[ "$idx_command" == "--data" ]]; then
+
+  # Validate ID argument format
+  if [ $# -ne 3 ]; then
+    >&2 echo "[ERROR] $0 --data: Expected 2 arguments, $(($# -1)) provided.";
+    exit 1;
+  fi
+  set +e
+  has_data="$(./index.sh --test "$2")"; # If ID exists, that means at least *some* data exists.
+  ret="$?";
+  set -e
+  if [[ "$ret" != "0" ]]; then
+    >&2 echo "[ERROR] $0 --data: Invalid parameter. Ecpected ID, got \"$2\".";
+    exit 1;
+  fi
+  if [[ "$has_data" != "1" ]];
+    >&2 echo "[ERROR] $0 --data: Invalid ID \"$2\". No entry in index.";
+  fi
+
+  # Generate requested file name
+  readonly data_id="$2";
+  data_file_name="$eval_dir";
+  if [[ "$3" == "tstats" ]]; then
+    data_file_name="$data_file_name/training_stats/${data_id}_training.dat";
+  elif [[ "$3" == "fstats" ]]; then
+    data_file_name="$data_file_name/final_stats/${data_id}_final.dat";
+  elif [[ "$3" == "plot" ]]; then
+    data_file_name="$data_file_name/plots/${data_id}_plot.png";
+  else
+    >&2 echo "[ERROR] $0 --data: Invalid parameter \"$3\".";
+    exit 1;
+  fi
+
+  # Some data may be missing even if other data (and the ID) exist
+  if [ -f "$project_dir/$data_file_name" ]; then
+    echo "$data_file_name";
+    exit 0;
+  else
+    >&2 echo "[ERROR] $0 --data: Requested data \"$3\" does not exist for ID \"$2\".";
+    exit 1;
+  fi
+################################################################################
+# Example command
+elif [[ "$idx_command" == "--foo" ]]; then
+  echo "Not implemented yet";
+  exit 1;
+
+################################################################################
+# Unknown command
 else
   echo "[ERROR] $0: Unrecognized command \"$idx_command\".";
   exit 1;
+
+################################################################################
 fi # Commands if-else
 
 exit 0;
