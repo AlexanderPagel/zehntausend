@@ -1,8 +1,43 @@
 README.scripts
-This file explains conventions and data formats of the Tenthousand scripts.
+This file explains directory conventions and data formats of the project.
 
 --------------------------------------------------------------------------------
-index0.txt
+eval/
+--------------------------------------------------------------------------------
+
+  Evaluation directory. All evaluation data is kept within this directory, but
+  the controlling scripts are placed in scripts/.
+
+  Subdirectories (persistent):
+
+    eval/training_stats/
+      Contains the logged stats of the training period of previously stored
+      evaluation runs.
+      Naming convention: <ID>_training.dat where <ID>=1, 2, ...
+    eval/final_stats/
+      Contains the logged stats of the final evaluation perio of previously
+      stored evaluation runs.
+      Naming convention: <ID>_final.dat where <ID>=1, 2, ...
+    eval/plots/
+      Contains the plotted stats of both the traingin and final period of
+      previously stored evaluation runs.
+      Naming convention: <ID>_plot.png where <ID>=1, 2, ...
+
+  Files (persistent):
+
+    eval/index.txt
+      The evaluation runs index file.
+
+  Files (temporary):
+
+    eval/index0.txt
+      The temporary one-line index of only the newest, temporary run with ID=0.
+    eval/0_training.dat eval/0_final.dat eval/0_plot.dat
+      The temporary locatino of the logged stats and plot of the newest,
+      temporary evaluation run.
+
+--------------------------------------------------------------------------------
+eval/index0.txt
 --------------------------------------------------------------------------------
 
   Like index.txt (see below), except only for the very last evaluation/training
@@ -10,7 +45,7 @@ index0.txt
   when a new run is generated.
 
 --------------------------------------------------------------------------------
-index.txt
+eval/index.txt
 --------------------------------------------------------------------------------
 
   Index file mapping IDs to training run descriptions. ID 0 is a special ID for
