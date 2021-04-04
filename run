@@ -14,7 +14,7 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 {training|clean}"
+  echo "Usage: $0 {test|training|clean}"
   exit 1;
 fi
 
@@ -25,6 +25,11 @@ fi
 eval_script="scripts/evaluate.sh";
 
 # Perform project training run. Currently just testing.
+if [[ "$1" == "test" ]]; then
+  ./scripts/test.sh && exit 0;
+  exit 1;
+fi
+
 if [ "$1" = "training" ]; then
   make zehntausend -j4 &&
   bash $eval_script "sarsa" "10000" "0.01" "0.2" &&

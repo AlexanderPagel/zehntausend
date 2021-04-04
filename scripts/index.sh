@@ -284,13 +284,14 @@ elif [[ "$idx_command" == "--data" ]]; then
     >&2 echo "[ERROR] $0 --data: Invalid parameter. Ecpected ID, got \"$2\".";
     exit 1;
   fi
-  if [[ "$has_data" != "1" ]];
+  if [[ "$has_data" != "1" ]]; then
     >&2 echo "[ERROR] $0 --data: Invalid ID \"$2\". No entry in index.";
+    exit 1;
   fi
 
   # Generate requested file name
   readonly data_id="$2";
-  data_file_name="$eval_dir";
+  data_file_name="eval/"; # do *not* use $eval_dir since that is from our script perspective
   if [[ "$3" == "tstats" ]]; then
     data_file_name="$data_file_name/training_stats/${data_id}_training.dat";
   elif [[ "$3" == "fstats" ]]; then
@@ -310,6 +311,7 @@ elif [[ "$idx_command" == "--data" ]]; then
     >&2 echo "[ERROR] $0 --data: Requested data \"$3\" does not exist for ID \"$2\".";
     exit 1;
   fi
+
 ################################################################################
 # Example command
 elif [[ "$idx_command" == "--foo" ]]; then
