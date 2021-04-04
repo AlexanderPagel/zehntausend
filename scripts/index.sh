@@ -171,8 +171,8 @@ elif [[ "$idx_command" == "--save" ]]; then
   fi # delegate y/n
   echo "[SUCCESS] $0: Evaluation data saved as ID=$save_id.";
 
-# Command --info to retrieve the info part of the index line
 ################################################################################
+# Command --info to retrieve the info part of the index line
 elif [[ "$idx_command" == "--info" ]]; then
 
   # Determine index of interest
@@ -185,13 +185,20 @@ elif [[ "$idx_command" == "--info" ]]; then
   # Read corresponding index line
   # TODO Input validation could help. Allow id if matching regex ^[0-9]+$.
   if [ "$index_of_interest" -eq 0 ]; then
-  #if [[ "$index_of_interest" == 0 ]]; then
+    if [ ! -f "../eval/index0.txt" ]; then
+      >&2 echo "[ERROR] $0 --info: File index0.txt not found";
+      exit 1;
+    fi
     index_line="$(head -n1 "../eval/index0.txt")";
   else
     # Search for line beginning with correct ID followed by whitespace.
     # Only keep anything after the ID (the first space).
     # The option "set -e" means this exits immediately if grep does not find
     # a match, which is intended.
+    if [ ! -f "../eval/index.txt" ]; then
+      >&2 echo "[ERROR] $0 --info: File index.txt not found";
+      exit 1;
+    fi
     index_line="$(grep "../eval/index.txt" -e "^$index_of_interest\\s")";
   fi
 
