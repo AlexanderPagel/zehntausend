@@ -23,7 +23,7 @@ if [ $# -eq 0 ]; then
   exit 1;
 fi
 if [[ "$1" == "--help" ]]; then
-  echo "Usage: $0 {--create|--plotline|--help} [<params...>]";
+  echo "Usage: $0 {--create_single|--create_compare|--plotline|--help} [<params...>]";
   echo "This scripts plots the training everage of the evaluation runs specified by IDs.";
   echo "IDs is *one* string containing a space-separated list if evaluation IDs to be plotted.";
   echo "An example usage could be \'$0 \"1 2 3 15\";\'.";
@@ -53,7 +53,8 @@ readonly project_root="..";
 readonly eval_dir="$project_root/eval";
 readonly temp_plotscript_name="plot.gpi";
 readonly temp_plotscript_path="$eval_dir/plot.gpi";
-readonly template_file_path="template_compare_plotscript.txt";
+readonly template_compare_file_path="template_compare_plotscript.txt";
+readonly tempalte_single_file_path="template_single_plotscript.txt";
 
 ################################################################################
 # Command --plotline to generate the line of gnuplot script required to add the
@@ -89,11 +90,32 @@ if [[ "$cplt_command" == "--plotline" ]]; then
 fi
 
 ################################################################################
-# Command --create to write eval/plot.gpi
-if [[ "$cplt_command" == "--create" ]]; then
+# TODO Make this command cork with an ID parameter
+# Command --create_single to write eval/plot.gpi plotting the last temporary
+# traingin run.
+if [[ "$cplt_command" == "--create_single" ]]; then
+
+  # Endure correct arguments
+  if [ "${#cplt_command_args[@]}" -ne 0 ]; then
+    echo "[ERROR] $0 --create_single: Expected 0 parameters, got ${#cplt_command_args[@]}.";
+    exit 1;
+  fi
+
+  # Simply copy the prepared gnoplot script.
+  # TODO This migh just be worse than just stright up using the script as is.
+  cp -vf "$tempalte_single_file_path" "$temp_plotscript_path";
+  echo "[SUCCESS] $0 --create_single: Created temporary single gnuplot script as \"$temp_plotscript_name\".";
+  exit 0;
+
+fi
+
+################################################################################
+# Command --create_compare to create eval/plot.gpi plotting multiple saved
+# training runs together.
+if [[ "$cplt_command" == "--create_compare" ]]; then
 
   # Begin with template
-  cp -vf "$template_file_path" "$temp_plotscript_path";
+  cp -vf "$template_compare_file_path" "$temp_plotscript_path";
 
   # Add plotlines for each ID one by one
   one_or_more="0"; # Flag to abort if not a single line is valid
@@ -105,7 +127,7 @@ if [[ "$cplt_command" == "--create" ]]; then
     ret="$?";
     set -e;
     if [ "$ret" -ne 0 ]; then
-      echo "[WARNING] $0 --create: Skipping ID=$id (no data found).";
+      echo "[WARNING] $0 --create_compare: Skipping ID=$id (no data found).";
       continue;
     fi
 
@@ -119,11 +141,11 @@ if [[ "$cplt_command" == "--create" ]]; then
 
   # If not a singel line was added that is an error
   if [[ "$one_or_more" == "0" ]]; then
-    echo "[ERROR] $0 --create: No data found for IDs \'${cplt_command_args[@]}\'.";
+    echo "[ERROR] $0 --create_compare: No data found for IDs \'${cplt_command_args[@]}\'.";
     exit 1;
   fi
 
-  echo "[SUCCESS] $0 --create: Created temporary gnuplot script \"$temp_plotscript_name\".";
+  echo "[SUCCESS] $0 --create_compare: Created temporary gnuplot script as \"$temp_plotscript_name\".";
   exit 0;
 
 fi

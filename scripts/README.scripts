@@ -32,9 +32,13 @@ eval/
 
     eval/index0.txt
       The temporary one-line index of only the newest, temporary run with ID=0.
-    eval/0_training.dat eval/0_final.dat eval/0_plot.dat
+    eval/0_training.dat and
+    eval/0_final.dat and
+    eval/0_plot.dat
       The temporary locatino of the logged stats and plot of the newest,
       temporary evaluation run.
+    eval/plot.gpi
+      Last temporary plotscript (created automatically).
 
 --------------------------------------------------------------------------------
 eval/index0.txt
@@ -76,3 +80,13 @@ eval/index.txt
     1 Sarsa n=10000 a=0.01 e=0.2
     2 SarsaMax n=100000 a=0.1 e=0.1
     0 SarsaExperimental n=10000 c=2.0
+
+--------------------------------------------------------------------------------
+scripts/template_compare_plotscript.txt
+--------------------------------------------------------------------------------
+
+  Template file to creat a Gnuplot script file comparing the progress
+  in multiple training evaluation runs.
+  The template is completed by adding the files to be plotted to the
+  end of the file. This is done automatically by the script
+  "create_gnuplot_script.sh".

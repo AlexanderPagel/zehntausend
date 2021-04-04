@@ -20,7 +20,7 @@ cd "$parent_path"
 
 # TODO usage info and help are no longer up to date
 if [ $# -eq 0 ]; then
-  echo "Usage: $0 {--plot} [<params...>]"
+  echo "Usage: $0 {--create_comparison|--create_single} [<params...>]"
   echo "This scripts plots the training everage of the evaluation runs specified by IDs.";
   echo "IDs is *one* string containing a space-separated list if evaluation IDs to be plotted.";
   echo "An example usage could be \'$0 \"1 2 3 15\";\'.";
@@ -34,16 +34,34 @@ readonly project_path="..";
 
 plt_command="$1";
 
-# Command --create_script that writes a gnuplot script file for the intended purpose
-if [[ "$plt_command" == "--create_script" ]]; then
+# Command --create_script that writes a gnuplot script file comparing multiple
+# training runs.
+# TODO Change the create_... commands into creating + immediate plotting
+if [[ "$plt_command" == "--create_compare" ]]; then
   set +e;
-  ./create_gnuplot_script.sh --create "${@:2}";
+  ./create_gnuplot_script.sh --create_compare "${@:2}";
   ret=$?;
   set -e;
   if [ "$ret" -ne 0 ]; then
-    echo "[ERROR] $0: Creation of gnuplot script failed".;
+    echo "[ERROR] $0 --create_compare: Creation of gnuplot script failed".;
   else
-    echo "[SUCCESS] $0: created gnuplot script.";
+    echo "[SUCCESS] $0 --create_compare: created gnuplot script.";
+  fi
+  exit "$ret";
+fi
+
+# Command --create_single that writes a gnuplot script file for a singel
+# evaluation run.
+# TODO Change the create_... commands into creating + immediate plotting
+if [[ "$plt_command" == "--create_single" ]]; then
+  set +e;
+  ./create_gnuplot_script.sh --create_single;
+  ret=$?;
+  set -e;
+  if [ "$ret" -ne 0 ]; then
+    echo "[ERROR] $0 --create_single: Creation of gnuplot script failed".;
+  else
+    echo "[SUCCESS] $0 --create_single: Created gnuplot script.";
   fi
   exit "$ret";
 fi
