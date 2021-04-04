@@ -53,7 +53,7 @@ readonly project_root="..";
 readonly eval_dir="$project_root/eval";
 readonly temp_plotscript_name="plot.gpi";
 readonly temp_plotscript_path="$eval_dir/plot.gpi";
-readonly template_file_path="plot_template.txt";
+readonly template_file_path="template_compare_plotscript.txt";
 
 ################################################################################
 # Command --plotline to generate the line of gnuplot script required to add the
@@ -83,7 +83,7 @@ if [[ "$cplt_command" == "--plotline" ]]; then
   #      stats formats to allow consistent printing when the format is changed.
 
   # Print the plotline by inserting the file name into a default scheme
-  echo '     "'"$data_path"'" using 18:19, \';
+  echo '     "'"$data_path"'" using 1:3, \';
   exit 0;
 
 fi
@@ -111,6 +111,7 @@ if [[ "$cplt_command" == "--create" ]]; then
 
     # Add plotline
     echo "$plotline" >> "$temp_plotscript_path";
+    echo "[SUCCESS] $0: Added plotline for ID \"$id\".";
     one_or_more="1";
   done
   # Add final empty line because every plotline ends with '\'
@@ -122,7 +123,7 @@ if [[ "$cplt_command" == "--create" ]]; then
     exit 1;
   fi
 
-  echo "[SUCCESS] Created temporary gnuplot scrit \"$temp_plotscript_name\".";
+  echo "[SUCCESS] $0 --create: Created temporary gnuplot script \"$temp_plotscript_name\".";
   exit 0;
 
 fi

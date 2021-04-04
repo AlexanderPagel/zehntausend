@@ -30,12 +30,14 @@ fi
 # Dispatch commands
 ################################################################################
 
+readonly project_path="..";
+
 plt_command="$1";
 
 # Command --create_script that writes a gnuplot script file for the intended purpose
 if [[ "$plt_command" == "--create_script" ]]; then
   set +e;
-  ./create_gnuplot_script.sh "${@:2}";
+  ./create_gnuplot_script.sh --create "${@:2}";
   ret=$?;
   set -e;
   if [ "$ret" -ne 0 ]; then
@@ -48,6 +50,15 @@ fi
 
 # Command --show to plot the last created gnuplot script
 if [[ "$plt_command" == "--show" ]]; then
-  echo "Not implemented yet.";
-  exit 1;
+  if [ ! -f "../eval/plot.gpi" ]; then
+    echo "[ERROR] $0 --show: No temporary plot prepared.";
+    exit 1;
+  fi
+  (cd "$project_path"; pwd; gnuplot "eval/plot.gpi";);
+  # TODO for testign show immediately
+  _png "$project_path/eval/0_plot.png";
+  exit 0;
 fi
+
+echo "[ERROR] $0: Unknown command \"$plt_command\".";
+exit 1;
