@@ -206,5 +206,3 @@ Sarsa::info() const
 
   return s;
 }
-
-
