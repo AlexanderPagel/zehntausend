@@ -29,6 +29,13 @@ if [[ "$1" == "test" ]]; then
   exit 1;
 fi
 
+# Legacy behaviour: just start game to play on console
+if [[ "$1" == "game" ]]; then
+  #make zehntausend -j4 &&
+  ./zehntausend "play" &&
+  exit 0;
+fi
+
 # One training run to compare different training stups/parameters
 if [[ "$1" == "once" ]]; then
   make zehntausend -j4 &&
@@ -42,7 +49,7 @@ if [[ "$1" == "once" ]]; then
   scripts/index.sh --save all &&
   #cd "eval" &&
   #gnuplot "../scripts/training.gpi" &&
-  echo "[SUCCESS] $0 one: Command completed";
+  echo "[SUCCESS] $0 one: Command completed" &&
   exit 0;
 fi
 
