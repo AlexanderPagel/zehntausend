@@ -1,8 +1,11 @@
 #include "sarsa.h"
 
 #include <cmath>
+#include <stdexcept>
 
 #include "randomness.h"
+#include "rl_evaluator.h"
+#include "utils.h"
 
 Sarsa::ActionVector_t const&
 Sarsa::_legalActionsLookup(State_t const& s) const
@@ -13,7 +16,7 @@ Sarsa::_legalActionsLookup(State_t const& s) const
     // Compute anew and cache if not found
     if( search == _legalActionsTable.end() )
     {
-        auto put = _legalActionsTable.insert( {s, Game_t::generateActions(s)} );
+        auto put = _legalActionsTable.insert( {s, Environment_t::generateActions(s)} );
         assert(put.second); // Insertion took place
         search = put.first;
     }
@@ -143,47 +146,36 @@ Sarsa::eGreedy(State_t const& s) const -> Action_t const&
 }
 
 void
-Sarsa::performLearningEpisodes(unsigned int n, unsigned int l, std::ostream& os)
+Sarsa::performLearningEpisodes(unsigned int n, unsigned int, std::ostream&)
 {
-    unsigned int const t = n;
-    refac::Environment e;
-
-    for( ; n != 0; --n )
-    {
-        e.restart();
-        auto s = e.getState();
-
-        while(!e.episodeFinished())
-        {
-            auto a( eGreedy(s) );
-
-            auto r  = e.takeAction(a);
-            auto s_ = e.getState();
-
-            auto a_( greedy(s_) );
-
-            Afterstate_t as (s , a );
-            Afterstate_t as_(s_, a_);
-
-            double prev = _afterstateValueLookup( as );
-            double nextEst = _afterstateValueLookup( as_ );
-
-            _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
-
-            s = s_;
-        }
-
-        // Print a loading bar so we know the algorithm didn't hung itself
-        if( l != 0 )
-            if( t != 0 )
-                if( n % (int)(t/l+1) == 0 ) /// \tbc get an exact loading function?
-                    os << "=";
-    }
-
-    return;
-
+    for (; n != 0; --n)
+      performLearningEpisode();
 }
 
+Sarsa::Reward_t
+Sarsa::performLearningEpisode()
+{
+  e.restart();
+  while(!e.episodeFinished())
+  {
+    //          v
+    auto const& s = e.getState(); // Referenced state changes at takeAction()
+    auto const& a( eGreedy(s) ); Afterstate_t as (s , a );
+    auto const& r  = e.takeAction(a);
+    auto const& s_ = e.getState();
+    auto const& a_( greedy(s_) ); Afterstate_t as_(s_, a_);
+    //          ^
+
+    double prev = _afterstateValueLookup( as );
+    double nextEst = _afterstateValueLookup( as_ );
+
+    // TODO Provide normal update function.
+    _afterstateValueUpdate( as ) = prev + alpha*(r+gamma*nextEst - prev);
+  }
+
+  // TODO we need environment::getReturn
+  return e.getState().getPoints();
+}
 
 Sarsa::Sarsa(double alph, double epsil, double gam)
     : alpha{alph}, epsilon{epsil}, gamma{gam}, _afterstateValueTable{}, _legalActionsTable()
@@ -191,4 +183,26 @@ Sarsa::Sarsa(double alph, double epsil, double gam)
     if( 1/RAND_MAX > epsilon )
         exit(36762);
 
+}
+
+std::string
+Sarsa::info() const
+{
+  // Algorithm specification
+  std::string_view algo {"Sarsa-Max"};
+  std::string_view repr {"Afterstates"};
+  std::string_view expl {"e-greeedy"};
+  std::string_view rate {"constant"};
+  std::string_view init {"fixed"};
+  std::string s {};
+  utils::append_more(s, algo, " using ", repr, ", exploration=", expl,
+      ", learning_rate=", rate, " initialization=", init, "; ");
+
+  // Parameters
+  utils::append_more(s,
+      "alpha=", std::to_string(alpha),
+      ", epsilon=", std::to_string(epsilon),
+      " gamma=", std::to_string(gamma));
+
+  return s;
 }

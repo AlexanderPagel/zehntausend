@@ -2,6 +2,9 @@
 
 #include <string> // std::to_string
 
+// FIXME testing
+#include "rl_evaluator.h"
+
 
 namespace ui
 {
@@ -217,14 +220,19 @@ UiFactory::createDefaultGame()
 BotActor*
 UiFactory::createDefaultBot()
 {
-#ifdef PG
-  auto s = new Sarsa(0.0, 0.1);
-  // 1M training episodes fr profiling
-  s->performLearningEpisodes(1000000);
-  delete s;
-  exit(1);
-#endif
+//#ifdef PG
+//  auto s = new Sarsa(0.1, 0.1);
+  // 1M training episodes for profiling
+//  s->performLearningEpisodes(1000000);
+//  delete s;
+//  exit(1);
+//#endif
 
+  // FIXME testing
+//  auto bot = new Sarsa(0.0005, 0.2); // 436 o 349
+//  auto bot = new Sarsa(0.005, 0.1); // 440.39 +- 0.70 o 358.27 (50M)
+//  echo "10000000 0.005 0.15" | "./zehntausend" "evaluate" && // 1000000|	441.06 (+- 0.71 ) o 361.46 (70M)
+//  echo "10000000 0.005 0.2" | "./zehntausend" "evaluate" && // 1000000|	441.80 (+- 0.71 ) o 363.46 (76M)
   // FIXME Sarsa bot creation is currently a memory leak: Bot actor will not
   //       free bot.
   // TODO Within the ui namespace it would be simplest to use smart pointers
@@ -258,7 +266,9 @@ UiFactory::createDefaultBot()
   std::cout << "Running " << count << " episodes with learning rate " << alpha
     << " and exploration " << epsilon << "..." << std::endl;
   Sarsa* b = new Sarsa(alpha, epsilon);
-  b->performLearningEpisodes(count);
+//  b->performLearningEpisodes(count);
+  rl::Evaluator eval2(count, 5000000);
+  eval2(*b);
   std::cout << "Training finished. [ENTER]" << std::endl;
   std::cin.ignore();
 

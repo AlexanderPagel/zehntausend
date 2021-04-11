@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# This script offers some off-the-shelf configurations/calls to the zehntausend
+# scripts. If you had a specific project/idea you want to try you would add it
+# as a command to this script.
+
+# Boilerplate safe mode
+# From: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
+IFS=$'\n\t'
+
+# Move to parent directory for behaviour independant of script location
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$parent_path"
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 {test|training|clean}"
+  exit 1;
+fi
+
+################################################################################
+# Execution
+################################################################################
+
+eval_script="scripts/evaluate.sh";
+
+if [[ "$1" == "test" ]]; then
+  ./scripts/test.sh && exit 0;
+  exit 1;
+fi
+
+# Legacy behaviour: just start game to play on console
+if [[ "$1" == "game" ]]; then
+  #make zehntausend -j4 &&
+  ./zehntausend "play" &&
+  exit 0;
+fi
+
+# One training run to compare different training stups/parameters
+if [[ "$1" == "once" ]]; then
+  make zehntausend -j4 &&
+  # use n=100k for test runs, 10M later
+  echo "Starting evaluation..." &&
+  bash "$eval_script" "sarsa" "10000000" "0.01" "0.2" &&
+  echo "Plotting results..." &&
+  scripts/plot.sh --create_single &&
+  scripts/plot.sh --show &&
+  echo "Saving results..." &&
+  scripts/index.sh --save all &&
+  #cd "eval" &&
+  #gnuplot "../scripts/training.gpi" &&
+  echo "[SUCCESS] $0 one: Command completed" &&
+  exit 0;
+fi
+
+# Perform project training run. Currently just testing.
+if [ "$1" = "training" ]; then
+  make zehntausend -j4 &&
+  bash "$eval_script" "sarsa" "10000" "0.01" "0.2" &&
+  # Read command as arg, parameters from stdin. Maybe not the best way?
+  cd "eval";
+  gnuplot "../scripts/training.gpi" &&
+    # TODO The all cd and stuff in plotting is too shitty in gnuplot-script. write bash scripts for it
+  _png "0_plot.png" &&
+  exit 0;
+
+elif [ "$1" = "clean" ]; then
+  make clean &&
+  exit 0;
+else
+  echo "[ERROR] $0: Unknown command \"$1\"";
+  exit 1;
+fi
+
+echo "[ERROR] Command \"$1\" aborted.";
+exit 1;
+
+# TODO write scripts:
+# 1) General eval script that takes the algorthm name + parameters and
+#    calls ./zehntausend accordingly
+# 2) Evaluation presets for testing that calls script 1 w/ fixed values
+# 3) Dedicated pplotting scripts: one default (current), one that takes
+#    a stats file (or ID) as input and re-prints the graph. Output is
+#    always a default file that can then be moved to the right location.

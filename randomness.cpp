@@ -12,7 +12,7 @@ namespace
 
 // Call srand() during static initialization. Static initialization itself must
 // not use randomness.
-int i = (std::srand(std::time(0)), 0);
+int i = (std::srand(std::time(nullptr)), 0);
 
 }
 

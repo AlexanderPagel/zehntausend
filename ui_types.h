@@ -9,7 +9,6 @@
 #include "ref_tenthousand.h"
 
 
-// FIXME Provide namespace
 namespace ui
 {
 

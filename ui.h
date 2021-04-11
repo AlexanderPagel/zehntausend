@@ -115,6 +115,7 @@ class Ui
 #ifdef RELAY_NAME
 #error Redefinition of macro RELAY_NAME
 #else
+    // TODO use std::forward
 #define RELAY_NAME(f, orig) \
     template<typename... Types> \
     auto f(Types... args) { return game-> orig (args...); }
@@ -202,6 +203,8 @@ class UiFactory
     void create();
 
   public:
+    // TODO We cannot initialize the subobjects with the UI pointer if we do
+    //      not provide it. What to do?
     template<typename T,
              typename = decltype(UiFactory::set(&std::declval<T>()))
             >

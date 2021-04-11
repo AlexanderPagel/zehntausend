@@ -1,3 +1,5 @@
+# TODO Create subdirectories for build, profile and eval
+
 # Build
 .debug
 .depend
@@ -10,7 +12,11 @@ zehntausend
 analysis.txt
 gmon.out
 
+# Evaluate
+eval/
+
 # Edit
+scripts/test.sh
 *.swp
 Session.vim
 SessionSplit.vim

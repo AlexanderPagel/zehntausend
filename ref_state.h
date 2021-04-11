@@ -31,6 +31,7 @@ class State
 
   public:
     static State startState(); // Randomize 6 dice, points 0
+    static State startState(Points_t maxPoints); // Radnom points in [0,2000]
     static State makeTerminalState();
 
     bool isTerminal() const;

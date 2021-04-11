@@ -45,15 +45,16 @@ private:
     //  - ...
     using _game_t        = refac::Environment;
 //    using Environment_t  = _game_t;
-    using Environment_t  = refac::Environment;
 public:
-    using Game_t         = _game_t;
+    using Environment_t  = refac::Environment;
     using State_t        = refac::State;
     using Action_t       = refac::Action;
 //    using Afterstate_t   = Game_t::Afterstate_t;
     using Afterstate_t   = refac::Afterstate; // TODO implement
 //    using ActionVector_t = Game_t::ActionVector_t;
     using ActionVector_t = std::vector<refac::Action>;
+    using Reward_t = refac::Points_t;
+    using Return_t = Reward_t;
 
 private:
     using _legalActionsTable_t = std::unordered_map<State_t, ActionVector_t>;
@@ -61,8 +62,10 @@ private:
 
 public:
     double const alpha;
-    double const epsilon;    // Store as 1/epsilon, e.g., 10 for epsilon = 0.1 // TODO
+    double const epsilon;
     double const gamma;
+
+    Environment_t e{};
 
     mutable _afterstateTable_t _afterstateValueTable;   // mutable for greedy lookup, not training
     mutable _legalActionsTable_t _legalActionsTable;
@@ -81,12 +84,25 @@ public:
         unsigned int n = 1,
         unsigned int l = 0,
         std::ostream& = std::cout);
+    // Teturn episode return, may need to convert to larger type
+    Return_t performLearningEpisode();
 
     // Ctor
     Sarsa(double alpha = 0.1, double epsilon = 0.2, double gamma = 1);
 
+    // Print algorithm info + parameters
+    std::string info() const;
 //    void printLowQ() const & noexcept;
 };
+
+
+namespace rl
+{
+
+// Default evaluation used for testing while preparing more general testing.
+void defaultEvaluation();
+
+} // namespace rl
 
 
 #endif // SARSA_HPP_INCLUDED

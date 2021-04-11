@@ -2,6 +2,7 @@
 
 #include <utility> // std::move
 
+#include "randomness.h"
 #include "ref_throw.h"
 #include "ref_types.h"
 
@@ -16,9 +17,18 @@ State::State(Throw const& t, Points_t const& p)
 State
 State::startState()
 {
+  // TODO Need Throw ctor for random roll?
   Throw initialThrow;
   initialThrow.roll(totalGameDieCount);
   return State(std::move(initialThrow), Points_t(0));
+}
+
+State
+State::startState(Points_t maxPoints)
+{
+  auto s {startState()};
+  s.points = randomness::randomInt(0, maxPoints);
+  return s;
 }
 
 State

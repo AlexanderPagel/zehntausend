@@ -1,0 +1,23 @@
+#!/bin/false
+
+# Expected to be run in project directory, so cd to eval/
+#cd "./eval/"
+
+# Set output file
+set terminal png size 1920,1080
+set output 'eval/0_plot.png'
+
+# Window appearance
+set title 'Training Evaluation' # PGN title
+set grid # plot a grid below data
+set xrange [0:] # ignroe drag stats warmup before x=0 (if any)
+set key right bottom
+
+# Graph appearance
+set style data lines
+
+################################################################################
+# Last line of template
+# The plotlines (in the above format) will be added hereafter
+################################################################################
+plot \
