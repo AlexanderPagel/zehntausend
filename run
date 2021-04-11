@@ -24,15 +24,32 @@ fi
 
 eval_script="scripts/evaluate.sh";
 
-# Perform project training run. Currently just testing.
 if [[ "$1" == "test" ]]; then
   ./scripts/test.sh && exit 0;
   exit 1;
 fi
 
+# One training run to compare different training stups/parameters
+if [[ "$1" == "once" ]]; then
+  make zehntausend -j4 &&
+  # use n=100k for test runs, 10M later
+  echo "Starting evaluation..." &&
+  bash "$eval_script" "sarsa" "100000" "0.01" "0.2" &&
+  echo "Plotting results..." &&
+  scripts/plot.sh --create_single &&
+  scripts/plot.sh --show &&
+  echo "Saving results..." &&
+  scripts/index.sh --save all &&
+  #cd "eval" &&
+  #gnuplot "../scripts/training.gpi" &&
+  echo "[SUCCESS] $0 one: Command completed";
+  exit 0;
+fi
+
+# Perform project training run. Currently just testing.
 if [ "$1" = "training" ]; then
   make zehntausend -j4 &&
-  bash $eval_script "sarsa" "10000" "0.01" "0.2" &&
+  bash "$eval_script" "sarsa" "10000" "0.01" "0.2" &&
   # Read command as arg, parameters from stdin. Maybe not the best way?
   cd "eval";
   gnuplot "../scripts/training.gpi" &&
