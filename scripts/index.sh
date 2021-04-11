@@ -221,10 +221,11 @@ elif [[ "$idx_command" == "--delete" ]]; then
       echo "[ERROR] $0: Can't delete out-of-range ID $2."; exit 1;
   fi
   remove_id="$2";
-  if [[ "$(is_uint.sh "$remove_id")" == "1" ]]; then
+  if [[ "$(./is_uint.sh "$remove_id")" == "1" ]]; then
     :; # everything ok
   else
-    echo "[ERROR] Passed eval ID is not an unsigned integer (got \"$remove_id\").";
+    echo "[ERROR] $0 --delete: Passed eval ID is not an unsigned integer (got \"$remove_id\").";
+    exit 1;
   fi
 
   # Remove eval ID in index file

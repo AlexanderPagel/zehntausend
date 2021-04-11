@@ -63,6 +63,7 @@ class Environment
     State const& getState() const;
     std::vector<Action> const& getLegalActions() const;
     void restart();
+    void restartRandomPoints(Points_t maxPoints = 2000);
 
     // Copy + move ctor default
     // Copy + move assign default

@@ -114,9 +114,6 @@ Evaluator::evaluateFull(Bot_type& bot)
 void
 Evaluator::writeTrainingLog(int i) const
 {
-  // TODO old version without centering drag intervals:
-//  ofsTrain << i << ":\t" << runningStats << std::endl;
-
   // True counter
   ofsTrain << i << "|\t";
 
@@ -126,10 +123,13 @@ Evaluator::writeTrainingLog(int i) const
   for (auto it {std::crbegin(stats)}; it != std::crend(stats); ++it)
   {
     auto const& s {*it};
-//    ofsTrain << " " << i - s.getDrag()/2 << ": " << s;
     ofsTrain << " " << i - s.getOffset() << ": " << s;
   }
-  ofsTrain << std::endl;
+  ofsTrain << "\n";
+
+  // Log to stdout to monitor progress more easily
+  auto const& last = stats.back();
+  std::cout << i << " | " << i - last.getOffset() << ":" << last << "\n";
 }
 
 void
@@ -144,7 +144,7 @@ Evaluator::Evaluator(int training, int test)
     // FIXME test predetermined grads
     runningStats
     {
-      int(0.001 * training),
+      int(0.01 * training),
       int(training),
       2, // two in-betweeners
       false, // No inertia

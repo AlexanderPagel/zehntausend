@@ -34,7 +34,7 @@ if [[ "$1" == "once" ]]; then
   make zehntausend -j4 &&
   # use n=100k for test runs, 10M later
   echo "Starting evaluation..." &&
-  bash "$eval_script" "sarsa" "100000" "0.01" "0.2" &&
+  bash "$eval_script" "sarsa" "10000000" "0.01" "0.2" &&
   echo "Plotting results..." &&
   scripts/plot.sh --create_single &&
   scripts/plot.sh --show &&

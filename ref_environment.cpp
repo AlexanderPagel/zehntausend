@@ -208,7 +208,13 @@ Environment::restart()
 {
   state = State::startState();
   clearActions();
-//  fillActions();
+}
+
+void
+Environment::restartRandomPoints(Points_t maxPoints)
+{
+  state = State::startState(maxPoints);
+  clearActions();
 }
 
 } // namespace refac
