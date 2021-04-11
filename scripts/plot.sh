@@ -55,7 +55,7 @@ fi
 # TODO Change the create_... commands into creating + immediate plotting
 if [[ "$plt_command" == "--create_single" ]]; then
   set +e;
-  ./create_gnuplot_script.sh --create_single;
+  bash ./create_gnuplot_script.sh --create_single;
   ret=$?;
   set -e;
   if [ "$ret" -ne 0 ]; then
@@ -72,7 +72,7 @@ if [[ "$plt_command" == "--show" ]]; then
     echo "[ERROR] $0 --show: No temporary plot prepared.";
     exit 1;
   fi
-  (cd "$project_path"; pwd; gnuplot "eval/plot.gpi";);
+  (cd "$project_path"; gnuplot "eval/plot.gpi";);
   # TODO for testign show immediately
   _png "$project_path/eval/0_plot.png";
   exit 0;

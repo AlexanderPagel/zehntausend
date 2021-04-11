@@ -54,7 +54,7 @@ readonly eval_dir="$project_root/eval";
 readonly temp_plotscript_name="plot.gpi";
 readonly temp_plotscript_path="$eval_dir/plot.gpi";
 readonly template_compare_file_path="template_compare_plotscript.txt";
-readonly tempalte_single_file_path="template_single_plotscript.txt";
+readonly template_single_file_path="template_single_plotscript.txt";
 
 ################################################################################
 # Command --plotline to generate the line of gnuplot script required to add the
@@ -103,7 +103,7 @@ if [[ "$cplt_command" == "--create_single" ]]; then
 
   # Simply copy the prepared gnoplot script.
   # TODO This migh just be worse than just stright up using the script as is.
-  cp -vf "$tempalte_single_file_path" "$temp_plotscript_path";
+  cp -vf "$template_single_file_path" "$temp_plotscript_path";
   echo "[SUCCESS] $0 --create_single: Created temporary single gnuplot script as \"$temp_plotscript_name\".";
   exit 0;
 
