@@ -273,6 +273,8 @@ UiFactory::createDefaultBot()
   rl::Evaluator eval2(count, count/10);
   eval2(*b);
   std::cout << "Training finished. [ENTER]" << std::endl;
+
+  std::cin.ignore(); // Consume last \n from entering parameters
   std::cin.ignore();
 
   return new BotActor{ui, *b};
