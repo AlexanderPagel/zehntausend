@@ -250,13 +250,15 @@ UiFactory::createDefaultBot()
             << "    1000  -   9999     | 0.18          | 0.15" << std::endl
             << "   10000  -  99999     | 0.14          | 0.12" << std::endl
             << "  100000+              | 0.12          | 0.1" << std::endl;
+  std::cout << "\n"
+            << "Good trade-off: DynamicLevel=2000000, lr=0.005, expl=0.2."
+               " Results in 10-15M episodes.\n" << std::endl;
   std::cout << "Dynamic Level (> 0): ";
   std::cin >> count; std::cin.sync(); std::cin.clear();
   std::cout << "Learning rate (0 to 1): ";
   std::cin >> alpha; std::cin.sync(); std::cin.clear();
   std::cout << "Exploration (0 to 1): ";
   std::cin >> epsilon; std::cin.sync(); std::cin.clear();
-  std::stringstream ss;
   if (alpha <= 0 || 1 <= alpha)
     throw std::runtime_error("Alpha " + std::to_string(alpha) + " invalid");
   if (epsilon <= 0 || 1 <= epsilon)
@@ -266,8 +268,8 @@ UiFactory::createDefaultBot()
   std::cout << "Running " << count << " episodes with learning rate " << alpha
     << " and exploration " << epsilon << "..." << std::endl;
   Sarsa* b = new Sarsa(alpha, epsilon);
-//  b->performLearningEpisodes(count);
   // NOTE Dynamic stop, so can not count on entered number
+  //      ALternative: b->performLearningEpisodes(count);
   rl::Evaluator eval2(count, count/10);
   eval2(*b);
   std::cout << "Training finished. [ENTER]" << std::endl;
