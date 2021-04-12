@@ -135,7 +135,10 @@ Evaluator::writeTrainingLog(int i) const
 void
 Evaluator::writeEvaluationLog(int i) const
 {
-  ofsFinal << i << "|\t" << finalStats << std::endl;
+  ofsFinal << i << "|\t" << finalStats << "\n";
+
+  // Log to stdout to monitor progress more easily
+  std::cout << i << " | " << finalStats << "\n";
 }
 
 Evaluator::Evaluator(int training, int test)
